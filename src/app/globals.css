@@ -25,3 +25,11 @@ body {
     text-wrap: balance;
   }
 }
+
+.scrollbar-hidden {
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
