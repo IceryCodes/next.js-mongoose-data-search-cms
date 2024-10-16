@@ -15,12 +15,12 @@ export const useHospitalQuery = ({
   onError,
   enabled,
   queryPrefixKey = [],
-  id,
+  _id,
 }: UseHospitalQueryProps): QueryBaseReturnType<HospitalProps> => {
   const queryResult = useQuery({
-    queryKey: [...queryPrefixKey, hospitalQueryKeys.getHospital, id],
-    queryFn: () => getHospital({ id }),
-    enabled: Boolean(id) && enabled,
+    queryKey: [...queryPrefixKey, hospitalQueryKeys.getHospital, _id],
+    queryFn: () => getHospital({ _id }),
+    enabled: Boolean(_id) && enabled,
   });
 
   const { isFetching, isError, error, data, refetch } = queryResult;

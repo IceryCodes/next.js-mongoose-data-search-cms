@@ -1,20 +1,43 @@
+import { MongoClient, ObjectId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { HospitalProps } from '@/app/hospitals/interfaces';
-import data from '@/data/converts/odsData.json';
 
-type ResponseData = HospitalProps | undefined;
+const uri = 'mongodb://Zioncare:zioncare2icery@localhost:27017/?authMechanism=DEFAULT&authSource=hospital_search';
+const client = new MongoClient(uri);
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
-  const { id } = req.query;
+let clientPromise: Promise<MongoClient> | null = null;
 
-  if (typeof id !== 'string') {
-    return res.status(400).json(undefined); // Return an undefined if query is invalid
+async function connectToDatabase() {
+  if (!clientPromise) {
+    clientPromise = client.connect(); // Reuse connection
+  }
+  return clientPromise;
+}
+
+type ResponseData = HospitalProps | null;
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
+  const { _id } = req.query;
+
+  // Validate ObjectId
+  if (typeof _id !== 'string' || !ObjectId.isValid(_id)) {
+    return res.status(400).json(null); // Invalid or missing ID
   }
 
-  const hospitals = data as HospitalProps[];
-  // Find hospital where id query matched
-  const result: ResponseData = hospitals.find(({ id: currentId }: HospitalProps) => currentId === id);
+  try {
+    // Connect to MongoDB using connection pooling
+    const client = await connectToDatabase();
+    const database = client.db('hospital_search');
+    const hospitalsCollection = database.collection<HospitalProps>('hospitals');
 
-  res.status(200).json(result);
+    // Find hospital by ID
+    const hospital = await hospitalsCollection.findOne({ _id: new ObjectId(_id) });
+
+    // Return the found hospital or null if not found
+    res.status(200).json(hospital || null);
+  } catch (error) {
+    console.error('Error fetching hospital by ID:', error);
+    res.status(500).json(null); // Return null on server error
+  }
 }

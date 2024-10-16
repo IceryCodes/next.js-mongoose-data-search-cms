@@ -1,5 +1,6 @@
-'use client'; // Add this line at the top to indicate it's a client component
+'use client';
 
+import { LoadScript } from '@react-google-maps/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import localFont from 'next/font/local';
 import './globals.css';
@@ -28,7 +29,9 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F5F5F5]`}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          <LoadScript googleMapsApiKey={process.env.NEXT_PRIVATE_GOOGLE_API_KEY}>{children}</LoadScript>
+        </QueryClientProvider>
       </body>
     </html>
   );

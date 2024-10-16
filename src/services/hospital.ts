@@ -9,9 +9,9 @@ export const hospitalQueryKeys = {
   getHospitals: 'getHospitals',
 } as const;
 
-export const getHospital = async ({ id }: HospitalDto): Promise<HospitalProps> => {
+export const getHospital = async ({ _id }: HospitalDto): Promise<HospitalProps> => {
   const { data } = await apiOrigin.get('/hospital', {
-    params: { id },
+    params: { _id },
   });
   return data;
 };

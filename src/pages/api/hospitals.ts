@@ -1,14 +1,26 @@
+import { MongoClient } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { DepartmentsType, HospitalProps } from '@/app/hospitals/interfaces';
-import data from '@/data/converts/odsData.json';
+
+const uri = 'mongodb://Zioncare:zioncare2icery@localhost:27017/?authMechanism=DEFAULT&authSource=hospital_search';
+const client = new MongoClient(uri);
+
+let clientPromise: Promise<MongoClient> | null = null;
+
+async function connectToDatabase() {
+  if (!clientPromise) {
+    clientPromise = client.connect(); // Reuse connection
+  }
+  return clientPromise;
+}
 
 interface ApiResponse {
   hospitals: HospitalProps[];
   total: number;
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse | undefined>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse | undefined>) {
   const { query, county, departments, page = '1', limit = '10' } = req.query;
 
   // Parse page and limit as integers
@@ -20,45 +32,49 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<ApiRes
     return res.status(400).json(undefined);
   }
 
-  // Split the query into individual words and convert them to lowercase
-  const queryWords = typeof query === 'string' ? query.toLowerCase().split(' ').filter(Boolean) : [];
-  const hospitals = data as HospitalProps[];
+  try {
+    // Connect to MongoDB using pooled connection
+    const client = await connectToDatabase();
+    const database = client.db('hospital_search');
+    const hospitalsCollection = database.collection<HospitalProps>('hospitals');
 
-  // Filter hospitals based on the query, county, and departments
-  const filteredHospitals = hospitals.filter(
-    ({ title, county: currentCounty, departments: hospitalDepartments }: HospitalProps) => {
-      const hospitalTitle = title.toLowerCase();
+    // Build MongoDB query
+    const mongoQuery: Record<string, unknown> = {}; // Type-safe object
 
-      // Check if at least one word from the query appears in the title
-      const isTitleMatch = !queryWords.length || queryWords.some((word) => hospitalTitle.includes(word));
-
-      // Check if the county matches, but only if a county has been specified
-      const isCategoryMatch = !county || currentCounty === county;
-
-      // Check if the department matches, but only if a department has been specified
-      const isDepartmentMatch = !departments || hospitalDepartments.includes(departments as DepartmentsType);
-
-      return isTitleMatch && isCategoryMatch && isDepartmentMatch;
+    // Add query-based filtering (title search)
+    if (query && typeof query === 'string') {
+      const queryWords = query.toLowerCase().split(' ').filter(Boolean);
+      mongoQuery.title = { $regex: queryWords.join('|'), $options: 'i' }; // Case-insensitive search
     }
-  );
 
-  // Prioritize hospitals: Partner hospitals come first
-  const prioritizedHospitals = filteredHospitals.sort((a, b) => {
-    if (a.partner && !b.partner) return -1; // Partner hospitals come first
-    if (!a.partner && b.partner) return 1;
-    return 0; // Otherwise, maintain the order
-  });
+    // Filter by county if specified
+    if (county && typeof county === 'string') {
+      mongoQuery.county = county;
+    }
 
-  // Calculate the start and end indices for pagination
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
+    // Filter by departments if specified
+    if (departments && typeof departments === 'string') {
+      mongoQuery.departments = { $in: [departments as DepartmentsType] };
+    }
 
-  // Slice the filtered results for the current page
-  const paginatedResults = prioritizedHospitals.slice(startIndex, endIndex);
+    // Fetch total count of matching documents before pagination
+    const total = await hospitalsCollection.countDocuments(mongoQuery);
 
-  // Return paginated results along with the total count
-  res.status(200).json({
-    hospitals: paginatedResults,
-    total: filteredHospitals.length, // Total number of filtered hospitals
-  });
+    // Fetch hospitals based on filters and apply pagination
+    const hospitals = await hospitalsCollection
+      .find(mongoQuery)
+      .sort({ partner: -1 }) // Sort so partner hospitals come first
+      .skip((currentPage - 1) * pageSize)
+      .limit(pageSize)
+      .toArray();
+
+    // Return paginated results along with the total count
+    res.status(200).json({
+      hospitals,
+      total, // Total number of filtered hospitals
+    });
+  } catch (error) {
+    console.error('Error fetching hospitals:', error);
+    res.status(500).json(undefined);
+  }
 }

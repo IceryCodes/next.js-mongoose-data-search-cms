@@ -14,10 +14,10 @@ import ConvertLink, { LinkType } from '@/utils/links';
 
 const HospitalContent = (): ReactElement => {
   const params = useParams();
-  const id: string = params?.id as string;
+  const _id: string = params?.id as string;
 
   const { composeGender } = useEnum();
-  const { data: hospital, isLoading, isError } = useHospitalQuery({ id });
+  const { data: hospital, isLoading, isError } = useHospitalQuery({ _id });
 
   const mainInfoRender = useCallback(
     ({ label, value }: { label: string; value: ReactElement }): ReactElement => (
@@ -59,8 +59,8 @@ const HospitalContent = (): ReactElement => {
     );
   }
 
-  if (!hospital) return <span>Hospital not found</span>;
-  if (isError) return <span>Error fetching hospitals</span>;
+  if (!hospital) return <span>沒有符合醫院</span>;
+  if (isError) return <span>搜尋時發生錯誤</span>;
 
   const {
     partner,

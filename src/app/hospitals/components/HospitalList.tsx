@@ -102,36 +102,34 @@ const HospitalList = (): ReactElement => {
       <GoogleMapComponent hospitals={hospitals} />
 
       {/* Loading overlay */}
-      <div className="relative w-full">
+      <div className="relative w-full min-h-[400px]">
         {isLoading && (
           <div className="absolute inset-0 flex justify-center items-center bg-white bg-opacity-70">
             <span className="text-gray-500 text-lg">搜尋中...</span>
           </div>
         )}
-        {isError && <span>Error fetching hospitals</span>}
+        {isError && <span>搜尋時發生錯誤</span>}
 
         {/* Hospital list */}
-        <section className="min-h-[400px]">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {!hospitals.length && <label>沒有符合醫院</label>}
-            {hospitals.map(({ id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
-              <HospitalListItemCard
-                key={id}
-                id={id}
-                image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
-                title={title}
-                county={county}
-                district={district}
-                address={address}
-                departments={departments}
-                partner={partner}
-              />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {!hospitals.length && <label>沒有符合醫院</label>}
+          {hospitals.map(({ _id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
+            <HospitalListItemCard
+              key={_id.toString()}
+              _id={_id}
+              image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
+              title={title}
+              county={county}
+              district={district}
+              address={address}
+              departments={departments}
+              partner={partner}
+            />
+          ))}
         </section>
+
+        {/* Pagination */}
+        <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
       </div>
     </div>
   );

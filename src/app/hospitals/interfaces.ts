@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 export enum GenderType {
   None = 0,
   Male = 1,
@@ -474,7 +476,7 @@ export const districtOptions = {
 };
 
 export interface HospitalProps {
-  id: string;
+  _id: ObjectId;
   partner: boolean;
   orgCode: string;
   owner: string;
