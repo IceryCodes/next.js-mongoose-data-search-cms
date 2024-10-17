@@ -17,10 +17,10 @@ const nextConfig = {
     ],
   },
     env: {
+        NEXT_PRIVATE_BASE_URL: usedUrl,
         NEXT_PRIVATE_API_BASE_URL: `${usedUrl}/api`,
         NEXT_PRIVATE_GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
 
-        NEXT_PUBLIC_BASE_URL: usedUrl,
         NEXT_PUBLIC_SITE_NAME: "MtM+ Technology",
         NEXT_PUBLIC_FEATURED_IMAGE: "https://mtmptech.com/wp-content/uploads/2022/07/logo_1280x720.jpg",
     }

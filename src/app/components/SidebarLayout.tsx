@@ -119,10 +119,10 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
           {/* Hospital list */}
           <div className="grid grid-cols-1 gap-4 p-4">
             {!hospitals.length && <label>附近沒有符合醫院</label>}
-            {hospitals.map(({ id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
+            {hospitals.map(({ _id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
               <HospitalListItemCard
-                key={id}
-                id={id}
+                key={_id.toString()}
+                _id={_id}
                 image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
                 title={title}
                 county={county}

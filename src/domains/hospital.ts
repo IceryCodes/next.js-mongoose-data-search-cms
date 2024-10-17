@@ -1,7 +1,7 @@
 import { DepartmentsType } from '@/app/hospitals/interfaces';
 
 export interface HospitalDto {
-  id: string;
+  _id: string;
 }
 
 export interface HospitalsDto {
