@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { Collection, ObjectId, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { HospitalProps } from '@/app/hospitals/interfaces';
@@ -15,10 +15,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse>) =
   }
 
   try {
-    const hospitalsCollection = await getHospitalsCollection();
+    const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
 
     // Find hospital by ID
-    const hospital = await hospitalsCollection.findOne({ _id: new ObjectId(_id) });
+    const hospital: WithId<HospitalProps> | null = await hospitalsCollection.findOne({ _id: new ObjectId(_id) });
 
     // Return the found hospital or null if not found
     res.status(200).json(hospital || null);

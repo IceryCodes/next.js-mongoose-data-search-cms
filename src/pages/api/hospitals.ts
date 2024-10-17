@@ -1,3 +1,4 @@
+import { Collection, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { DepartmentsType, HospitalProps } from '@/app/hospitals/interfaces';
@@ -22,7 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
 
   try {
     // Use the shared hospitals collection
-    const hospitalsCollection = await getHospitalsCollection();
+    const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
 
     // Build MongoDB query
     const mongoQuery: Record<string, unknown> = {}; // Type-safe object
@@ -43,11 +44,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
       mongoQuery.departments = { $in: [departments as DepartmentsType] };
     }
 
+    // Filter out sample by keyword if production
+    if (process.env.NODE_ENV === 'production') {
+      mongoQuery.keywords = { $not: { $all: ['Sample'] } };
+    }
+
     // Fetch total count of matching documents before pagination
-    const total = await hospitalsCollection.countDocuments(mongoQuery);
+    const total: number = await hospitalsCollection.countDocuments(mongoQuery);
 
     // Fetch hospitals based on filters and apply pagination
-    const hospitals = await hospitalsCollection
+    const hospitals: WithId<HospitalProps>[] = await hospitalsCollection
       .find(mongoQuery)
       .sort({ partner: -1 }) // Sort so partner hospitals come first
       .skip((currentPage - 1) * pageSize)
