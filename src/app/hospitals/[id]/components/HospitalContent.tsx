@@ -1,8 +1,8 @@
 'use client';
-import { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback, useEffect } from 'react';
 
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
@@ -14,10 +14,11 @@ import ConvertLink, { LinkType } from '@/utils/links';
 
 const HospitalContent = (): ReactElement => {
   const params = useParams();
-  const id: string = params?.id as string;
+  const _id: string = params?.id as string;
+  const router = useRouter();
 
   const { composeGender } = useEnum();
-  const { data: hospital, isLoading, isError } = useHospitalQuery({ id });
+  const { data: hospital, isLoading, isError } = useHospitalQuery({ _id });
 
   const mainInfoRender = useCallback(
     ({ label, value }: { label: string; value: ReactElement }): ReactElement => (
@@ -49,6 +50,12 @@ const HospitalContent = (): ReactElement => {
     []
   );
 
+  useEffect(() => {
+    if (!isLoading && !hospital && !isError) {
+      router.push('/404'); // Redirect to /404 if no hospital is found
+    }
+  }, [isLoading, hospital, isError, router]);
+
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
@@ -59,8 +66,8 @@ const HospitalContent = (): ReactElement => {
     );
   }
 
-  if (!hospital) return <span>Hospital not found</span>;
-  if (isError) return <span>Error fetching hospitals</span>;
+  if (isError) return <span>搜尋時發生錯誤</span>;
+  if (!hospital) return <span>沒有符合醫院</span>;
 
   const {
     partner,

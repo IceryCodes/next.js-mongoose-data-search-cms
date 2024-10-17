@@ -1,20 +1,31 @@
+import { ObjectId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { HospitalProps } from '@/app/hospitals/interfaces';
-import data from '@/data/converts/odsData.json';
+import { getHospitalsCollection } from '@/lib/mongodb';
 
-type ResponseData = HospitalProps | undefined;
+type ApiResponse = HospitalProps | null;
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
-  const { id } = req.query;
+const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse>) => {
+  const { _id } = req.query;
 
-  if (typeof id !== 'string') {
-    return res.status(400).json(undefined); // Return an undefined if query is invalid
+  // Validate ObjectId
+  if (typeof _id !== 'string' || !ObjectId.isValid(_id)) {
+    return res.status(400).json(null); // Invalid or missing ID
   }
 
-  const hospitals = data as HospitalProps[];
-  // Find hospital where id query matched
-  const result: ResponseData = hospitals.find(({ id: currentId }: HospitalProps) => currentId === id);
+  try {
+    const hospitalsCollection = await getHospitalsCollection();
 
-  res.status(200).json(result);
-}
+    // Find hospital by ID
+    const hospital = await hospitalsCollection.findOne({ _id: new ObjectId(_id) });
+
+    // Return the found hospital or null if not found
+    res.status(200).json(hospital || null);
+  } catch (error) {
+    console.error('Error fetching hospital by ID:', error);
+    res.status(500).json(null); // Return null on server error
+  }
+};
+
+export default handler;

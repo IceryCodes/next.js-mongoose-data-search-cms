@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, InfoWindow, Marker } from '@react-google-maps/api';
+import { ObjectId } from 'mongodb';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -20,7 +21,7 @@ const containerStyle = {
 interface Location {
   lat: number;
   lng: number;
-  id: string;
+  _id: ObjectId;
   title: string;
   description: string;
   image: string;
@@ -52,7 +53,7 @@ const GoogleMapComponent = ({ hospitals }: GoogleMapComponentProps) => {
         try {
           const geocoder = new google.maps.Geocoder();
           const results = await Promise.all(
-            hospitals.map(async ({ id, title, address, featuredImg }: HospitalProps) => {
+            hospitals.map(async ({ _id, title, address, featuredImg }: HospitalProps) => {
               try {
                 const response = await geocoder.geocode({ address });
                 const location = response.results[0]?.geometry.location;
@@ -61,7 +62,7 @@ const GoogleMapComponent = ({ hospitals }: GoogleMapComponentProps) => {
                   return {
                     lat: location.lat(),
                     lng: location.lng(),
-                    id,
+                    _id,
                     title,
                     description: address,
                     image: featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE,
@@ -88,37 +89,35 @@ const GoogleMapComponent = ({ hospitals }: GoogleMapComponentProps) => {
 
   return (
     <div className="w-full h-[400px]">
-      <LoadScript googleMapsApiKey={process.env.NEXT_PRIVATE_GOOGLE_API_KEY as string}>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={locations[0] || { lat: 25.0606989, lng: 121.4860045 }}
-          zoom={12.5}
-        >
-          {locations.map((location, index) => (
-            <Marker key={index} position={location} onClick={() => setSelectedLocation(location)} />
-          ))}
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={locations[0] || { lat: 25.0606989, lng: 121.4860045 }}
+        zoom={12.5}
+      >
+        {locations.map((location, index) => (
+          <Marker key={index} position={location} onClick={() => setSelectedLocation(location)} />
+        ))}
 
-          {selectedLocation && (
-            <InfoWindow
-              position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
-              onCloseClick={() => setSelectedLocation(null)}
-            >
-              <Link href={`/${getPageUrlByType(PageType.HOSPITALS)}/${selectedLocation.id}`} className="flex flex-col gap-1">
-                <Image
-                  src={selectedLocation.image}
-                  alt={selectedLocation.title}
-                  width={216}
-                  height={144}
-                  className="rounded"
-                  priority={true}
-                />
-                <span>{selectedLocation.title}</span>
-                <span>{selectedLocation.description}</span>
-              </Link>
-            </InfoWindow>
-          )}
-        </GoogleMap>
-      </LoadScript>
+        {selectedLocation && (
+          <InfoWindow
+            position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
+            onCloseClick={() => setSelectedLocation(null)}
+          >
+            <Link href={`/${getPageUrlByType(PageType.HOSPITALS)}/${selectedLocation._id}`} className="flex flex-col gap-1">
+              <Image
+                src={selectedLocation.image}
+                alt={selectedLocation.title}
+                width={216}
+                height={144}
+                className="rounded"
+                priority={true}
+              />
+              <span>{selectedLocation.title}</span>
+              <span>{selectedLocation.description}</span>
+            </Link>
+          </InfoWindow>
+        )}
+      </GoogleMap>
     </div>
   );
 };

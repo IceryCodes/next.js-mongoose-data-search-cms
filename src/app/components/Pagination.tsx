@@ -52,7 +52,7 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, maxBut
           {pageButtons.map((page, index) =>
             typeof page === 'number' ? (
               <Button
-                key={page}
+                key={index}
                 onClick={() => onPageChange(page)}
                 className={`px-4 py-2 text-sm font-medium ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'} rounded`}
                 element={<>{page}</>}
