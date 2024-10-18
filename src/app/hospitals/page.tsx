@@ -2,13 +2,13 @@ import { ReactElement } from 'react';
 
 import { Metadata } from 'next';
 
-import { PageType } from '../components/interface';
+import { getPageUrlByType, PageType } from '../components/interface';
 
 import HospitalList from './components/HospitalList';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const pageName: string = PageType.HOSPITALS;
-  const currentPath: string = `${process.env.NEXT_PRIVATE_BASE_URL}/hospitals`;
+  const currentPath: string = `${process.env.NEXT_PRIVATE_BASE_URL}/${getPageUrlByType(PageType.HOSPITALS)}`;
 
   return {
     title: `${pageName} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,

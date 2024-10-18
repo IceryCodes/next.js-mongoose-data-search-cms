@@ -6,8 +6,8 @@ import { useParams, useRouter } from 'next/navigation';
 
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
-import SidebarLayout from '@/app/components/SidebarLayout';
 import Tag from '@/app/components/tags/Tag';
+import SidebarLayout from '@/app/hospitals/[id]/components/SidebarLayout';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';

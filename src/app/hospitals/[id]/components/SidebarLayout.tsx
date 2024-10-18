@@ -3,15 +3,13 @@ import { ReactElement, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
+import { Button, ButtonStyleType } from '@/app/components/buttons/Button';
+import Card from '@/app/components/Card';
+import { CountyType, getPageUrlByType, PageType } from '@/app/components/interface';
+import HospitalListItemCard from '@/app/hospitals/components/HospitalListItemCard';
+import { DepartmentsType, HospitalProps } from '@/app/hospitals/interfaces';
 import { HospitalsDto } from '@/domains/hospital';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
-
-import HospitalListItemCard from '../hospitals/components/HospitalListItemCard';
-import { CountyType, DepartmentsType, HospitalProps } from '../hospitals/interfaces';
-
-import { Button, ButtonStyleType } from './buttons/Button';
-import Card from './Card';
-import { getPageUrlByType, PageType } from './interface';
 
 interface SidebarLayoutProps {
   county: string;
