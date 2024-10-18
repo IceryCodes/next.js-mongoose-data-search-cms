@@ -35,13 +35,14 @@ export const getPharmacy = async ({ _id }: PharmacyDto): Promise<PharmacyProps |
 export const getPharmacies = async ({
   query,
   county,
+  partner,
   healthInsuranceAuthorized,
   page = 1,
   limit = 10,
 }: PharmaciesDto): Promise<GetPharmaciesProps> => {
   try {
     const { data } = await apiOrigin.get('/pharmacies', {
-      params: { query, county, healthInsuranceAuthorized, page, limit },
+      params: { query, county, partner, healthInsuranceAuthorized, page, limit },
     });
 
     return {

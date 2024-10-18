@@ -18,12 +18,13 @@ export const useHospitalsQuery = ({
   query,
   county,
   departments,
+  partner,
   page,
   limit,
 }: UseHospitalsQueryProps): QueryBaseReturnType<GetHospitalsProps> => {
   const queryResult = useQuery({
-    queryKey: [...queryPrefixKey, hospitalQueryKeys.getHospitals, query, county, departments, page, limit],
-    queryFn: () => getHospitals({ query, county, departments, page, limit }),
+    queryKey: [...queryPrefixKey, hospitalQueryKeys.getHospitals, query, county, departments, partner, page, limit],
+    queryFn: () => getHospitals({ query, county, departments, partner, page, limit }),
     enabled,
   });
 

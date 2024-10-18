@@ -17,13 +17,23 @@ export const usePharmaciesQuery = ({
   queryPrefixKey = [],
   query,
   county,
+  partner,
   healthInsuranceAuthorized,
   page,
   limit,
 }: usePharmaciesQueryProps): QueryBaseReturnType<GetPharmaciesProps> => {
   const queryResult = useQuery({
-    queryKey: [...queryPrefixKey, pharmacyQueryKeys.getPharmacies, query, county, healthInsuranceAuthorized, page, limit],
-    queryFn: () => getPharmacies({ query, county, healthInsuranceAuthorized, page, limit }),
+    queryKey: [
+      ...queryPrefixKey,
+      pharmacyQueryKeys.getPharmacies,
+      query,
+      county,
+      partner,
+      healthInsuranceAuthorized,
+      page,
+      limit,
+    ],
+    queryFn: () => getPharmacies({ query, county, partner, healthInsuranceAuthorized, page, limit }),
     enabled,
   });
 

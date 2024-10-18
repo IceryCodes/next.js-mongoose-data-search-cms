@@ -10,7 +10,7 @@ interface ApiResponse {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | undefined>) => {
-  const { query, county, departments, page = '1', limit = '10' } = req.query;
+  const { query, county, departments, partner, page = '1', limit = '10' } = req.query;
 
   // Parse page and limit as integers
   const currentPage: number = Number(page);
@@ -27,6 +27,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
 
     // Build MongoDB query
     const mongoQuery: Record<string, unknown> = {}; // Type-safe object
+
+    // Filter by partner if specified
+    if (partner && typeof partner === 'string' && partner === 'true') {
+      mongoQuery.partner = true;
+    }
 
     // Add query-based filtering (title search)
     if (query && typeof query === 'string') {

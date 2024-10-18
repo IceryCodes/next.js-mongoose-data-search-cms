@@ -21,6 +21,7 @@ const HospitalList = (): ReactElement => {
       query: '',
       county: '',
       departments: '' as DepartmentsType,
+      partner: false,
     },
   });
 
@@ -35,6 +36,7 @@ const HospitalList = (): ReactElement => {
     query: getValues('query'),
     county: getValues('county'),
     departments: getValues('departments') as DepartmentsType,
+    partner: getValues('partner'),
     page: currentPage,
     limit,
   });
@@ -54,7 +56,7 @@ const HospitalList = (): ReactElement => {
       <h1 className="text-2xl font-bold">{PageType.HOSPITALS}</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex gap-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-4/5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-4/5">
           <Controller
             name="query"
             control={control}
@@ -90,6 +92,22 @@ const HospitalList = (): ReactElement => {
                   </option>
                 ))}
               </select>
+            )}
+          />
+
+          <Controller
+            name="partner"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  value={value.toString()}
+                  onChange={(e) => onChange(e.target.checked.toString())}
+                  className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label className="text-sm">先豐科技合作夥伴</label>
+              </div>
             )}
           />
         </div>

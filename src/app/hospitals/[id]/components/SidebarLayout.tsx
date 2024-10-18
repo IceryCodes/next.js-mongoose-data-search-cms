@@ -25,6 +25,7 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
       query: '',
       county,
       departments: '' as DepartmentsType,
+      partner: false,
     },
   });
 
@@ -37,6 +38,7 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
     query: getValues('query'),
     county: getValues('county'),
     departments: getValues('departments') as DepartmentsType,
+    partner: getValues('partner'),
     limit,
   });
 
@@ -64,6 +66,22 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
 
                 <Button text="搜尋" type="submit" className="w-1/3" />
               </div>
+
+              <Controller
+                name="partner"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      value={value.toString()}
+                      onChange={(e) => onChange(e.target.checked.toString())}
+                      className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <label className="text-sm">先豐科技合作夥伴</label>
+                  </div>
+                )}
+              />
 
               <Controller
                 name="query"

@@ -36,12 +36,13 @@ export const getHospitals = async ({
   query,
   county,
   departments,
+  partner,
   page = 1,
   limit = 10,
 }: HospitalsDto): Promise<GetHospitalsProps> => {
   try {
     const { data } = await apiOrigin.get('/hospitals', {
-      params: { query, county, departments, page, limit },
+      params: { query, county, departments, partner, page, limit },
     });
 
     return {
