@@ -3,6 +3,8 @@
 import { LoadScript } from '@react-google-maps/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import localFont from 'next/font/local';
+
+import Header from './components/Header';
 import './globals.css';
 
 const geistSans = localFont({
@@ -30,7 +32,9 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F5F5F5]`}>
         <QueryClientProvider client={queryClient}>
-          <LoadScript googleMapsApiKey={process.env.NEXT_PRIVATE_GOOGLE_API_KEY}>{children}</LoadScript>
+          <LoadScript googleMapsApiKey={process.env.NEXT_PRIVATE_GOOGLE_API_KEY}>
+            <Header>{children}</Header>
+          </LoadScript>
         </QueryClientProvider>
       </body>
     </html>

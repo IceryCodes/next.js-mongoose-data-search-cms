@@ -8,6 +8,7 @@ export interface HospitalsDto {
   query: string;
   county: string;
   departments: DepartmentsType;
+  partner: boolean;
   page?: number;
   limit?: number;
 }

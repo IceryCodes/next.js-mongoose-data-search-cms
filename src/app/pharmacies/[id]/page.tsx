@@ -3,23 +3,23 @@ import { ReactElement } from 'react';
 import { Metadata } from 'next';
 
 import { getPageUrlByType, PageType } from '@/app/components/interface';
-import { getHospital } from '@/services/hospital';
+import { getPharmacy } from '@/services/pharmacy';
 
-import { HospitalProps } from '../interfaces';
+import { PharmacyProps } from '../interfaces';
 
-import HospitalContent from './components/HospitalContent';
+import PharmacyContent from './components/PharmacyContent';
 
 export const generateMetadata = async ({ params }: { params: { id: string } }): Promise<Metadata> => {
   const { id } = params;
 
   let _id: string = '';
   let title: string = '';
-  const hospital: HospitalProps | null = await getHospital({ _id: id });
-  if (hospital) {
-    _id = hospital._id.toString();
-    title = hospital.title;
+  const pharmacy: PharmacyProps | null = await getPharmacy({ _id: id });
+  if (pharmacy) {
+    _id = pharmacy._id.toString();
+    title = pharmacy.title;
   }
-  const currentPath: string = `${process.env.NEXT_PRIVATE_BASE_URL}/${getPageUrlByType(PageType.HOSPITALS)}/${_id}`;
+  const currentPath: string = `${process.env.NEXT_PRIVATE_BASE_URL}/${getPageUrlByType(PageType.PHARMACIES)}/${_id}`;
   const pageName: string = title;
 
   return {
@@ -51,6 +51,6 @@ export const generateMetadata = async ({ params }: { params: { id: string } }): 
   };
 };
 
-const Page = (): ReactElement => <HospitalContent />;
+const Page = (): ReactElement => <PharmacyContent />;
 
 export default Page;

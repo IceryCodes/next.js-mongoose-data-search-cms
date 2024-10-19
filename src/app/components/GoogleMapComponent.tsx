@@ -6,11 +6,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { HospitalProps } from '../hospitals/interfaces';
+import { PharmacyProps } from '../pharmacies/interfaces';
 
 import { getPageUrlByType, PageType } from './interface';
 
 interface GoogleMapComponentProps {
-  hospitals: HospitalProps[];
+  locationData: (HospitalProps | PharmacyProps)[];
 }
 
 const containerStyle = {
@@ -27,7 +28,7 @@ interface Location {
   image: string;
 }
 
-const GoogleMapComponent = ({ hospitals }: GoogleMapComponentProps) => {
+const GoogleMapComponent = ({ locationData }: GoogleMapComponentProps) => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
 
@@ -53,7 +54,7 @@ const GoogleMapComponent = ({ hospitals }: GoogleMapComponentProps) => {
         try {
           const geocoder = new google.maps.Geocoder();
           const results = await Promise.all(
-            hospitals.map(async ({ _id, title, address, featuredImg }: HospitalProps) => {
+            locationData.map(async ({ _id, title, address, featuredImg }: HospitalProps | PharmacyProps) => {
               try {
                 const response = await geocoder.geocode({ address });
                 const location = response.results[0]?.geometry.location;
@@ -85,14 +86,14 @@ const GoogleMapComponent = ({ hospitals }: GoogleMapComponentProps) => {
     };
 
     geocodeAddresses();
-  }, [hospitals]);
+  }, [locationData]);
 
   return (
     <div className="w-full h-[400px]">
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={locations[0] || { lat: 25.0606989, lng: 121.4860045 }}
-        zoom={12.5}
+        zoom={locations.length === 1 ? 17 : 12.5}
       >
         {locations.map((location, index) => (
           <Marker key={index} position={location} onClick={() => setSelectedLocation(location)} />

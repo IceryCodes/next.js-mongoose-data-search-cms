@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import { GenderType } from '@/app/hospitals/interfaces';
+import { GenderType } from '@/app/components/interface';
 
 interface UsePatientSelectionTicketEnumReturnType {
   genderMap: Record<GenderType, string>;

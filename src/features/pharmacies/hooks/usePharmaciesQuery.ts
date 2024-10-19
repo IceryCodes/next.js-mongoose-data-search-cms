@@ -2,29 +2,38 @@ import { useMemo } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { HospitalsDto } from '@/domains/hospital';
+import { PharmaciesDto } from '@/domains/pharmacy';
 import { useQueryCallback } from '@/hooks/utils/useQueryCallback';
-import { getHospitals, hospitalQueryKeys } from '@/services/hospital';
-import { GetHospitalsProps } from '@/services/interfaces';
+import { GetPharmaciesProps } from '@/services/interfaces';
+import { getPharmacies, pharmacyQueryKeys } from '@/services/pharmacy';
 import { QueryBaseProps, QueryBaseReturnType } from '@/utils/reactQuery';
 
-interface UseHospitalsQueryProps extends QueryBaseProps<GetHospitalsProps>, HospitalsDto {}
+interface usePharmaciesQueryProps extends QueryBaseProps<GetPharmaciesProps>, PharmaciesDto {}
 
-export const useHospitalsQuery = ({
+export const usePharmaciesQuery = ({
   onSuccess,
   onError,
   enabled,
   queryPrefixKey = [],
   query,
   county,
-  departments,
   partner,
+  healthInsuranceAuthorized,
   page,
   limit,
-}: UseHospitalsQueryProps): QueryBaseReturnType<GetHospitalsProps> => {
+}: usePharmaciesQueryProps): QueryBaseReturnType<GetPharmaciesProps> => {
   const queryResult = useQuery({
-    queryKey: [...queryPrefixKey, hospitalQueryKeys.getHospitals, query, county, departments, partner, page, limit],
-    queryFn: () => getHospitals({ query, county, departments, partner, page, limit }),
+    queryKey: [
+      ...queryPrefixKey,
+      pharmacyQueryKeys.getPharmacies,
+      query,
+      county,
+      partner,
+      healthInsuranceAuthorized,
+      page,
+      limit,
+    ],
+    queryFn: () => getPharmacies({ query, county, partner, healthInsuranceAuthorized, page, limit }),
     enabled,
   });
 
@@ -33,7 +42,7 @@ export const useHospitalsQuery = ({
     isError,
     error,
     data = {
-      hospitals: [],
+      pharmacies: [],
       total: 0,
     },
     refetch,

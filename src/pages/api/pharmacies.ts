@@ -1,16 +1,16 @@
 import { Collection, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { DepartmentsType, HospitalProps } from '@/app/hospitals/interfaces';
-import { getHospitalsCollection } from '@/lib/mongodb';
+import { PharmacyProps } from '@/app/pharmacies/interfaces';
+import { getPharmaciesCollection } from '@/lib/mongodb';
 
 interface ApiResponse {
-  hospitals: HospitalProps[];
+  pharmacies: PharmacyProps[];
   total: number;
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | undefined>) => {
-  const { query, county, departments, partner, page = '1', limit = '10' } = req.query;
+  const { query, county, healthInsuranceAuthorized, partner, page = '1', limit = '10' } = req.query;
 
   // Parse page and limit as integers
   const currentPage: number = Number(page);
@@ -22,8 +22,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
   }
 
   try {
-    // Use the shared hospitals collection
-    const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
+    // Use the shared pharmacies collection
+    const pharmaciesCollection: Collection<PharmacyProps> = await getPharmaciesCollection();
 
     // Build MongoDB query
     const mongoQuery: Record<string, unknown> = {}; // Type-safe object
@@ -44,9 +44,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
       mongoQuery.county = county;
     }
 
-    // Filter by departments if specified
-    if (departments && typeof departments === 'string') {
-      mongoQuery.departments = { $in: [departments as DepartmentsType] };
+    // Filter by healthInsuranceAuthorized if specified
+    if (healthInsuranceAuthorized && typeof healthInsuranceAuthorized === 'string' && healthInsuranceAuthorized === 'true') {
+      mongoQuery.healthInsuranceAuthorized = true;
     }
 
     // Filter out sample by keyword if production
@@ -55,23 +55,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
     }
 
     // Fetch total count of matching documents before pagination
-    const total: number = await hospitalsCollection.countDocuments(mongoQuery);
+    const total: number = await pharmaciesCollection.countDocuments(mongoQuery);
 
-    // Fetch hospitals based on filters and apply pagination
-    const hospitals: WithId<HospitalProps>[] = await hospitalsCollection
+    // Fetch pharmacies based on filters and apply pagination
+    const pharmacies: WithId<PharmacyProps>[] = await pharmaciesCollection
       .find(mongoQuery)
-      .sort({ partner: -1 }) // Sort so partner hospitals come first
+      .sort({ partner: -1 }) // Sort so partner pharmacies come first
       .skip((currentPage - 1) * pageSize)
       .limit(pageSize)
       .toArray();
 
     // Return paginated results along with the total count
     res.status(200).json({
-      hospitals,
-      total, // Total number of filtered hospitals
+      pharmacies,
+      total, // Total number of filtered pharmacies
     });
   } catch (error) {
-    console.error('Error fetching hospitals:', error);
+    console.error('Error fetching pharmacies:', error);
     res.status(500).json(undefined);
   }
 };
