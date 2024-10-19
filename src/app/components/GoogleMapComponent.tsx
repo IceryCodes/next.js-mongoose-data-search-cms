@@ -93,7 +93,7 @@ const GoogleMapComponent = ({ locationData }: GoogleMapComponentProps) => {
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={locations[0] || { lat: 25.0606989, lng: 121.4860045 }}
-        zoom={12.5}
+        zoom={locations.length === 1 ? 17 : 12.5}
       >
         {locations.map((location, index) => (
           <Marker key={index} position={location} onClick={() => setSelectedLocation(location)} />

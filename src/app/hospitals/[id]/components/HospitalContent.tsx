@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
+import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
 import SidebarLayout from '@/app/hospitals/[id]/components/SidebarLayout';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
@@ -21,7 +22,7 @@ const HospitalContent = (): ReactElement => {
   const { data: hospital, isLoading, isError } = useHospitalQuery({ _id });
 
   const mainInfoRender = useCallback(
-    ({ label, value }: { label: string; value: ReactElement }): ReactElement => (
+    ({ label, value }: { label: string; value: ReactElement | null }): ReactElement => (
       <>
         {!!value && (
           <li>
@@ -80,12 +81,17 @@ const HospitalContent = (): ReactElement => {
     county,
     district,
     doctors,
+    departments,
     address,
     excerpt,
     content,
     websiteUrl,
     featuredImg,
   } = hospital;
+
+  const usedExcerpt: string = excerpt
+    ? excerpt
+    : `${title}是一間提供${departments.join(', ')}的醫院! 位於${county}${district}${address}，電話是${phone}!`;
 
   return (
     <div className="container mx-auto p-6">
@@ -109,9 +115,9 @@ const HospitalContent = (): ReactElement => {
 
             <Card>
               <>
-                <blockquote className="border-l-4 pl-4 italic text-gray-600">{excerpt}</blockquote>
+                <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
                 <ul className="list-disc ml-5">
-                  {mainInfoRender({ label: '負責人', value: <span>{owner + composeGender(gender)}</span> })}
+                  {owner && mainInfoRender({ label: '負責人', value: <span>{owner + composeGender(gender)}</span> })}
                   {mainInfoRender({ label: '機構代碼', value: <span>{orgCode}</span> })}
                   {mainInfoRender({
                     label: '聯絡電話',
@@ -136,7 +142,7 @@ const HospitalContent = (): ReactElement => {
             <Card>
               <>
                 <h2 className="text-2xl font-bold">關於{title}</h2>
-                <p>{content}</p>
+                <p>{content ? content : `尚無關於${title}的相關資訊，歡迎醫院提供補充!`}</p>
               </>
             </Card>
 
@@ -173,6 +179,10 @@ const HospitalContent = (): ReactElement => {
                   {workerInfoRender({ label: '營養師', value: hospital['營養師'] })}
                 </ul>
               </>
+            </Card>
+
+            <Card>
+              <GoogleMapComponent locationData={[hospital]} />
             </Card>
           </div>
         </SidebarLayout>

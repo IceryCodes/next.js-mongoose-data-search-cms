@@ -14,11 +14,13 @@ interface ConvertLinkProps {
   text: string;
 }
 
-const ConvertLink = ({ type, text }: ConvertLinkProps): ReactElement => {
+const ConvertLink = ({ type, text }: ConvertLinkProps): ReactElement | null => {
   let link: string = text;
   if (type === LinkType.Phone) link = `tel:${text}`;
   if (type === LinkType.Email) link = `mailto:${text}`;
   if (type === LinkType.Address) link = `https://www.google.com.tw/maps/place/${text}`;
+
+  if (!text) return null;
 
   return (
     <Link href={link} className="hover:underline" target="_blank">

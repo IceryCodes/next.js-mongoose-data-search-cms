@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
+import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
 import { usePharmacyQuery } from '@/features/pharmacies/hooks/usePharmacyQuery';
 import { useEnum } from '@/hooks/utils/useEnum';
@@ -22,7 +23,7 @@ const PharmacyContent = (): ReactElement => {
   const { data: pharmacy, isLoading, isError } = usePharmacyQuery({ _id });
 
   const mainInfoRender = useCallback(
-    ({ label, value }: { label: string; value: ReactElement }): ReactElement => (
+    ({ label, value }: { label: string; value: ReactElement | null }): ReactElement => (
       <>
         {!!value && (
           <li>
@@ -86,7 +87,11 @@ const PharmacyContent = (): ReactElement => {
     content,
     websiteUrl,
     featuredImg,
+    healthInsuranceAuthorized,
   } = pharmacy;
+  const usedExcerpt: string = excerpt
+    ? excerpt
+    : `${title}是一間位於${county}${district}${address}的藥局! ${healthInsuranceAuthorized ? '是健保特約的藥局' : ''}，負責人為${owner + composeGender(gender)}，電話是${phone}!`;
 
   return (
     <div className="container mx-auto p-6">
@@ -110,10 +115,10 @@ const PharmacyContent = (): ReactElement => {
 
             <Card>
               <>
-                <blockquote className="border-l-4 pl-4 italic text-gray-600">{excerpt}</blockquote>
+                <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
                 <ul className="list-disc ml-5">
                   {mainInfoRender({ label: '負責人', value: <span>{owner + composeGender(gender)}</span> })}
-                  {mainInfoRender({ label: '機構代碼', value: <span>{orgCode}</span> })}
+                  {orgCode && mainInfoRender({ label: '機構代碼', value: <span>{orgCode}</span> })}
                   {mainInfoRender({
                     label: '聯絡電話',
                     value: ConvertLink({ text: phone, type: LinkType.Phone }),
@@ -137,7 +142,7 @@ const PharmacyContent = (): ReactElement => {
             <Card>
               <>
                 <h2 className="text-2xl font-bold">關於{title}</h2>
-                <p>{content}</p>
+                <p>{content ? content : `尚無關於${title}的相關資訊，歡迎藥局提供補充!`}</p>
               </>
             </Card>
 
@@ -146,6 +151,10 @@ const PharmacyContent = (): ReactElement => {
                 <h3 className="text-xl font-bold">藥局醫生: {doctors.join(', ')}</h3>
                 <ul className="list-disc ml-5 grid grid-cols-1 md:grid-cols-3"></ul>
               </>
+            </Card>
+
+            <Card>
+              <GoogleMapComponent locationData={[pharmacy]} />
             </Card>
           </div>
         </SidebarLayout>
