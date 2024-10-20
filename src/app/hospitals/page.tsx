@@ -8,7 +8,7 @@ import HospitalList from './components/HospitalList';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const pageName: string = PageType.HOSPITALS;
-  const currentPath: string = `${process.env.NEXT_PRIVATE_BASE_URL}/${getPageUrlByType(PageType.HOSPITALS)}`;
+  const currentPath: string = `${process.env.NEXT_PUBLIC_BASE_URL}/${getPageUrlByType(PageType.HOSPITALS)}`;
 
   return {
     title: `${pageName} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
@@ -19,7 +19,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
     generator: process.env.NEXT_PUBLIC_SITE_NAME,
     applicationName: process.env.NEXT_PUBLIC_SITE_NAME,
     keywords: [process.env.NEXT_PUBLIC_SITE_NAME, pageName],
-    metadataBase: new URL(process.env.NEXT_PRIVATE_BASE_URL),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL),
     openGraph: {
       type: 'website',
       title: process.env.NEXT_PUBLIC_SITE_NAME,

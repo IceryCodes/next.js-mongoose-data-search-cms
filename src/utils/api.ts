@@ -23,6 +23,6 @@ const axiosBaseConfig: CreateAxiosDefaults = {
   },
 };
 
-const apiOrigin = axios.create({ ...axiosBaseConfig, baseURL: process.env.NEXT_PRIVATE_API_BASE_URL });
+const apiOrigin = axios.create({ ...axiosBaseConfig, baseURL: process.env.NEXT_PUBLIC_API_BASE_URL });
 
 export { apiOrigin };

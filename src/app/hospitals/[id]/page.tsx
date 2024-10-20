@@ -19,7 +19,7 @@ export const generateMetadata = async ({ params }: { params: { id: string } }): 
     _id = hospital._id.toString();
     title = hospital.title;
   }
-  const currentPath: string = `${process.env.NEXT_PRIVATE_BASE_URL}/${getPageUrlByType(PageType.HOSPITALS)}/${_id}`;
+  const currentPath: string = `${process.env.NEXT_PUBLIC_BASE_URL}/${getPageUrlByType(PageType.HOSPITALS)}/${_id}`;
   const pageName: string = title;
 
   return {
@@ -31,7 +31,7 @@ export const generateMetadata = async ({ params }: { params: { id: string } }): 
     generator: process.env.NEXT_PUBLIC_SITE_NAME,
     applicationName: process.env.NEXT_PUBLIC_SITE_NAME,
     keywords: [process.env.NEXT_PUBLIC_SITE_NAME, pageName],
-    metadataBase: new URL(process.env.NEXT_PRIVATE_BASE_URL),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL),
     openGraph: {
       type: 'website',
       title: process.env.NEXT_PUBLIC_SITE_NAME,
