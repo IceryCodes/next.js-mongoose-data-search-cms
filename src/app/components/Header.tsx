@@ -17,7 +17,7 @@ const Header = ({ children }: { children: React.ReactNode }) => {
       <header className="h-[80px] w-full bg-[#00A7D4] fixed top-0 z-10 shadow-md">
         <div className="container h-full p-4 m-auto flex justify-between items-center">
           {/* Logo */}
-          <Link href={process.env.NEXT_PRIVATE_BASE_URL}>
+          <Link href={process.env.NEXT_PUBLIC_BASE_URL}>
             <Image
               src={Logo}
               alt={`${process.env.NEXT_PUBLIC_SITE_NAME} Logo`}
