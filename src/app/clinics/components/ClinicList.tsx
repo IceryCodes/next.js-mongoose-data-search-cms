@@ -11,11 +11,11 @@ import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/app/hosp
 import { HospitalsDto } from '@/domains/hospital';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 
-import HospitalListItemCard from './HospitalListItemCard';
+import ClinicListItemCard from './ClinicListItemCard';
 
 const limit: number = 12;
 
-const HospitalList = (): ReactElement => {
+const ClinicList = (): ReactElement => {
   const { control, handleSubmit, getValues, reset } = useForm<HospitalsDto>({
     defaultValues: {
       query: '',
@@ -37,7 +37,7 @@ const HospitalList = (): ReactElement => {
     county: getValues('county'),
     departments: getValues('departments') as DepartmentsType,
     partner: getValues('partner'),
-    category: HospitalCategoryType.Hospital,
+    category: HospitalCategoryType.Clinic,
     page: currentPage,
     limit,
   });
@@ -54,7 +54,7 @@ const HospitalList = (): ReactElement => {
 
   return (
     <div className="container mx-auto flex flex-col gap-y-4">
-      <h1 className="text-2xl font-bold">{PageType.HOSPITALS}</h1>
+      <h1 className="text-2xl font-bold">{PageType.CLINICS}</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex gap-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-4/5">
@@ -62,7 +62,7 @@ const HospitalList = (): ReactElement => {
             name="query"
             control={control}
             render={({ field }) => (
-              <input type="text" placeholder="醫院名稱" {...field} className="border rounded px-4 py-2 w-full" />
+              <input type="text" placeholder="診所名稱" {...field} className="border rounded px-4 py-2 w-full" />
             )}
           />
 
@@ -131,9 +131,9 @@ const HospitalList = (): ReactElement => {
 
         {/* Hospital list */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {!hospitals.length && <label>沒有符合醫院</label>}
+          {!hospitals.length && <label>沒有符合診所</label>}
           {hospitals.map(({ _id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
-            <HospitalListItemCard
+            <ClinicListItemCard
               key={_id.toString()}
               _id={_id}
               image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
@@ -154,4 +154,4 @@ const HospitalList = (): ReactElement => {
   );
 };
 
-export default HospitalList;
+export default ClinicList;

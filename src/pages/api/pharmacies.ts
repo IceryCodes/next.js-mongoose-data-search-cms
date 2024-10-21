@@ -29,9 +29,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
     const mongoQuery: Record<string, unknown> = {}; // Type-safe object
 
     // Filter by partner if specified
-    if (partner && typeof partner === 'string' && partner === 'true') {
-      mongoQuery.partner = true;
-    }
+    if (partner === 'true') mongoQuery.partner = true;
 
     // Add query-based filtering (title search)
     if (query && typeof query === 'string') {
