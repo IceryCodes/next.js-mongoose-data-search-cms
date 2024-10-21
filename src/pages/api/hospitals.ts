@@ -1,7 +1,7 @@
 import { Collection, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { DepartmentsType, HospitalProps } from '@/app/hospitals/interfaces';
+import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/app/hospitals/interfaces';
 import { getHospitalsCollection } from '@/lib/mongodb';
 
 interface ApiResponse {
@@ -10,7 +10,7 @@ interface ApiResponse {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | undefined>) => {
-  const { query, county, departments, partner, page = '1', limit = '10' } = req.query;
+  const { query, county, departments, partner, category, page = '1', limit = '10' } = req.query;
 
   // Parse page and limit as integers
   const currentPage: number = Number(page);
@@ -29,14 +29,35 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
     const mongoQuery: Record<string, unknown> = {}; // Type-safe object
 
     // Filter by partner if specified
-    if (partner && typeof partner === 'string' && partner === 'true') {
-      mongoQuery.partner = true;
+    if (partner === 'true') mongoQuery.partner = true;
+
+    // Filter by title with HospitalCategoryType
+    // 1. First, apply the category filter (Hospital or Clinic) using HospitalCategoryType
+    if (category && typeof category === 'string') {
+      if (category === HospitalCategoryType.Hospital) {
+        mongoQuery.title = { $regex: '醫院', $options: 'i' }; // Case-insensitive search for "醫院"
+      } else if (category === HospitalCategoryType.Clinic) {
+        mongoQuery.title = { $not: { $regex: '醫院', $options: 'i' } }; // Exclude "醫院"
+      } else {
+        return res.status(400).json(undefined); // Invalid category value
+      }
     }
 
-    // Add query-based filtering (title search)
+    // 2. After applying category, apply the query-based filtering (title search)
     if (query && typeof query === 'string') {
       const queryWords = query.toLowerCase().split(' ').filter(Boolean);
-      mongoQuery.title = { $regex: queryWords.join('|'), $options: 'i' }; // Case-insensitive search
+
+      // If category filter is applied, combine it with the query filter using $and
+      if (mongoQuery.title) {
+        mongoQuery.$and = [
+          { title: mongoQuery.title }, // Category-based filtering
+          { title: { $regex: queryWords.join('|'), $options: 'i' } }, // Query-based search
+        ];
+        delete mongoQuery.title; // Remove top-level title query since it’s now in $and
+      } else {
+        // If no category-based title filter, just apply the query-based filter
+        mongoQuery.title = { $regex: queryWords.join('|'), $options: 'i' };
+      }
     }
 
     // Filter by county if specified

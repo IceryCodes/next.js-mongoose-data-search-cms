@@ -7,7 +7,7 @@ import { Button, ButtonStyleType } from '@/app/components/buttons/Button';
 import Card from '@/app/components/Card';
 import { CountyType, getPageUrlByType, PageType } from '@/app/components/interface';
 import HospitalListItemCard from '@/app/hospitals/components/HospitalListItemCard';
-import { DepartmentsType, HospitalProps } from '@/app/hospitals/interfaces';
+import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/app/hospitals/interfaces';
 import { HospitalsDto } from '@/domains/hospital';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 
@@ -39,6 +39,7 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
     county: getValues('county'),
     departments: getValues('departments') as DepartmentsType,
     partner: getValues('partner'),
+    category: HospitalCategoryType.Hospital,
     limit,
   });
 

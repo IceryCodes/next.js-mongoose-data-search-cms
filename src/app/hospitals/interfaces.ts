@@ -2,6 +2,11 @@ import { ObjectId } from 'mongodb';
 
 import { CountyType, GenderType } from '../components/interface';
 
+export enum HospitalCategoryType {
+  Hospital = 'hospital',
+  Clinic = 'clinic',
+}
+
 export enum DepartmentsType {
   GeneralTraditionalChineseMedicine = '中醫一般科',
   InternalMedicine = '內科',

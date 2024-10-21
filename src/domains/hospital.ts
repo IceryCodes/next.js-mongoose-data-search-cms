@@ -1,4 +1,4 @@
-import { DepartmentsType } from '@/app/hospitals/interfaces';
+import { DepartmentsType, HospitalCategoryType } from '@/app/hospitals/interfaces';
 
 export interface HospitalDto {
   _id: string;
@@ -9,6 +9,7 @@ export interface HospitalsDto {
   county: string;
   departments: DepartmentsType;
   partner: boolean;
+  category: HospitalCategoryType;
   page?: number;
   limit?: number;
 }

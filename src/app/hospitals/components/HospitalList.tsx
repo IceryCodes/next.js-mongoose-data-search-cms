@@ -7,7 +7,7 @@ import { Button } from '@/app/components/buttons/Button';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import { CountyType, PageType } from '@/app/components/interface';
 import Pagination from '@/app/components/Pagination';
-import { DepartmentsType, HospitalProps } from '@/app/hospitals/interfaces';
+import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/app/hospitals/interfaces';
 import { HospitalsDto } from '@/domains/hospital';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 
@@ -37,6 +37,7 @@ const HospitalList = (): ReactElement => {
     county: getValues('county'),
     departments: getValues('departments') as DepartmentsType,
     partner: getValues('partner'),
+    category: HospitalCategoryType.Hospital,
     page: currentPage,
     limit,
   });
