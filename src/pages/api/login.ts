@@ -1,7 +1,9 @@
 import bcrypt from 'bcrypt';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { ValidationError } from 'yup';
 
 import { getUsersCollection } from '@/lib/mongodb';
+import { loginValidationSchema } from '@/lib/validation';
 import { UserLoginReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
 import { generateToken } from '@/utils/token';
@@ -14,6 +16,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
   const { email, password } = req.body;
 
   try {
+    await loginValidationSchema.validate(req.body, { abortEarly: false });
+
     const usersCollection = await getUsersCollection();
 
     const user = await usersCollection.findOne({ email });
@@ -42,6 +46,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       message: 'Success',
     });
   } catch (error) {
+    if (error instanceof ValidationError)
+      return res.status(HttpStatus.BadRequest).json({ message: error.errors.join(', ') });
     console.error('Error logging in:', error);
     res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });
   }

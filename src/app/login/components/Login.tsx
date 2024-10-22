@@ -1,31 +1,39 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { ReactElement, useEffect } from 'react';
 
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button } from '@/app/components/buttons/Button';
+import FieldErrorlabel from '@/app/components/FieldErrorlabel';
+import { ToastStyleType } from '@/app/components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { UserLoginDto } from '@/domains/user';
 import { useLoginMutation } from '@/features/user/useAuthMutation';
+import { loginValidationSchema } from '@/lib/validation';
 
-const Login: React.FC = () => {
+const Login = (): ReactElement => {
   const { control, handleSubmit, reset } = useForm<UserLoginDto>({
+    resolver: yupResolver(loginValidationSchema),
     defaultValues: { email: '', password: '' },
   });
   const { isLoading, mutateAsync } = useLoginMutation();
   const { login, logout } = useAuth();
+  const { showToast } = useToast();
 
   const handleLogin = async (data: UserLoginDto) => {
     try {
       const result = await mutateAsync(data);
       if (typeof result === 'string') throw new Error(result);
 
-      const { token, user } = result;
+      const { token, user, message } = result;
       if (token && user) {
         login(token, user);
       } else {
         logout();
+        if (message) showToast({ message, toastStyle: ToastStyleType.Waring });
       }
 
       reset();
@@ -45,30 +53,36 @@ const Login: React.FC = () => {
       <Controller
         name="email"
         control={control}
-        render={({ field }) => (
-          <input
-            type="email"
-            {...field}
-            placeholder="信箱"
-            autoComplete="email"
-            required
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+        render={({ field, fieldState: { error } }) => (
+          <div>
+            <input
+              type="email"
+              {...field}
+              placeholder="信箱"
+              autoComplete="email"
+              required
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <FieldErrorlabel error={error} />
+          </div>
         )}
       />
 
       <Controller
         name="password"
         control={control}
-        render={({ field }) => (
-          <input
-            type="password"
-            {...field}
-            placeholder="密碼"
-            autoComplete="current-password"
-            required
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+        render={({ field, fieldState: { error } }) => (
+          <div>
+            <input
+              type="password"
+              {...field}
+              placeholder="密碼"
+              autoComplete="current-password"
+              required
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <FieldErrorlabel error={error} />
+          </div>
         )}
       />
 

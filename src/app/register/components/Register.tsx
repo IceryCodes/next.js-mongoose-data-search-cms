@@ -1,19 +1,26 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { ReactElement, useEffect } from 'react';
 
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button, defaultButtonStyle } from '@/app/components/buttons/Button';
+import FieldErrorlabel from '@/app/components/FieldErrorlabel';
+import { ToastStyleType } from '@/app/components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { GenderType } from '@/domains/interfaces';
 import { UserRegisterDto } from '@/domains/user';
 import { useRegisterMutation } from '@/features/user/useAuthMutation';
+import { registerValidationSchema } from '@/lib/validation';
 
-const Register: React.FC = () => {
+const Register = (): ReactElement => {
   const { login, logout } = useAuth();
+  const { showToast } = useToast();
 
   const { control, handleSubmit, reset } = useForm<UserRegisterDto>({
+    resolver: yupResolver(registerValidationSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -29,11 +36,12 @@ const Register: React.FC = () => {
       const result = await mutateAsync(data);
       if (typeof result === 'string') throw new Error(result);
 
-      const { token, user } = result;
+      const { token, user, message } = result;
       if (token && user) {
         login(token, user);
       } else {
         logout();
+        if (message) showToast({ message, toastStyle: ToastStyleType.Waring });
       }
 
       reset();
@@ -55,40 +63,46 @@ const Register: React.FC = () => {
         <Controller
           name="firstName"
           control={control}
-          render={({ field }) => (
-            <input
-              type="text"
-              {...field}
-              placeholder="名字"
-              autoComplete="given-name"
-              required
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+          render={({ field, fieldState: { error } }) => (
+            <div>
+              <input
+                type="text"
+                {...field}
+                placeholder="名字"
+                autoComplete="given-name"
+                required
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <FieldErrorlabel error={error} />
+            </div>
           )}
         />
 
         <Controller
           name="lastName"
           control={control}
-          render={({ field }) => (
-            <input
-              type="text"
-              {...field}
-              placeholder="姓氏"
-              autoComplete="family-name"
-              required
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+          render={({ field, fieldState: { error } }) => (
+            <div>
+              <input
+                type="text"
+                {...field}
+                placeholder="姓氏"
+                autoComplete="family-name"
+                required
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <FieldErrorlabel error={error} />
+            </div>
           )}
         />
       </div>
 
-      <div className="flex justify-around gap-x-2">
-        <Controller
-          name="gender"
-          control={control}
-          render={({ field }) => (
-            <>
+      <Controller
+        name="gender"
+        control={control}
+        render={({ field, fieldState: { error } }) => (
+          <div>
+            <div className="flex justify-around gap-x-2">
               <Button
                 element={<span>男</span>}
                 onClick={() => field.onChange(GenderType.Male)}
@@ -99,38 +113,45 @@ const Register: React.FC = () => {
                 onClick={() => field.onChange(GenderType.Female)}
                 className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Female ? 'bg-blue-400 text-white' : 'bg-white text-gray-700'}`}
               />
-            </>
-          )}
-        />
-      </div>
+            </div>
+            <FieldErrorlabel error={error} />
+          </div>
+        )}
+      />
 
       <Controller
         name="email"
         control={control}
-        render={({ field }) => (
-          <input
-            type="email"
-            {...field}
-            placeholder="信箱"
-            autoComplete="email"
-            required
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+        render={({ field, fieldState: { error } }) => (
+          <div>
+            <input
+              type="email"
+              {...field}
+              placeholder="信箱"
+              autoComplete="email"
+              required
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <FieldErrorlabel error={error} />
+          </div>
         )}
       />
 
       <Controller
         name="password"
         control={control}
-        render={({ field }) => (
-          <input
-            type="password"
-            {...field}
-            placeholder="密碼"
-            autoComplete="current-password"
-            required
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+        render={({ field, fieldState: { error } }) => (
+          <div>
+            <input
+              type="password"
+              {...field}
+              placeholder="密碼"
+              autoComplete="current-password"
+              required
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <FieldErrorlabel error={error} />
+          </div>
         )}
       />
 
