@@ -18,6 +18,11 @@ export const getPageUrlByType = (value: PageType): string => {
   );
 };
 
+export enum UserRoleType {
+  None = 0,
+  Admin = 1,
+}
+
 export enum GenderType {
   None = 0,
   Male = 1,

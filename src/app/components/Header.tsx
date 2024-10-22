@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 
 import Image from 'next/image';
@@ -14,7 +16,7 @@ const Header = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       {/* Header Section */}
-      <header className="h-[80px] w-full bg-[#00A7D4] fixed top-0 z-10 shadow-md">
+      <header className={`h-header w-full bg-[#00A7D4] fixed top-0 z-10 shadow-md`}>
         <div className="container h-full p-4 m-auto flex justify-between items-center">
           {/* Logo */}
           <Link href={process.env.NEXT_PUBLIC_BASE_URL}>
@@ -67,7 +69,7 @@ const Header = ({ children }: { children: React.ReactNode }) => {
       </header>
 
       {/* Content Section */}
-      <section className="mt-[80px]">{children}</section>
+      <section className={`mt-header`}>{children}</section>
     </>
   );
 };

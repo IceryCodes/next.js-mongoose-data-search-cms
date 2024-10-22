@@ -36,7 +36,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
         _id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
+        gender: user.gender,
         email: user.email,
+        role: user.role,
       },
       message: 'Success',
     });

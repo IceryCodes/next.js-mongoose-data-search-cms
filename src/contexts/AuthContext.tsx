@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, ReactElement, useContext, useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +13,7 @@ interface AuthContextProps {
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: ReactElement }): ReactElement => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<UserProps | null>(null);
@@ -42,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     sessionStorage.setItem('user', JSON.stringify(user)); // Store user data in session storage
     setIsAuthenticated(true);
     setUser(user);
-    router.refresh();
+    router.push(process.env.NEXT_PUBLIC_BASE_URL);
   };
 
   return <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>{children}</AuthContext.Provider>;

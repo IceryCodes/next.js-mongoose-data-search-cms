@@ -5,6 +5,7 @@ import { apiOrigin, logApiError } from '@/utils/api';
 export const userRegister = async ({
   firstName,
   lastName,
+  gender,
   email,
   password,
 }: UserRegisterDto): Promise<UserLoginReturnType> => {
@@ -12,6 +13,7 @@ export const userRegister = async ({
     const { data } = await apiOrigin.post('/register', {
       firstName,
       lastName,
+      gender,
       email,
       password,
     });

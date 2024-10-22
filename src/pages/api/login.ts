@@ -15,6 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
 
   try {
     const usersCollection = await getUsersCollection();
+
     const user = await usersCollection.findOne({ email });
 
     if (!user) {
@@ -34,7 +35,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
         _id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
+        gender: user.gender,
         email: user.email,
+        role: user.role, // No error now since user is typed properly
       },
       message: 'Success',
     });

@@ -2,7 +2,8 @@ import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { UserProps, UserRegisterDto } from '@/domains/user';
+import { UserRoleType } from '@/domains/interfaces';
+import { UserProps, UserWithPasswordProps } from '@/domains/user';
 import { getUsersCollection } from '@/lib/mongodb';
 import { UserLoginReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
@@ -13,17 +14,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
     return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
   }
 
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, gender, email, password } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const usersCollection = await getUsersCollection();
 
-    const newUser: UserRegisterDto = {
+    const newUser: Omit<UserWithPasswordProps, '_id'> = {
       firstName,
       lastName,
+      gender,
       email,
       password: hashedPassword,
+      role: UserRoleType.None,
     };
 
     const result = await usersCollection.insertOne(newUser);
@@ -33,7 +36,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       _id: userId,
       firstName,
       lastName,
+      gender,
       email,
+      role: UserRoleType.None,
     };
 
     const token = generateToken(userId.toString()); // Use _id in the token
