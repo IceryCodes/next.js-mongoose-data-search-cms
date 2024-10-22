@@ -1,17 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { ReactElement, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 
 import Logo from '@/assets/LOGO_FFFFFF_300PX.png';
-import { PageTypeMap } from '@/domains/interfaces';
+import { useAuth } from '@/contexts/AuthContext';
+import { PageType, PageTypeMap } from '@/domains/interfaces';
 
 import { Button } from './buttons/Button';
 
-const Header = ({ children }: { children: React.ReactNode }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+const linkStyle: string =
+  'font-bold text-white hover:text-[#545454] block transition-all duration-300 ease-in-out md:inline';
+
+const Header = ({ children }: { children: ReactElement }) => {
+  const { isAuthenticated, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
+  const Logout = () => {
+    logout();
+    setMenuOpen(false);
+  };
 
   return (
     <>
@@ -54,15 +64,22 @@ const Header = ({ children }: { children: React.ReactNode }) => {
             md:opacity-100 md:translate-y-0 md:flex transition-all duration-300 ease-in-out`}
           >
             <ul className="flex flex-col md:flex-row gap-4 p-4 md:p-0">
-              {Object.keys(PageTypeMap).map((key: string) => (
-                <Link
-                  key={key}
-                  href={`/${key.toLocaleLowerCase()}`}
-                  className="font-bold text-white hover:text-[#545454] block transition-all duration-300 ease-in-out md:inline"
-                >
-                  <li>{PageTypeMap[key]}</li>
+              {Object.keys(PageTypeMap).map((key) => {
+                const pageType = PageTypeMap[key];
+
+                if (pageType === PageType.LOGIN || pageType === PageType.REGISTER) if (isAuthenticated) return;
+
+                return (
+                  <Link key={key} href={`/${key.toLowerCase()}`} className={linkStyle} onClick={() => setMenuOpen(false)}>
+                    <li>{pageType}</li>
+                  </Link>
+                );
+              })}
+              {isAuthenticated && (
+                <Link href="" className={linkStyle} onClick={Logout}>
+                  <li>登出</li>
                 </Link>
-              ))}
+              )}
             </ul>
           </nav>
         </div>

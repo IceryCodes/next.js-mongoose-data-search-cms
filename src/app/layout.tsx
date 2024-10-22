@@ -1,5 +1,7 @@
 'use client';
 
+import { ReactElement } from 'react';
+
 import { LoadScript } from '@react-google-maps/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import localFont from 'next/font/local';
@@ -31,7 +33,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+const RootLayout = ({ children }: { children: ReactElement }) => {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F5F5F5]`}>

@@ -1,9 +1,9 @@
 export enum PageType {
-  REGISTER = '註冊',
-  LOGIN = '登入',
   HOSPITALS = '醫院搜尋',
   CLINICS = '診所搜尋',
   PHARMACIES = '藥局搜尋',
+  REGISTER = '註冊',
+  LOGIN = '登入',
 }
 
 export const PageTypeMap: { [key: string]: string } = Object.fromEntries(
