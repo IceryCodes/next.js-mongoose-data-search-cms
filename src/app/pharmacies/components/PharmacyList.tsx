@@ -5,12 +5,10 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button } from '@/app/components/buttons/Button';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
-import { CountyType, PageType } from '@/app/components/interface';
 import Pagination from '@/app/components/Pagination';
-import { PharmaciesDto } from '@/domains/pharmacy';
+import { CountyType, PageType } from '@/domains/interfaces';
+import { PharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';
-
-import { PharmacyProps } from '../interfaces';
 
 import PharmacyListItemCard from './PharmacyListItemCard';
 

@@ -1,15 +1,12 @@
 import { Collection, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/app/hospitals/interfaces';
+import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
 import { getHospitalsCollection } from '@/lib/mongodb';
+import { GetHospitalsReturnType } from '@/services/interfaces';
+import { HttpStatus } from '@/utils/api';
 
-interface ApiResponse {
-  hospitals: HospitalProps[];
-  total: number;
-}
-
-const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | undefined>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsReturnType>) => {
   const { query, county, departments, partner, category, page = '1', limit = '10' } = req.query;
 
   // Parse page and limit as integers
@@ -18,17 +15,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
 
   // Return undefined if query is invalid
   if (isNaN(currentPage) || currentPage < 1 || isNaN(pageSize) || pageSize < 1) {
-    return res.status(400).json(undefined);
+    return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
   }
 
   try {
-    // Use the shared hospitals collection
     const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
 
-    // Build MongoDB query
     const mongoQuery: Record<string, unknown> = {}; // Type-safe object
 
-    // Filter by partner if specified
     if (partner === 'true') mongoQuery.partner = true;
 
     // Filter by title with HospitalCategoryType
@@ -39,7 +33,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
       } else if (category === HospitalCategoryType.Clinic) {
         mongoQuery.title = { $not: { $regex: '醫院', $options: 'i' } }; // Exclude "醫院"
       } else {
-        return res.status(400).json(undefined); // Invalid category value
+        return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' }); // Invalid category value
       }
     }
 
@@ -47,53 +41,43 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | u
     if (query && typeof query === 'string') {
       const queryWords = query.toLowerCase().split(' ').filter(Boolean);
 
-      // If category filter is applied, combine it with the query filter using $and
       if (mongoQuery.title) {
-        mongoQuery.$and = [
-          { title: mongoQuery.title }, // Category-based filtering
-          { title: { $regex: queryWords.join('|'), $options: 'i' } }, // Query-based search
-        ];
-        delete mongoQuery.title; // Remove top-level title query since it’s now in $and
+        mongoQuery.$and = [{ title: mongoQuery.title }, { title: { $regex: queryWords.join('|'), $options: 'i' } }];
+        delete mongoQuery.title;
       } else {
-        // If no category-based title filter, just apply the query-based filter
         mongoQuery.title = { $regex: queryWords.join('|'), $options: 'i' };
       }
     }
 
-    // Filter by county if specified
     if (county && typeof county === 'string') {
       mongoQuery.county = county;
     }
 
-    // Filter by departments if specified
     if (departments && typeof departments === 'string') {
       mongoQuery.departments = { $in: [departments as DepartmentsType] };
     }
 
-    // Filter out sample by keyword if production
     if (process.env.NODE_ENV === 'production') {
       mongoQuery.keywords = { $not: { $all: ['Sample'] } };
     }
 
-    // Fetch total count of matching documents before pagination
     const total: number = await hospitalsCollection.countDocuments(mongoQuery);
 
-    // Fetch hospitals based on filters and apply pagination
     const hospitals: WithId<HospitalProps>[] = await hospitalsCollection
       .find(mongoQuery)
-      .sort({ partner: -1 }) // Sort so partner hospitals come first
+      .sort({ partner: -1 })
       .skip((currentPage - 1) * pageSize)
       .limit(pageSize)
       .toArray();
 
-    // Return paginated results along with the total count
-    res.status(200).json({
+    res.status(HttpStatus.Ok).json({
       hospitals,
-      total, // Total number of filtered hospitals
+      total,
+      message: 'Success',
     });
   } catch (error) {
     console.error('Error fetching hospitals:', error);
-    res.status(500).json(undefined);
+    res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });
   }
 };
 

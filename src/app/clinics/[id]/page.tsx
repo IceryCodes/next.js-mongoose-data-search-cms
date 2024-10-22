@@ -2,9 +2,9 @@ import { ReactElement } from 'react';
 
 import { Metadata } from 'next';
 
-import { getPageUrlByType, PageType } from '@/app/components/interface';
-import { HospitalProps } from '@/app/hospitals/interfaces';
+import { getPageUrlByType, PageType } from '@/domains/interfaces';
 import { getHospital } from '@/services/hospital';
+import { GetHospitalReturnType } from '@/services/interfaces';
 
 import ClinicContent from './components/ClinicContent';
 
@@ -13,7 +13,7 @@ export const generateMetadata = async ({ params }: { params: { id: string } }): 
 
   let _id: string = '';
   let title: string = '';
-  const hospital: HospitalProps | null = await getHospital({ _id: id });
+  const { hospital }: GetHospitalReturnType = await getHospital({ _id: id });
   if (hospital) {
     _id = hospital._id.toString();
     title = hospital.title;

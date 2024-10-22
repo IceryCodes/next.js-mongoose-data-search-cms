@@ -17,6 +17,7 @@ const nextConfig = {
     ],
   },
     env: {
+        NEXT_PRIVATE_JWT_SECRET: process.env.JWT_SECRET,
         NEXT_PRIVATE_GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
 
         NEXT_PUBLIC_BASE_URL: usedUrl,

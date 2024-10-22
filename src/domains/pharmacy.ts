@@ -1,3 +1,7 @@
+import { ObjectId } from 'mongodb';
+
+import { CountyType, GenderType } from '@/domains/interfaces';
+
 export interface PharmacyDto {
   _id: string;
 }
@@ -9,4 +13,25 @@ export interface PharmaciesDto {
   healthInsuranceAuthorized: boolean;
   page?: number;
   limit?: number;
+}
+
+export interface PharmacyProps {
+  _id: ObjectId;
+  partner: boolean;
+  orgCode: string;
+  owner: string;
+  gender: GenderType;
+  doctors: string[];
+  websiteUrl: string;
+  email: string;
+  phone: string;
+  county: CountyType;
+  district: string;
+  address: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  keywords: string[];
+  featuredImg: string;
+  healthInsuranceAuthorized: boolean;
 }

@@ -5,10 +5,9 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button } from '@/app/components/buttons/Button';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
-import { CountyType, PageType } from '@/app/components/interface';
 import Pagination from '@/app/components/Pagination';
-import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/app/hospitals/interfaces';
-import { HospitalsDto } from '@/domains/hospital';
+import { DepartmentsType, HospitalCategoryType, HospitalProps, HospitalsDto } from '@/domains/hospital';
+import { CountyType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 
 import HospitalListItemCard from './HospitalListItemCard';

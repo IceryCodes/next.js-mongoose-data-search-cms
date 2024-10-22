@@ -1,34 +1,26 @@
-import axios from 'axios';
-
-import { PharmacyProps } from '@/app/pharmacies/interfaces';
 import { PharmaciesDto, PharmacyDto } from '@/domains/pharmacy';
-import { apiOrigin } from '@/utils/api';
+import { apiOrigin, logApiError } from '@/utils/api';
 
-import { GetPharmaciesProps } from './interfaces';
+import { GetPharmaciesReturnType, GetPharmacyReturnType } from './interfaces';
 
 export const pharmacyQueryKeys = {
   getPharmacy: 'getPharmacy',
   getPharmacies: 'getPharmacies',
 } as const;
 
-export const getPharmacy = async ({ _id }: PharmacyDto): Promise<PharmacyProps | null> => {
+export const getPharmacy = async ({ _id }: PharmacyDto): Promise<GetPharmacyReturnType> => {
   try {
     const { data } = await apiOrigin.get('/pharmacy', {
       params: { _id },
     });
     return data;
   } catch (error) {
-    // Cast the error to AxiosError
-    if (axios.isAxiosError(error)) {
-      if (error.response && error.response.status === 400) {
-        console.error('Invalid _id or pharmacy not found:', error.response.data);
-        return null; // Return null if there's a 400 error
-      }
-    } else {
-      console.error('Unexpected error:', error);
-    }
+    const message: string = 'Get pharmacy error';
+    logApiError({ error, message });
 
-    throw error; // Rethrow the error for other statuses or unknown errors
+    return {
+      message,
+    };
   }
 };
 
@@ -39,7 +31,7 @@ export const getPharmacies = async ({
   healthInsuranceAuthorized,
   page = 1,
   limit = 10,
-}: PharmaciesDto): Promise<GetPharmaciesProps> => {
+}: PharmaciesDto): Promise<GetPharmaciesReturnType> => {
   try {
     const { data } = await apiOrigin.get('/pharmacies', {
       params: { query, county, partner, healthInsuranceAuthorized, page, limit },
@@ -48,17 +40,16 @@ export const getPharmacies = async ({
     return {
       pharmacies: data.pharmacies.length ? data.pharmacies : [],
       total: data.total ? data.total : 0,
+      message: 'Success',
     };
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Error fetching pharmacies:', error.response?.data || error.message);
-    } else {
-      console.error('Unexpected error:', error);
-    }
+    const message: string = 'Get pharmacies error';
+    logApiError({ error, message });
 
     return {
       pharmacies: [],
       total: 0,
-    }; // Return a safe default if there’s an error
+      message,
+    };
   }
 };

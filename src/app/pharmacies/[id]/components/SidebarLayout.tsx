@@ -5,12 +5,10 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button, ButtonStyleType } from '@/app/components/buttons/Button';
 import Card from '@/app/components/Card';
-import { CountyType, getPageUrlByType, PageType } from '@/app/components/interface';
-import { PharmacyProps } from '@/app/pharmacies/interfaces';
-import { PharmaciesDto } from '@/domains/pharmacy';
+import PharmacyListItemCard from '@/app/pharmacies/components/PharmacyListItemCard';
+import { CountyType, getPageUrlByType, PageType } from '@/domains/interfaces';
+import { PharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';
-
-import PharmacyListItemCard from '../../components/PharmacyListItemCard';
 
 interface SidebarLayoutProps {
   county: string;

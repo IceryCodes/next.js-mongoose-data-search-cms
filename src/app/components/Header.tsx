@@ -4,9 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import Logo from '@/assets/LOGO_FFFFFF_300PX.png';
+import { PageTypeMap } from '@/domains/interfaces';
 
 import { Button } from './buttons/Button';
-import { PageTypeMap } from './interface';
 
 const Header = ({ children }: { children: React.ReactNode }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -24,6 +24,7 @@ const Header = ({ children }: { children: React.ReactNode }) => {
               width={200}
               height={100}
               className="max-h-[40px] w-auto md:max-h-[60px]"
+              priority
             />
           </Link>
 

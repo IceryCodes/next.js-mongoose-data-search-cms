@@ -1,76 +1,62 @@
 import { Collection, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { PharmacyProps } from '@/app/pharmacies/interfaces';
+import { PharmacyProps } from '@/domains/pharmacy';
 import { getPharmaciesCollection } from '@/lib/mongodb';
+import { GetPharmaciesReturnType } from '@/services/interfaces';
+import { HttpStatus } from '@/utils/api';
 
-interface ApiResponse {
-  pharmacies: PharmacyProps[];
-  total: number;
-}
-
-const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse | undefined>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<GetPharmaciesReturnType>) => {
   const { query, county, healthInsuranceAuthorized, partner, page = '1', limit = '10' } = req.query;
 
-  // Parse page and limit as integers
   const currentPage: number = Number(page);
   const pageSize: number = Number(limit);
 
-  // Return undefined if query is invalid
   if (isNaN(currentPage) || currentPage < 1 || isNaN(pageSize) || pageSize < 1) {
-    return res.status(400).json(undefined);
+    return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
   }
 
   try {
-    // Use the shared pharmacies collection
     const pharmaciesCollection: Collection<PharmacyProps> = await getPharmaciesCollection();
 
-    // Build MongoDB query
     const mongoQuery: Record<string, unknown> = {}; // Type-safe object
 
-    // Filter by partner if specified
     if (partner === 'true') mongoQuery.partner = true;
 
-    // Add query-based filtering (title search)
     if (query && typeof query === 'string') {
       const queryWords = query.toLowerCase().split(' ').filter(Boolean);
       mongoQuery.title = { $regex: queryWords.join('|'), $options: 'i' }; // Case-insensitive search
     }
 
-    // Filter by county if specified
     if (county && typeof county === 'string') {
       mongoQuery.county = county;
     }
 
-    // Filter by healthInsuranceAuthorized if specified
     if (healthInsuranceAuthorized && typeof healthInsuranceAuthorized === 'string' && healthInsuranceAuthorized === 'true') {
       mongoQuery.healthInsuranceAuthorized = true;
     }
 
-    // Filter out sample by keyword if production
     if (process.env.NODE_ENV === 'production') {
       mongoQuery.keywords = { $not: { $all: ['Sample'] } };
     }
 
-    // Fetch total count of matching documents before pagination
     const total: number = await pharmaciesCollection.countDocuments(mongoQuery);
 
-    // Fetch pharmacies based on filters and apply pagination
     const pharmacies: WithId<PharmacyProps>[] = await pharmaciesCollection
       .find(mongoQuery)
-      .sort({ partner: -1 }) // Sort so partner pharmacies come first
+      .sort({ partner: -1 })
       .skip((currentPage - 1) * pageSize)
       .limit(pageSize)
       .toArray();
 
-    // Return paginated results along with the total count
-    res.status(200).json({
+    res.status(HttpStatus.Ok).json({
       pharmacies,
-      total, // Total number of filtered pharmacies
+      total,
+      message: 'Success',
     });
   } catch (error) {
     console.error('Error fetching pharmacies:', error);
-    res.status(500).json(undefined);
+    res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });
   }
 };
 

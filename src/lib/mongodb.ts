@@ -1,7 +1,8 @@
 import { Collection, MongoClient } from 'mongodb';
 
-import { HospitalProps } from '@/app/hospitals/interfaces';
-import { PharmacyProps } from '@/app/pharmacies/interfaces';
+import { HospitalProps } from '@/domains/hospital';
+import { PharmacyProps } from '@/domains/pharmacy';
+import { UserRegisterDto } from '@/domains/user';
 
 const uri: string = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
@@ -14,6 +15,13 @@ export const connectToDatabase = async (): Promise<MongoClient> => {
     clientPromise = client.connect();
   }
   return clientPromise;
+};
+
+// Function to get the users collection
+export const getUsersCollection = async (): Promise<Collection<UserRegisterDto>> => {
+  const client = await connectToDatabase();
+  const database = client.db('hospital_search');
+  return database.collection<UserRegisterDto>('users');
 };
 
 // Function to get the hospitals collection

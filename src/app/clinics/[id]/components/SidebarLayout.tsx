@@ -6,9 +6,8 @@ import { Controller, useForm } from 'react-hook-form';
 import ClinicListItemCard from '@/app/clinics/components/ClinicListItemCard';
 import { Button, ButtonStyleType } from '@/app/components/buttons/Button';
 import Card from '@/app/components/Card';
-import { CountyType, getPageUrlByType, PageType } from '@/app/components/interface';
-import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/app/hospitals/interfaces';
-import { HospitalsDto } from '@/domains/hospital';
+import { DepartmentsType, HospitalCategoryType, HospitalProps, HospitalsDto } from '@/domains/hospital';
+import { CountyType, getPageUrlByType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 
 interface SidebarLayoutProps {
