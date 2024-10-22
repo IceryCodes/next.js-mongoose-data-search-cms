@@ -2,12 +2,13 @@
 import { ReactElement, useCallback, useEffect } from 'react';
 
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { notFound, useParams, useRouter } from 'next/navigation';
 
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
+import { PharmacyProps } from '@/domains/pharmacy';
 import { usePharmacyQuery } from '@/features/pharmacies/hooks/usePharmacyQuery';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
@@ -20,7 +21,8 @@ const PharmacyContent = (): ReactElement => {
   const router = useRouter();
 
   const { composeGender } = useEnum();
-  const { data: pharmacy, isLoading, isError } = usePharmacyQuery({ _id });
+  const { data, isLoading, isError } = usePharmacyQuery({ _id });
+  const pharmacy: PharmacyProps | null | undefined = data?.pharmacy;
 
   const mainInfoRender = useCallback(
     ({ label, value }: { label: string; value: ReactElement | null }): ReactElement => (
@@ -54,7 +56,7 @@ const PharmacyContent = (): ReactElement => {
 
   useEffect(() => {
     if (!isLoading && !pharmacy && !isError) {
-      router.push('/404'); // Redirect to /404 if no pharmacy is found
+      notFound();
     }
   }, [isLoading, pharmacy, isError, router]);
 

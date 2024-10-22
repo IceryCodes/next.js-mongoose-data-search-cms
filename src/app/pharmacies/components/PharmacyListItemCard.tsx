@@ -4,8 +4,8 @@ import { ObjectId } from 'mongodb';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { getPageUrlByType, PageType } from '@/app/components/interface';
 import Tag from '@/app/components/tags/Tag';
+import { getPageUrlByType, PageType } from '@/domains/interfaces';
 
 interface PharmacyListItemCardProps {
   _id: ObjectId;

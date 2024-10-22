@@ -1,2 +1,2 @@
-const Home = () => <></>;
-export default Home;
+const Page = () => <></>;
+export default Page;

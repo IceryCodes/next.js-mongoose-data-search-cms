@@ -5,10 +5,9 @@ import { ObjectId } from 'mongodb';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { HospitalProps } from '../hospitals/interfaces';
-import { PharmacyProps } from '../pharmacies/interfaces';
-
-import { getPageUrlByType, PageType } from './interface';
+import { HospitalProps } from '@/domains/hospital';
+import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { PharmacyProps } from '@/domains/pharmacy';
 
 interface GoogleMapComponentProps {
   locationData: (HospitalProps | PharmacyProps)[];

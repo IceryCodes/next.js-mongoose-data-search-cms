@@ -2,10 +2,9 @@ import { ReactElement } from 'react';
 
 import { Metadata } from 'next';
 
-import { getPageUrlByType, PageType } from '@/app/components/interface';
+import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { GetPharmacyReturnType } from '@/services/interfaces';
 import { getPharmacy } from '@/services/pharmacy';
-
-import { PharmacyProps } from '../interfaces';
 
 import PharmacyContent from './components/PharmacyContent';
 
@@ -14,7 +13,7 @@ export const generateMetadata = async ({ params }: { params: { id: string } }): 
 
   let _id: string = '';
   let title: string = '';
-  const pharmacy: PharmacyProps | null = await getPharmacy({ _id: id });
+  const { pharmacy }: GetPharmacyReturnType = await getPharmacy({ _id: id });
   if (pharmacy) {
     _id = pharmacy._id.toString();
     title = pharmacy.title;

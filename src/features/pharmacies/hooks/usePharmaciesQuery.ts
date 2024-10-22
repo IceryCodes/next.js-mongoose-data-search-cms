@@ -4,11 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 
 import { PharmaciesDto } from '@/domains/pharmacy';
 import { useQueryCallback } from '@/hooks/utils/useQueryCallback';
-import { GetPharmaciesProps } from '@/services/interfaces';
+import { GetPharmaciesReturnType } from '@/services/interfaces';
 import { getPharmacies, pharmacyQueryKeys } from '@/services/pharmacy';
 import { QueryBaseProps, QueryBaseReturnType } from '@/utils/reactQuery';
 
-interface usePharmaciesQueryProps extends QueryBaseProps<GetPharmaciesProps>, PharmaciesDto {}
+interface usePharmaciesQueryProps extends QueryBaseProps<GetPharmaciesReturnType>, PharmaciesDto {}
 
 export const usePharmaciesQuery = ({
   onSuccess,
@@ -21,7 +21,7 @@ export const usePharmaciesQuery = ({
   healthInsuranceAuthorized,
   page,
   limit,
-}: usePharmaciesQueryProps): QueryBaseReturnType<GetPharmaciesProps> => {
+}: usePharmaciesQueryProps): QueryBaseReturnType<GetPharmaciesReturnType> => {
   const queryResult = useQuery({
     queryKey: [
       ...queryPrefixKey,
@@ -44,6 +44,7 @@ export const usePharmaciesQuery = ({
     data = {
       pharmacies: [],
       total: 0,
+      message: '',
     },
     refetch,
   } = queryResult;

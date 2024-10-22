@@ -1,34 +1,26 @@
-import axios from 'axios';
-
-import { HospitalProps } from '@/app/hospitals/interfaces';
 import { HospitalDto, HospitalsDto } from '@/domains/hospital';
-import { apiOrigin } from '@/utils/api';
+import { apiOrigin, logApiError } from '@/utils/api';
 
-import { GetHospitalsProps } from './interfaces';
+import { GetHospitalReturnType, GetHospitalsReturnType } from './interfaces';
 
 export const hospitalQueryKeys = {
   getHospital: 'getHospital',
   getHospitals: 'getHospitals',
 } as const;
 
-export const getHospital = async ({ _id }: HospitalDto): Promise<HospitalProps | null> => {
+export const getHospital = async ({ _id }: HospitalDto): Promise<GetHospitalReturnType> => {
   try {
     const { data } = await apiOrigin.get('/hospital', {
       params: { _id },
     });
     return data;
   } catch (error) {
-    // Cast the error to AxiosError
-    if (axios.isAxiosError(error)) {
-      if (error.response && error.response.status === 400) {
-        console.error('Invalid _id or hospital not found:', error.response.data);
-        return null; // Return null if there's a 400 error
-      }
-    } else {
-      console.error('Unexpected error:', error);
-    }
+    const message: string = 'Get hospital error';
+    logApiError({ error, message });
 
-    throw error; // Rethrow the error for other statuses or unknown errors
+    return {
+      message,
+    };
   }
 };
 
@@ -40,7 +32,7 @@ export const getHospitals = async ({
   category,
   page = 1,
   limit = 10,
-}: HospitalsDto): Promise<GetHospitalsProps> => {
+}: HospitalsDto): Promise<GetHospitalsReturnType> => {
   try {
     const { data } = await apiOrigin.get('/hospitals', {
       params: { query, county, departments, partner, category, page, limit },
@@ -49,17 +41,14 @@ export const getHospitals = async ({
     return {
       hospitals: data.hospitals.length ? data.hospitals : [],
       total: data.total ? data.total : 0,
+      message: 'Success',
     };
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Error fetching hospitals:', error.response?.data || error.message);
-    } else {
-      console.error('Unexpected error:', error);
-    }
+    const message: string = 'Get hospitals error';
+    logApiError({ error, message });
 
     return {
-      hospitals: [],
-      total: 0,
-    }; // Return a safe default if there’s an error
+      message,
+    };
   }
 };

@@ -2,13 +2,14 @@
 import { ReactElement, useCallback, useEffect } from 'react';
 
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { notFound, useParams, useRouter } from 'next/navigation';
 
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
 import SidebarLayout from '@/app/hospitals/[id]/components/SidebarLayout';
+import { HospitalProps } from '@/domains/hospital';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
@@ -19,7 +20,8 @@ const HospitalContent = (): ReactElement => {
   const router = useRouter();
 
   const { composeGender } = useEnum();
-  const { data: hospital, isLoading, isError } = useHospitalQuery({ _id });
+  const { data, isLoading, isError } = useHospitalQuery({ _id });
+  const hospital: HospitalProps | null | undefined = data?.hospital;
 
   const mainInfoRender = useCallback(
     ({ label, value }: { label: string; value: ReactElement | null }): ReactElement => (
@@ -53,7 +55,7 @@ const HospitalContent = (): ReactElement => {
 
   useEffect(() => {
     if (!isLoading && !hospital && !isError) {
-      router.push('/404'); // Redirect to /404 if no hospital is found
+      notFound();
     }
   }, [isLoading, hospital, isError, router]);
 

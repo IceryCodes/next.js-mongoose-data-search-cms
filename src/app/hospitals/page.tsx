@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 
 import { Metadata } from 'next';
 
-import { getPageUrlByType, PageType } from '../components/interface';
+import { getPageUrlByType, PageType } from '@/domains/interfaces';
 
 import HospitalList from './components/HospitalList';
 

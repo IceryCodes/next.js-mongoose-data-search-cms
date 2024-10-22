@@ -1,30 +1,27 @@
 import { Collection, ObjectId, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { HospitalProps } from '@/app/hospitals/interfaces';
+import { HospitalProps } from '@/domains/hospital';
 import { getHospitalsCollection } from '@/lib/mongodb';
+import { GetHospitalReturnType } from '@/services/interfaces';
+import { HttpStatus } from '@/utils/api';
 
-type ApiResponse = HospitalProps | null;
-
-const handler = async (req: NextApiRequest, res: NextApiResponse<ApiResponse>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalReturnType>) => {
   const { _id } = req.query;
 
-  // Validate ObjectId
   if (typeof _id !== 'string' || !ObjectId.isValid(_id)) {
-    return res.status(400).json(null); // Invalid or missing ID
+    return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
   }
 
   try {
     const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
 
-    // Find hospital by ID
     const hospital: WithId<HospitalProps> | null = await hospitalsCollection.findOne({ _id: new ObjectId(_id) });
 
-    // Return the found hospital or null if not found
-    res.status(200).json(hospital || null);
+    res.status(HttpStatus.Ok).json({ hospital: hospital || null, message: 'Success' });
   } catch (error) {
     console.error('Error fetching hospital by ID:', error);
-    res.status(500).json(null); // Return null on server error
+    res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });
   }
 };
 

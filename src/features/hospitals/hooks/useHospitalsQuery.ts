@@ -5,10 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import { HospitalsDto } from '@/domains/hospital';
 import { useQueryCallback } from '@/hooks/utils/useQueryCallback';
 import { getHospitals, hospitalQueryKeys } from '@/services/hospital';
-import { GetHospitalsProps } from '@/services/interfaces';
+import { GetHospitalsReturnType } from '@/services/interfaces';
 import { QueryBaseProps, QueryBaseReturnType } from '@/utils/reactQuery';
 
-interface UseHospitalsQueryProps extends QueryBaseProps<GetHospitalsProps>, HospitalsDto {}
+interface UseHospitalsQueryProps extends QueryBaseProps<GetHospitalsReturnType>, HospitalsDto {}
 
 export const useHospitalsQuery = ({
   onSuccess,
@@ -22,7 +22,7 @@ export const useHospitalsQuery = ({
   category,
   page,
   limit,
-}: UseHospitalsQueryProps): QueryBaseReturnType<GetHospitalsProps> => {
+}: UseHospitalsQueryProps): QueryBaseReturnType<GetHospitalsReturnType> => {
   const queryResult = useQuery({
     queryKey: [
       ...queryPrefixKey,
@@ -46,6 +46,7 @@ export const useHospitalsQuery = ({
     data = {
       hospitals: [],
       total: 0,
+      message: '',
     },
     refetch,
   } = queryResult;
