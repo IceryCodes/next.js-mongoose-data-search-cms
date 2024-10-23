@@ -1,9 +1,10 @@
 export enum PageType {
-  REGISTER = '註冊',
-  LOGIN = '登入',
   HOSPITALS = '醫院搜尋',
   CLINICS = '診所搜尋',
   PHARMACIES = '藥局搜尋',
+  REGISTER = '註冊',
+  LOGIN = '登入',
+  VERIFY = '帳號驗證',
 }
 
 export const PageTypeMap: { [key: string]: string } = Object.fromEntries(
@@ -17,6 +18,11 @@ export const getPageUrlByType = (value: PageType): string => {
       ?.toLowerCase() ?? '404'
   );
 };
+
+export enum UserRoleType {
+  None = 0,
+  Admin = 1,
+}
 
 export enum GenderType {
   None = 0,

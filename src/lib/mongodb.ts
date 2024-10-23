@@ -2,9 +2,9 @@ import { Collection, MongoClient } from 'mongodb';
 
 import { HospitalProps } from '@/domains/hospital';
 import { PharmacyProps } from '@/domains/pharmacy';
-import { UserRegisterDto } from '@/domains/user';
+import { UserWithPasswordProps } from '@/domains/user';
 
-const uri: string = process.env.MONGODB_URI;
+const uri: string = process.env.NEXT_PRIVATE_MONGODB_URI;
 const client = new MongoClient(uri);
 
 let clientPromise: Promise<MongoClient> | null = null;
@@ -18,10 +18,10 @@ export const connectToDatabase = async (): Promise<MongoClient> => {
 };
 
 // Function to get the users collection
-export const getUsersCollection = async (): Promise<Collection<UserRegisterDto>> => {
+export const getUsersCollection = async (): Promise<Collection<Omit<UserWithPasswordProps, '_id'>>> => {
   const client = await connectToDatabase();
   const database = client.db('hospital_search');
-  return database.collection<UserRegisterDto>('users');
+  return database.collection<Omit<UserWithPasswordProps, '_id'>>('users');
 };
 
 // Function to get the hospitals collection

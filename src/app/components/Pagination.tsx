@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
 
 import { Button } from './buttons/Button';
 
@@ -9,7 +9,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, maxButtons = 5, onPageChange }) => {
+const Pagination = ({ totalPages, currentPage, maxButtons = 5, onPageChange }: PaginationProps): ReactElement => {
   const pageButtons = useMemo((): (number | null)[] => {
     const pages: (number | null)[] = [];
 

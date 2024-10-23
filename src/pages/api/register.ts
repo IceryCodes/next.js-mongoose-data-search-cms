@@ -1,44 +1,67 @@
 import bcrypt from 'bcrypt';
-import { ObjectId } from 'mongodb';
+import { InsertOneResult, ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { ValidationError } from 'yup';
 
-import { UserProps, UserRegisterDto } from '@/domains/user';
+import { UserRoleType } from '@/domains/interfaces';
+import { UserProps, UserWithPasswordProps } from '@/domains/user';
 import { getUsersCollection } from '@/lib/mongodb';
+import { registerValidationSchema } from '@/lib/validation';
 import { UserLoginReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import sendEmail from '@/utils/sendEmail';
 import { generateToken } from '@/utils/token';
+import verificationEmailTemplate from '@/utils/verificationEmailTemplate';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturnType>) => {
   if (req.method !== 'POST') {
     return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
   }
 
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, gender, email, password } = req.body;
 
   try {
+    await registerValidationSchema.validate(req.body, { abortEarly: false });
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const usersCollection = await getUsersCollection();
 
-    const newUser: UserRegisterDto = {
+    const newUser: Omit<UserWithPasswordProps, '_id'> = {
       firstName,
       lastName,
+      gender,
       email,
       password: hashedPassword,
+      role: UserRoleType.None,
+      isVerified: false,
     };
 
-    const result = await usersCollection.insertOne(newUser);
+    const result: InsertOneResult<Omit<UserWithPasswordProps, '_id'>> = await usersCollection.insertOne(newUser);
     const userId: ObjectId = result.insertedId; // Get the generated ObjectId
+
+    const verificationToken: string = generateToken(userId.toString());
+    const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}`;
+    await sendEmail({
+      to: email,
+      subject: `[${process.env.NEXT_PUBLIC_SITE_NAME}] 歡迎${lastName} ${firstName}進行信箱驗證!`,
+      html: verificationEmailTemplate({ userName: `${lastName} ${firstName}`, verificationLink }),
+    });
 
     const user: UserProps = {
       _id: userId,
       firstName,
       lastName,
+      gender,
       email,
+      role: UserRoleType.None,
+      isVerified: false,
     };
 
-    const token = generateToken(userId.toString()); // Use _id in the token
-    res.status(HttpStatus.Created).json({ token, user, message: 'Success' });
+    res.status(HttpStatus.Created).json({ user, message: '請至註冊信箱進行驗證' });
   } catch (error) {
+    if (error instanceof ValidationError)
+      return res.status(HttpStatus.BadRequest).json({ message: error.errors.join(', ') });
+
     console.error('Error register user details:', error);
     res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });
   }

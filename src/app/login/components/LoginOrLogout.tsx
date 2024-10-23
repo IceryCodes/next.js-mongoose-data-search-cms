@@ -1,7 +1,7 @@
 'use client';
 
-import Login from '@/app/components/Auth/Login';
 import Logout from '@/app/components/Auth/Logout';
+import Login from '@/app/login/components/Login';
 import { useAuth } from '@/contexts/AuthContext';
 
 const LoginOrLogout = () => {

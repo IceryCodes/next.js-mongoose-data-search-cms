@@ -1,20 +1,33 @@
-import { useState } from 'react';
+'use client';
+
+import { ReactElement, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 
 import Logo from '@/assets/LOGO_FFFFFF_300PX.png';
-import { PageTypeMap } from '@/domains/interfaces';
+import { useAuth } from '@/contexts/AuthContext';
+import { PageType, PageTypeMap } from '@/domains/interfaces';
 
 import { Button } from './buttons/Button';
+import VerifyBar from './VerifyBar';
 
-const Header = ({ children }: { children: React.ReactNode }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+const linkStyle: string =
+  'font-bold text-white hover:text-[#545454] block transition-all duration-300 ease-in-out md:inline';
+
+const Header = ({ children }: { children: ReactElement }) => {
+  const { isAuthenticated, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
+  const Logout = () => {
+    logout();
+    setMenuOpen(false);
+  };
 
   return (
     <>
       {/* Header Section */}
-      <header className="h-[80px] w-full bg-[#00A7D4] fixed top-0 z-10 shadow-md">
+      <header className={`h-header w-full bg-[#00A7D4] fixed top-0 z-10 shadow-md`}>
         <div className="container h-full p-4 m-auto flex justify-between items-center">
           {/* Logo */}
           <Link href={process.env.NEXT_PUBLIC_BASE_URL}>
@@ -52,22 +65,32 @@ const Header = ({ children }: { children: React.ReactNode }) => {
             md:opacity-100 md:translate-y-0 md:flex transition-all duration-300 ease-in-out`}
           >
             <ul className="flex flex-col md:flex-row gap-4 p-4 md:p-0">
-              {Object.keys(PageTypeMap).map((key: string) => (
-                <Link
-                  key={key}
-                  href={`/${key.toLocaleLowerCase()}`}
-                  className="font-bold text-white hover:text-[#545454] block transition-all duration-300 ease-in-out md:inline"
-                >
-                  <li>{PageTypeMap[key]}</li>
+              {Object.keys(PageTypeMap).map((key) => {
+                const pageType = PageTypeMap[key];
+
+                if (pageType === PageType.LOGIN || pageType === PageType.REGISTER) if (isAuthenticated) return;
+                if (pageType === PageType.VERIFY) return;
+
+                return (
+                  <Link key={key} href={`/${key.toLowerCase()}`} className={linkStyle} onClick={() => setMenuOpen(false)}>
+                    <li>{pageType}</li>
+                  </Link>
+                );
+              })}
+              {isAuthenticated && (
+                <Link href="" className={linkStyle} onClick={Logout}>
+                  <li>登出</li>
                 </Link>
-              ))}
+              )}
             </ul>
           </nav>
         </div>
       </header>
 
       {/* Content Section */}
-      <section className="mt-[80px]">{children}</section>
+      <section className={`mt-header`}>{children}</section>
+
+      <VerifyBar />
     </>
   );
 };

@@ -1,10 +1,13 @@
 'use client';
 
+import { ReactElement } from 'react';
+
 import { LoadScript } from '@react-google-maps/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import localFont from 'next/font/local';
 
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ToastProvider } from '@/contexts/ToastContext';
 
 import Header from './components/Header';
 
@@ -30,15 +33,17 @@ const queryClient = new QueryClient({
   },
 });
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+const RootLayout = ({ children }: { children: ReactElement }) => {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F5F5F5]`}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <LoadScript googleMapsApiKey={process.env.NEXT_PRIVATE_GOOGLE_API_KEY}>
-              <Header>{children}</Header>
-            </LoadScript>
+            <ToastProvider>
+              <LoadScript googleMapsApiKey={process.env.NEXT_PRIVATE_GOOGLE_API_KEY}>
+                <Header>{children}</Header>
+              </LoadScript>
+            </ToastProvider>
           </AuthProvider>
         </QueryClientProvider>
       </body>

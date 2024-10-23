@@ -15,7 +15,7 @@ export const getPharmacy = async ({ _id }: PharmacyDto): Promise<GetPharmacyRetu
     });
     return data;
   } catch (error) {
-    const message: string = 'Get pharmacy error';
+    const message: string = '搜尋藥局失敗!';
     logApiError({ error, message });
 
     return {
@@ -43,7 +43,7 @@ export const getPharmacies = async ({
       message: 'Success',
     };
   } catch (error) {
-    const message: string = 'Get pharmacies error';
+    const message: string = '搜尋藥局失敗!';
     logApiError({ error, message });
 
     return {
