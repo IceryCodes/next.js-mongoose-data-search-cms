@@ -15,7 +15,7 @@ export const getHospital = async ({ _id }: HospitalDto): Promise<GetHospitalRetu
     });
     return data;
   } catch (error) {
-    const message: string = 'Get hospital error';
+    const message: string = '搜尋醫院失敗!';
     logApiError({ error, message });
 
     return {
@@ -44,7 +44,7 @@ export const getHospitals = async ({
       message: 'Success',
     };
   } catch (error) {
-    const message: string = 'Get hospitals error';
+    const message: string = '搜尋醫院失敗!';
     logApiError({ error, message });
 
     return {

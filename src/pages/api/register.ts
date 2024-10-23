@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { ObjectId } from 'mongodb';
+import { InsertOneResult, ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ValidationError } from 'yup';
 
@@ -9,7 +9,9 @@ import { getUsersCollection } from '@/lib/mongodb';
 import { registerValidationSchema } from '@/lib/validation';
 import { UserLoginReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import sendEmail from '@/utils/sendEmail';
 import { generateToken } from '@/utils/token';
+import verificationEmailTemplate from '@/utils/verificationEmailTemplate';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturnType>) => {
   if (req.method !== 'POST') {
@@ -31,10 +33,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       email,
       password: hashedPassword,
       role: UserRoleType.None,
+      isVerified: false,
     };
 
-    const result = await usersCollection.insertOne(newUser);
+    const result: InsertOneResult<Omit<UserWithPasswordProps, '_id'>> = await usersCollection.insertOne(newUser);
     const userId: ObjectId = result.insertedId; // Get the generated ObjectId
+
+    const verificationToken: string = generateToken(userId.toString());
+    const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}`;
+    await sendEmail({
+      to: email,
+      subject: `[${process.env.NEXT_PUBLIC_SITE_NAME}] 歡迎${lastName} ${firstName}進行信箱驗證!`,
+      html: verificationEmailTemplate({ userName: `${lastName} ${firstName}`, verificationLink }),
+    });
 
     const user: UserProps = {
       _id: userId,
@@ -43,10 +54,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       gender,
       email,
       role: UserRoleType.None,
+      isVerified: false,
     };
 
-    const token = generateToken(userId.toString()); // Use _id in the token
-    res.status(HttpStatus.Created).json({ token, user, message: 'Success' });
+    res.status(HttpStatus.Created).json({ user, message: '請至註冊信箱進行驗證' });
   } catch (error) {
     if (error instanceof ValidationError)
       return res.status(HttpStatus.BadRequest).json({ message: error.errors.join(', ') });

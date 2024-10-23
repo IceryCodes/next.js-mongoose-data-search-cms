@@ -39,3 +39,11 @@ export interface UserLoginReturnType {
   user?: UserProps;
   message: string;
 }
+
+export interface UserVerifyReturnType {
+  message: string;
+}
+
+export interface UserResendVerificationReturnType {
+  message: string;
+}

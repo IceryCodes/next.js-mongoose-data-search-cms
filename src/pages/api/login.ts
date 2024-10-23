@@ -41,7 +41,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
         lastName: user.lastName,
         gender: user.gender,
         email: user.email,
-        role: user.role, // No error now since user is typed properly
+        role: user.role,
+        isVerified: user.isVerified,
       },
       message: 'Success',
     });

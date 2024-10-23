@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { PageType, PageTypeMap } from '@/domains/interfaces';
 
 import { Button } from './buttons/Button';
+import VerifyBar from './VerifyBar';
 
 const linkStyle: string =
   'font-bold text-white hover:text-[#545454] block transition-all duration-300 ease-in-out md:inline';
@@ -68,6 +69,7 @@ const Header = ({ children }: { children: ReactElement }) => {
                 const pageType = PageTypeMap[key];
 
                 if (pageType === PageType.LOGIN || pageType === PageType.REGISTER) if (isAuthenticated) return;
+                if (pageType === PageType.VERIFY) return;
 
                 return (
                   <Link key={key} href={`/${key.toLowerCase()}`} className={linkStyle} onClick={() => setMenuOpen(false)}>
@@ -87,6 +89,8 @@ const Header = ({ children }: { children: ReactElement }) => {
 
       {/* Content Section */}
       <section className={`mt-header`}>{children}</section>
+
+      <VerifyBar />
     </>
   );
 };

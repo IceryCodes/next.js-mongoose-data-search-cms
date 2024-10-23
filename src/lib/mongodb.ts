@@ -4,7 +4,7 @@ import { HospitalProps } from '@/domains/hospital';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { UserWithPasswordProps } from '@/domains/user';
 
-const uri: string = process.env.MONGODB_URI;
+const uri: string = process.env.NEXT_PRIVATE_MONGODB_URI;
 const client = new MongoClient(uri);
 
 let clientPromise: Promise<MongoClient> | null = null;

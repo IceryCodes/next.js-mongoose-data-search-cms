@@ -2,25 +2,24 @@ import { useMemo } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { useAuth } from '@/contexts/AuthContext';
+import { UserVerifyDto } from '@/domains/user';
 import { useQueryCallback } from '@/hooks/utils/useQueryCallback';
-import { GetUserReturnType } from '@/services/interfaces';
-import { getUser, userQueryKeys } from '@/services/user';
+import { UserVerifyReturnType } from '@/services/interfaces';
+import { userQueryKeys, verifyUser } from '@/services/user';
 import { QueryBaseProps, QueryBaseReturnType } from '@/utils/reactQuery';
 
-export type UsePatientMeQueryProps = QueryBaseProps<GetUserReturnType>;
+interface UseUserVerifyQueryProps extends QueryBaseProps<UserVerifyReturnType>, UserVerifyDto {}
 
-export const useUserQuery = ({
+export const useUserVerifyQuery = ({
   onSuccess,
   onError,
   enabled,
   queryPrefixKey = [],
-}: UsePatientMeQueryProps = {}): QueryBaseReturnType<GetUserReturnType> => {
-  const { token } = useAuth();
-
+  token,
+}: UseUserVerifyQueryProps): QueryBaseReturnType<UserVerifyReturnType> => {
   const queryResult = useQuery({
-    queryKey: [...queryPrefixKey, userQueryKeys.getUser],
-    queryFn: () => (token ? getUser(token) : { user: null, message: '' }),
+    queryKey: [...queryPrefixKey, userQueryKeys.verifyUser, token],
+    queryFn: () => verifyUser({ token }),
     enabled,
   });
   const { isFetching, isError, error, data, refetch } = queryResult;

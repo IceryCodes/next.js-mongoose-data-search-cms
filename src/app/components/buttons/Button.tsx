@@ -21,7 +21,7 @@ export const Button = ({
   text,
   element,
   type = 'button',
-  className,
+  className = '',
   onClick,
   disabled = false,
   buttonStyle = ButtonStyleType.Blue,

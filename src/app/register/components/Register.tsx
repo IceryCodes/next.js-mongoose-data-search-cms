@@ -39,9 +39,10 @@ const Register = (): ReactElement => {
       const { token, user, message } = result;
       if (token && user) {
         login(token, user);
+        showToast({ message });
       } else {
         logout();
-        if (message) showToast({ message, toastStyle: ToastStyleType.Waring });
+        if (message) showToast({ message, toastStyle: ToastStyleType.Warning });
       }
 
       reset();

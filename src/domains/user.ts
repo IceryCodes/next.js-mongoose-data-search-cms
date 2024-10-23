@@ -15,9 +15,18 @@ export interface UserRegisterDto {
   password: string;
 }
 
+export interface UserVerifyDto {
+  token: string;
+}
+
+export interface UserResendVerificationDto {
+  _id: string;
+}
+
 export interface UserWithPasswordProps extends UserRegisterDto {
   _id: ObjectId;
   role: UserRoleType;
+  isVerified: boolean;
 }
 
 export type UserProps = Omit<UserWithPasswordProps, 'password'>;

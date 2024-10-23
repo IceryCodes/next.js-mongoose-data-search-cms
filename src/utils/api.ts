@@ -119,7 +119,7 @@ apiOrigin.interceptors.response.use(
       // Retry the original request with the new token
       return apiOrigin(originalRequest);
     } catch (error) {
-      const message: string = 'Token Renewal Error';
+      const message: string = '更新憑證失敗!';
       logApiError({ error, message });
 
       return Promise.reject(error); // Reject if token renewal fails

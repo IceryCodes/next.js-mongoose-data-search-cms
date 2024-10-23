@@ -33,7 +33,7 @@ const Login = (): ReactElement => {
         login(token, user);
       } else {
         logout();
-        if (message) showToast({ message, toastStyle: ToastStyleType.Waring });
+        if (message) showToast({ message, toastStyle: ToastStyleType.Warning });
       }
 
       reset();

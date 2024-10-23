@@ -4,6 +4,7 @@ export enum PageType {
   PHARMACIES = '藥局搜尋',
   REGISTER = '註冊',
   LOGIN = '登入',
+  VERIFY = '帳號驗證',
 }
 
 export const PageTypeMap: { [key: string]: string } = Object.fromEntries(

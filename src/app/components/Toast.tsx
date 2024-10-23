@@ -6,7 +6,7 @@ import { Button } from './buttons/Button';
 
 export enum ToastStyleType {
   Normal = 'bg-blue-400',
-  Waring = 'bg-red-400',
+  Warning = 'bg-red-400',
 }
 
 interface ToastProps {
@@ -27,7 +27,7 @@ const Toast = ({ message, onClose, duration = 5000, toastStyle = ToastStyleType.
 
   return (
     <div
-      className={`${toastStyle} fixed bottom-5 right-5 w-80 p-4 text-white rounded shadow-lg transition-all duration-${duration} ease-in-out ${message ? 'opacity-100' : 'opacity-0'} ${message ? '' : '-right-96'}`}
+      className={`${toastStyle} z-20 fixed bottom-5 w-80 p-4 text-white rounded shadow-lg transition-all duration-${duration} ease-in-out ${message ? 'opacity-100' : 'opacity-0'} ${message ? 'right-5' : '-right-96'}`}
     >
       {message}
       <Button
