@@ -9,7 +9,7 @@ const useAdminProtectedRoute = () => {
 
   if (!isAuthenticated || user?.role !== UserRoleType.Admin) {
     logout();
-    router.push(`${getPageUrlByType(PageType.LOGIN)}`);
+    router.push(getPageUrlByType(PageType.LOGIN));
   }
 };
 

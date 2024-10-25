@@ -30,7 +30,7 @@ const HospitalListItemCard = ({
   departments,
 }: HospitalListItemCardProps): ReactElement => (
   <Link
-    href={`/${getPageUrlByType(PageType.HOSPITALS)}/${_id}`}
+    href={`${getPageUrlByType(PageType.HOSPITALS)}/${_id}`}
     className="flex flex-col gap-1 border rounded p-4 shadow-lg hover:scale-105 transition-transform duration-300 bg-white"
   >
     <Image src={image} alt="Hospital Image" width={720} height={480} className="rounded" priority={true} />

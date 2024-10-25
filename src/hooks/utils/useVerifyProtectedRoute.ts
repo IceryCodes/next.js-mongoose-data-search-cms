@@ -9,7 +9,7 @@ const useVerifyProtectedRoute = () => {
 
   if (!isAuthenticated || !user?.isVerified) {
     logout();
-    router.push(`${getPageUrlByType(PageType.LOGIN)}`);
+    router.push(getPageUrlByType(PageType.LOGIN));
   }
 };
 
