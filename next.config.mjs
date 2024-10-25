@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
-const baseUrl = process.env.API_ORIGIN;
-const baseUrlDev = `http://localhost:${process.env.PORT || 3000}`;
+const baseUrl = process.env.BASE_URL;
+const baseUrlDev = `http://localhost:${process.env.PORT}`;
 const usedUrl = process.env.NODE_ENV === 'production' ? baseUrl : baseUrlDev
 
 const nextConfig = {
@@ -26,7 +26,7 @@ const nextConfig = {
 
         NEXT_PUBLIC_BASE_URL: usedUrl,
         NEXT_PUBLIC_API_BASE_URL: `${usedUrl}/api`,
-        NEXT_PUBLIC_SITE_NAME: "MtM+ Technology",
+        NEXT_PUBLIC_SITE_NAME: process.env.SITE_NAME,
         NEXT_PUBLIC_FEATURED_IMAGE: "https://mtmptech.com/wp-content/uploads/2022/07/logo_1280x720.jpg",
     }
 };

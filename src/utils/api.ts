@@ -21,6 +21,7 @@ export enum HttpStatus {
   Forbidden = 403,
   NotFound = 404,
   MethodNotAllowed = 405,
+  TooManyRequests = 429,
   InternalServerError = 500,
 }
 
@@ -55,17 +56,12 @@ apiOrigin.interceptors.request.use(
   (config: CustomAxiosRequestConfig): CustomAxiosRequestConfig => {
     try {
       if (isBrowser) {
-        const token = sessionStorage.getItem('token'); // Get token from sessionStorage in the browser
-
+        const token: string | null = sessionStorage.getItem('token');
         // Ensure headers are initialized
-        if (!config.headers) {
-          config.headers = {} as AxiosHeaders; // Initialize headers if undefined
-        }
+        if (!config.headers) config.headers = {} as AxiosHeaders; // Initialize headers if undefined
 
-        // Attach token if available
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
+        // Attach tokens if available
+        if (token) config.headers.Authorization = `Bearer ${token}`;
       }
 
       return config; // Return the modified config
@@ -90,9 +86,8 @@ apiOrigin.interceptors.response.use(
 
     // Check if originalRequest exists and is defined before retrying
     if (!originalRequest || error.response?.status !== HttpStatus.Unauthorized || originalRequest.retryAttempt) {
-      if (enableAxiosLogs) {
-        console.error('Response Error:', error); // Only log in dev
-      }
+      if (enableAxiosLogs) console.error('Response Error:', error); // Only log in dev
+
       return Promise.reject(error); // Reject if original request is undefined or retry logic isn't applicable
     }
 

@@ -13,7 +13,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserVerifyRetur
   if (typeof token !== 'string') return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
 
   try {
-    const userId = verifyToken(token);
+    const userId: string = verifyToken(token);
 
     const usersCollection = await getUsersCollection();
     const result: UpdateResult<Omit<UserWithPasswordProps, '_id'>> = await usersCollection.updateOne(
