@@ -34,4 +34,6 @@ export interface PharmacyProps {
   keywords: string[];
   featuredImg: string;
   healthInsuranceAuthorized: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

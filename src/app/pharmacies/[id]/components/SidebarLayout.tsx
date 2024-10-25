@@ -59,7 +59,7 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
                 <Button
                   text="返回列表"
                   buttonStyle={ButtonStyleType.Gray}
-                  onClick={() => router.push(`/${getPageUrlByType(PageType.PHARMACIES)}`)}
+                  onClick={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
                   className="rounded w-2/3"
                 />
                 <Button text="搜尋" type="submit" className="w-1/3" />
