@@ -27,7 +27,7 @@ const nextConfig = {
         NEXT_PUBLIC_BASE_URL: usedUrl,
         NEXT_PUBLIC_API_BASE_URL: `${usedUrl}/api`,
         NEXT_PUBLIC_SITE_NAME: process.env.SITE_NAME,
-        NEXT_PUBLIC_FEATURED_IMAGE: "https://mtmptech.com/wp-content/uploads/2022/07/logo_1280x720.jpg",
+        NEXT_PUBLIC_FEATURED_IMAGE: "/assets/featured_image.jpg",
     }
 };
 

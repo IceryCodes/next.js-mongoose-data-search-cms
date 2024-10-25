@@ -5,7 +5,6 @@ import { ReactElement, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import Logo from '@/assets/LOGO_FFFFFF_300PX.png';
 import { useAuth } from '@/contexts/AuthContext';
 import { PageType, PageTypeMap } from '@/domains/interfaces';
 
@@ -32,7 +31,7 @@ const Header = ({ children }: { children: ReactElement }) => {
           {/* Logo */}
           <Link href={process.env.NEXT_PUBLIC_BASE_URL}>
             <Image
-              src={Logo}
+              src="/assets/logo.png"
               alt={`${process.env.NEXT_PUBLIC_SITE_NAME} Logo`}
               width={200}
               height={100}
