@@ -81,6 +81,8 @@ export interface HospitalProps {
   ['諮商心理師']: number;
   ['臨床心理師']: number;
   ['營養師']: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface HospitalDto {

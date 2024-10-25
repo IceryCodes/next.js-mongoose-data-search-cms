@@ -25,6 +25,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const usersCollection = await getUsersCollection();
+    const timeStamp: Date = new Date();
 
     const newUser: Omit<UserWithPasswordProps, '_id'> = {
       firstName,
@@ -34,6 +35,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       password: hashedPassword,
       role: UserRoleType.None,
       isVerified: false,
+      createdAt: timeStamp,
+      updatedAt: timeStamp,
     };
 
     const result: InsertOneResult<Omit<UserWithPasswordProps, '_id'>> = await usersCollection.insertOne(newUser);
@@ -55,6 +58,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       email,
       role: UserRoleType.None,
       isVerified: false,
+      createdAt: timeStamp,
+      updatedAt: timeStamp,
     };
 
     res.status(HttpStatus.Created).json({ user, message: '請至註冊信箱進行驗證' });

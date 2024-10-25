@@ -27,6 +27,8 @@ export interface UserWithPasswordProps extends UserRegisterDto {
   _id: ObjectId;
   role: UserRoleType;
   isVerified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type UserProps = Omit<UserWithPasswordProps, 'password'>;

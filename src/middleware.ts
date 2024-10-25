@@ -4,6 +4,8 @@ import checkNext from 'next-rate-limit';
 
 import { HttpStatus } from './utils/api';
 
+const requests: number = 10; // requests limit per minute
+
 const limiter = checkNext({
   interval: 60 * 1000, // 1 minute
   uniqueTokenPerInterval: 500, // Adjust as needed
@@ -21,7 +23,7 @@ export async function middleware(req: NextRequest) {
   // Rate limiting only for API routes
   if (pathname.startsWith('/api')) {
     try {
-      await limiter.checkNext(req, 5); // 5 requests per interval
+      await limiter.checkNext(req, requests);
     } catch {
       // If rate limit is exceeded, respond with 429 status
       return NextResponse.json({ Icery: 'Take it easy, bro. Too many requests!' }, { status: HttpStatus.TooManyRequests });
