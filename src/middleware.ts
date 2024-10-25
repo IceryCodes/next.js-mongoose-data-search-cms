@@ -1,15 +1,46 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import checkNext from 'next-rate-limit';
 
-export function middleware(req: NextRequest) {
-  const url = req.nextUrl.clone();
+import { HttpStatus } from './utils/api';
 
-  // Check if the pathname has uppercase letters
-  if (/[A-Z]/.test(url.pathname)) {
-    // Redirect to the lowercase version of the URL
-    url.pathname = url.pathname.toLowerCase();
-    return NextResponse.redirect(url);
+const limiter = checkNext({
+  interval: 60 * 1000, // 1 minute
+  uniqueTokenPerInterval: 500, // Adjust as needed
+});
+
+export async function middleware(req: NextRequest) {
+  const { pathname, search } = req.nextUrl;
+
+  // Lowercase redirection for non-API routes only
+  if (!pathname.startsWith('/api') && pathname !== pathname.toLowerCase()) {
+    const lowercaseUrl = `${pathname.toLowerCase()}${search}`;
+    return NextResponse.redirect(new URL(lowercaseUrl, req.url));
   }
 
-  return NextResponse.next();
+  // Rate limiting only for API routes
+  if (pathname.startsWith('/api')) {
+    try {
+      await limiter.checkNext(req, 5); // 5 requests per interval
+    } catch {
+      // If rate limit is exceeded, respond with 429 status
+      return NextResponse.json({ Icery: 'Take it easy, bro. Too many requests!' }, { status: HttpStatus.TooManyRequests });
+    }
+  }
+
+  // Add CORS headers to the response
+  const res = NextResponse.next();
+  res.headers.append('Access-Control-Allow-Credentials', 'true');
+  res.headers.append('Access-Control-Allow-Origin', process.env.NEXT_PUBLIC_BASE_URL);
+  res.headers.append('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT');
+  res.headers.append(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  return res;
 }
+
+export const config = {
+  matcher: ['/', '/((?!api).*)', '/api/:path*'], // Apply to all routes, but handle logic in middleware
+};
