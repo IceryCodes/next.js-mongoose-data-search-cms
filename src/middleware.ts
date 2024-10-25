@@ -4,7 +4,7 @@ import checkNext from 'next-rate-limit';
 
 import { HttpStatus } from './utils/api';
 
-const requests: number = 10; // requests limit per minute
+const requests: number = 60; // requests limit per minute
 
 const limiter = checkNext({
   interval: 60 * 1000, // 1 minute

@@ -103,7 +103,7 @@ const GoogleMapComponent = ({ locationData }: GoogleMapComponentProps) => {
             position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
             onCloseClick={() => setSelectedLocation(null)}
           >
-            <Link href={`/${getPageUrlByType(PageType.HOSPITALS)}/${selectedLocation._id}`} className="flex flex-col gap-1">
+            <Link href={`${getPageUrlByType(PageType.HOSPITALS)}/${selectedLocation._id}`} className="flex flex-col gap-1">
               <Image
                 src={selectedLocation.image}
                 alt={selectedLocation.title}

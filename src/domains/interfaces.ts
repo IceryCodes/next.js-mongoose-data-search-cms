@@ -12,11 +12,10 @@ export const PageTypeMap: { [key: string]: string } = Object.fromEntries(
 );
 
 export const getPageUrlByType = (value: PageType): string => {
-  return (
-    Object.keys(PageType)
-      .find((key) => PageType[key as keyof typeof PageType] === value)
-      ?.toLowerCase() ?? '404'
-  );
+  const url: string = `/${Object.keys(PageType)
+    .find((key) => PageType[key as keyof typeof PageType] === value)
+    ?.toLowerCase()}`;
+  return url;
 };
 
 export enum UserRoleType {
