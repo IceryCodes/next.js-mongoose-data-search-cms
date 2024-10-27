@@ -13,7 +13,7 @@ interface PharmacyListItemCardProps {
   image: string;
   title: string;
   county: string;
-  district: string;
+  district: DistrictType;
   address: string;
   healthInsuranceAuthorized: boolean;
 }

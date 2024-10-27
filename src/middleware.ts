@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Rate limiting only for API routes
-  if (pathname.startsWith('/api')) {
+  if (pathname.startsWith('/api') && process.env.NODE_ENV === 'production') {
     try {
       await limiter.checkNext(req, requests);
     } catch {

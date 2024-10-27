@@ -14,7 +14,7 @@ interface ClinicListItemCardProps {
   image: string;
   title: string;
   county: string;
-  district: string;
+  district: DistrictType;
   address: string;
   departments: DepartmentsType[];
 }

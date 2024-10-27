@@ -26,7 +26,7 @@ export interface PharmacyProps {
   email: string;
   phone: string;
   county: CountyType;
-  district: string;
+  district: DistrictType;
   address: string;
   title: string;
   excerpt: string;

@@ -4,6 +4,7 @@ import { ReactElement, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
+import ManageHospitalContent from '@/app/components/admin/ManageContent';
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
@@ -111,6 +112,7 @@ const HospitalContent = (): ReactElement => {
             <Breadcrumb pageName={title} />
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <ManageHospitalContent hospital={hospital} />
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}
             </div>

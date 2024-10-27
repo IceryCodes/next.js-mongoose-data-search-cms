@@ -18,6 +18,9 @@ const config: Config = {
         header: `${headerHeight}px`,
         content: `calc(100vh - ${headerHeight}px)`,
       },
+      maxHeight: {
+        content: `calc(100vh - ${headerHeight}px)`,
+      },
       margin: {
         header: `${headerHeight}px`,
       },

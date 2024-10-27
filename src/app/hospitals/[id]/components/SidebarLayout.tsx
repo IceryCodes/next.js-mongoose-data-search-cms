@@ -42,10 +42,13 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
     limit,
   });
 
-  const onSubmit = useCallback((formData: HospitalsDto) => {
-    refetch();
-    reset(formData);
-  }, []);
+  const onSubmit = useCallback(
+    (formData: HospitalsDto) => {
+      refetch();
+      reset(formData);
+    },
+    [refetch, reset]
+  );
 
   return (
     <div className="flex gap-x-8">
