@@ -44,11 +44,14 @@ const PharmacyList = (): ReactElement => {
 
   const onPageChange = useCallback((page: number) => setCurrentPage(page), []);
 
-  const onSubmit = useCallback((formData: GetPharmaciesDto) => {
-    refetch();
-    reset(formData);
-    setCurrentPage(1);
-  }, []);
+  const onSubmit = useCallback(
+    (formData: GetPharmaciesDto) => {
+      refetch();
+      reset(formData);
+      setCurrentPage(1);
+    },
+    [refetch, reset]
+  );
 
   return (
     <div className="container mx-auto flex flex-col gap-y-4">

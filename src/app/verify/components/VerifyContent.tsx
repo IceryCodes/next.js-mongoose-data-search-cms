@@ -45,7 +45,7 @@ const VerifyContent = () => {
       clearInterval(intervalId);
       clearTimeout(timeoutId);
     };
-  }, [data, isError, error]);
+  }, [data, isError, error, showToast, logout, router]);
 
   if (isLoading) return <div>驗證帳號中...</div>;
 

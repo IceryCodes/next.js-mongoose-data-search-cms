@@ -51,7 +51,7 @@ const Register = (): ReactElement => {
     }
   };
 
-  useEffect(() => logout(), []);
+  useEffect(() => logout(), [logout]);
 
   return (
     <form
