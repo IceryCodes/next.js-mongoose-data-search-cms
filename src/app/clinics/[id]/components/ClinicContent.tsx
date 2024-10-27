@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import SidebarLayout from '@/app/clinics/[id]/components/SidebarLayout';
+import ManageHospitalContent from '@/app/components/admin/ManageContent';
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
@@ -20,7 +21,7 @@ const ClinicContent = (): ReactElement => {
   const router = useRouter();
 
   const { composeGender } = useEnum();
-  const { data, isLoading, isError } = useHospitalQuery({ _id });
+  const { data, isLoading, isError, refetch } = useHospitalQuery({ _id });
   const hospital: HospitalProps | null | undefined = data?.hospital;
 
   const mainInfoRender = useCallback(
@@ -94,6 +95,7 @@ const ClinicContent = (): ReactElement => {
             <Breadcrumb pageName={title} />
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <ManageHospitalContent hospital={hospital} refetch={refetch} />
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}
             </div>

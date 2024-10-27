@@ -7,7 +7,7 @@ import { Button, ButtonStyleType } from '@/app/components/buttons/Button';
 import Card from '@/app/components/Card';
 import PharmacyListItemCard from '@/app/pharmacies/components/PharmacyListItemCard';
 import { CountyType, getPageUrlByType, PageType } from '@/domains/interfaces';
-import { PharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
+import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';
 
 interface SidebarLayoutProps {
@@ -19,7 +19,7 @@ const limit: number = 5;
 
 const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
   const router = useRouter();
-  const { control, handleSubmit, getValues, reset } = useForm<PharmaciesDto>({
+  const { control, handleSubmit, getValues, reset } = useForm<GetPharmaciesDto>({
     defaultValues: {
       query: '',
       county,
@@ -41,7 +41,7 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
     limit,
   });
 
-  const onSubmit = useCallback((formData: PharmaciesDto) => {
+  const onSubmit = useCallback((formData: GetPharmaciesDto) => {
     refetch();
     reset(formData);
   }, []);

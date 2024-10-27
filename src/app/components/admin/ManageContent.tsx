@@ -5,8 +5,10 @@ import { ReactElement, useCallback, useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
-import { HospitalProps, HospitalUpdateDto } from '@/domains/hospital';
+import { useToast } from '@/contexts/ToastContext';
+import { HospitalProps, UpdateHospitalProps } from '@/domains/hospital';
 import { CountyType, districtOptions, DistrictType } from '@/domains/interfaces';
+import { useHospitalMutation } from '@/features/user/useHospitalMutation';
 import { useEnum } from '@/hooks/utils/useEnum';
 import { hospitalValidationSchema } from '@/lib/validation';
 
@@ -15,10 +17,14 @@ import Popup from '../Popup';
 
 interface ManageHospitalContentProps {
   hospital: HospitalProps;
+  refetch: () => void;
 }
 
-const ManageHospitalContent = ({ hospital }: ManageHospitalContentProps) => {
+const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps) => {
   const { hospitalExtraFieldMap } = useEnum();
+  const { isLoading, mutateAsync } = useHospitalMutation({ onSuccess: refetch });
+  const { showToast } = useToast();
+
   const [display, setDisplay] = useState<boolean>(false);
   const [expand, setExpand] = useState<boolean>(false);
 
@@ -28,7 +34,7 @@ const ManageHospitalContent = ({ hospital }: ManageHospitalContentProps) => {
     reset,
     watch,
     formState: { isDirty },
-  } = useForm<HospitalUpdateDto>({
+  } = useForm<UpdateHospitalProps>({
     resolver: yupResolver(hospitalValidationSchema),
     defaultValues: hospital,
   });
@@ -37,17 +43,27 @@ const ManageHospitalContent = ({ hospital }: ManageHospitalContentProps) => {
   const county = watch('county');
 
   const onSubmit = useCallback(
-    (data: HospitalUpdateDto) => {
-      console.log('Form data:', data);
-      reset(data);
+    async (data: UpdateHospitalProps) => {
+      try {
+        const result = await mutateAsync({ _id: hospital._id, ...data });
+        if (typeof result === 'string') throw new Error(result);
+
+        const { message } = result;
+        if (message) showToast({ message });
+
+        reset(data);
+      } catch (error) {
+        console.error('Login error:', error);
+      }
     },
-    [reset]
+    [hospital._id, mutateAsync, reset, showToast]
   );
 
   const form = useMemo(
     (): ReactElement => (
       <Popup title="編輯醫院" display={display} onClose={() => setDisplay(false)}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-6 gap-4 w-[500px]">
+          {isLoading && <label className="col-span-6">更新中...</label>}
           <div className="flex justify-end col-span-6">
             <Button type="submit" text="提交" disabled={!isDirty} />
           </div>
@@ -215,7 +231,7 @@ const ManageHospitalContent = ({ hospital }: ManageHospitalContentProps) => {
               <div key={label} className="flex flex-col col-span-2">
                 <label>{label}</label>
                 <Controller
-                  name={label as keyof HospitalUpdateDto}
+                  name={label as keyof UpdateHospitalProps}
                   control={control}
                   render={({ field: { value, onChange }, fieldState: { error } }) => (
                     <>
@@ -235,12 +251,24 @@ const ManageHospitalContent = ({ hospital }: ManageHospitalContentProps) => {
         </form>
       </Popup>
     ),
-    [display, handleSubmit, onSubmit, isDirty, control, expand, hospitalExtraFieldMap, county]
+    [display, isLoading, handleSubmit, onSubmit, isDirty, control, expand, hospitalExtraFieldMap, county]
   );
+
+  const onClick = () => setDisplay(true);
 
   return (
     <>
-      <Button element={<label>123</label>} onClick={() => setDisplay(true)} />
+      <svg
+        onClick={onClick}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        className="w-6 h-6 cursor-pointer text-gray-600 hover:text-blue-600 transition"
+      >
+        <path d="M3 17.25V21h3.75l11.39-11.39-3.75-3.75L3 17.25zM16 3l5 5-2 2-5-5 2-2z" />
+      </svg>
       {form}
     </>
   );

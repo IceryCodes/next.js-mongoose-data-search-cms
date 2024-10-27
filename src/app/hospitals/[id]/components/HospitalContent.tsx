@@ -21,7 +21,7 @@ const HospitalContent = (): ReactElement => {
   const router = useRouter();
 
   const { composeGender } = useEnum();
-  const { data, isLoading, isError } = useHospitalQuery({ _id });
+  const { data, isLoading, isError, refetch } = useHospitalQuery({ _id });
   const hospital: HospitalProps | null | undefined = data?.hospital;
 
   const mainInfoRender = useCallback(
@@ -95,7 +95,7 @@ const HospitalContent = (): ReactElement => {
             <Breadcrumb pageName={title} />
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-              <ManageHospitalContent hospital={hospital} />
+              <ManageHospitalContent hospital={hospital} refetch={refetch} />
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}
             </div>

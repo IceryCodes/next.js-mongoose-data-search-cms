@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import Tag from '@/app/components/tags/Tag';
 import { DepartmentsType } from '@/domains/hospital';
-import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { DistrictType, getPageUrlByType, PageType } from '@/domains/interfaces';
 
 interface HospitalListItemCardProps {
   _id: ObjectId;

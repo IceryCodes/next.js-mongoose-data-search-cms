@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/app/components/buttons/Button';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Pagination from '@/app/components/Pagination';
-import { DepartmentsType, HospitalCategoryType, HospitalProps, HospitalsDto } from '@/domains/hospital';
+import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 
@@ -15,7 +15,7 @@ import ClinicListItemCard from './ClinicListItemCard';
 const limit: number = 12;
 
 const ClinicList = (): ReactElement => {
-  const { control, handleSubmit, getValues, reset } = useForm<HospitalsDto>({
+  const { control, handleSubmit, getValues, reset } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
       county: '',
@@ -45,7 +45,7 @@ const ClinicList = (): ReactElement => {
 
   const onPageChange = useCallback((page: number) => setCurrentPage(page), []);
 
-  const onSubmit = useCallback((formData: HospitalsDto) => {
+  const onSubmit = useCallback((formData: GetHospitalsDto) => {
     refetch();
     reset(formData);
     setCurrentPage(1);

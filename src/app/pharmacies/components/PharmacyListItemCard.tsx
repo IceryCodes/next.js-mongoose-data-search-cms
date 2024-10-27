@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import Tag from '@/app/components/tags/Tag';
-import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { DistrictType, getPageUrlByType, PageType } from '@/domains/interfaces';
 
 interface PharmacyListItemCardProps {
   _id: ObjectId;

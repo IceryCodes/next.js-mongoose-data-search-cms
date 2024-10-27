@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { HospitalDto } from '@/domains/hospital';
+import { GetHospitalDto } from '@/domains/hospital';
 import { useQueryCallback } from '@/hooks/utils/useQueryCallback';
 import { getHospital, hospitalQueryKeys } from '@/services/hospital';
 import { GetHospitalReturnType } from '@/services/interfaces';
 import { QueryBaseProps, QueryBaseReturnType } from '@/utils/reactQuery';
 
-interface UseHospitalQueryProps extends QueryBaseProps<GetHospitalReturnType>, HospitalDto {}
+interface UseHospitalQueryProps extends QueryBaseProps<GetHospitalReturnType>, GetHospitalDto {}
 
 export const useHospitalQuery = ({
   onSuccess,

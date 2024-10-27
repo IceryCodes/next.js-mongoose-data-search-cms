@@ -13,6 +13,10 @@ export interface GetHospitalsReturnType {
   message: string;
 }
 
+export interface UpdateHospitalReturnType {
+  message: string;
+}
+
 export interface GetPharmacyReturnType {
   pharmacy?: PharmacyProps | null;
   message: string;

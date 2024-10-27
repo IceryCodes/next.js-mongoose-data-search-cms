@@ -115,11 +115,11 @@ export interface HospitalProps {
   updatedAt: Date;
 }
 
-export interface HospitalDto {
+export interface GetHospitalDto {
   _id: string;
 }
 
-export interface HospitalsDto {
+export interface GetHospitalsDto {
   query: string;
   county: string;
   departments: DepartmentsType;
@@ -129,4 +129,5 @@ export interface HospitalsDto {
   limit?: number;
 }
 
-export type HospitalUpdateDto = Omit<HospitalProps, '_id' | 'createdAt' | 'updatedAt'>;
+export type UpdateHospitalProps = Omit<HospitalProps, '_id' | 'createdAt' | 'updatedAt'>;
+export interface UpdateHospitalDto extends UpdateHospitalProps, Pick<HospitalProps, '_id'> {}

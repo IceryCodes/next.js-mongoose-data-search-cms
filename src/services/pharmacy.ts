@@ -1,4 +1,4 @@
-import { PharmaciesDto, PharmacyDto } from '@/domains/pharmacy';
+import { GetPharmaciesDto, GetPharmacyDto } from '@/domains/pharmacy';
 import { apiOrigin, logApiError } from '@/utils/api';
 
 import { GetPharmaciesReturnType, GetPharmacyReturnType } from './interfaces';
@@ -8,9 +8,9 @@ export const pharmacyQueryKeys = {
   getPharmacies: 'getPharmacies',
 } as const;
 
-export const getPharmacy = async ({ _id }: PharmacyDto): Promise<GetPharmacyReturnType> => {
+export const getPharmacy = async ({ _id }: GetPharmacyDto): Promise<GetPharmacyReturnType> => {
   try {
-    const { data } = await apiOrigin.get('/pharmacy', {
+    const { data } = await apiOrigin.get('/get-pharmacy', {
       params: { _id },
     });
     return data;
@@ -31,9 +31,9 @@ export const getPharmacies = async ({
   healthInsuranceAuthorized,
   page = 1,
   limit = 10,
-}: PharmaciesDto): Promise<GetPharmaciesReturnType> => {
+}: GetPharmaciesDto): Promise<GetPharmaciesReturnType> => {
   try {
-    const { data } = await apiOrigin.get('/pharmacies', {
+    const { data } = await apiOrigin.get('/get-pharmacies', {
       params: { query, county, partner, healthInsuranceAuthorized, page, limit },
     });
 

@@ -1,12 +1,12 @@
 import { ObjectId } from 'mongodb';
 
-import { CountyType, GenderType } from '@/domains/interfaces';
+import { CountyType, DistrictType, GenderType } from '@/domains/interfaces';
 
-export interface PharmacyDto {
+export interface GetPharmacyDto {
   _id: string;
 }
 
-export interface PharmaciesDto {
+export interface GetPharmaciesDto {
   query: string;
   county: string;
   partner: boolean;

@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import ClinicListItemCard from '@/app/clinics/components/ClinicListItemCard';
 import { Button, ButtonStyleType } from '@/app/components/buttons/Button';
 import Card from '@/app/components/Card';
-import { DepartmentsType, HospitalCategoryType, HospitalProps, HospitalsDto } from '@/domains/hospital';
+import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
 import { CountyType, getPageUrlByType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 
@@ -19,7 +19,7 @@ const limit: number = 5;
 
 const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
   const router = useRouter();
-  const { control, handleSubmit, getValues, reset } = useForm<HospitalsDto>({
+  const { control, handleSubmit, getValues, reset } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
       county,
@@ -42,7 +42,7 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
     limit,
   });
 
-  const onSubmit = useCallback((formData: HospitalsDto) => {
+  const onSubmit = useCallback((formData: GetHospitalsDto) => {
     refetch();
     reset(formData);
   }, []);
