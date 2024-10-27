@@ -9,7 +9,7 @@ import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
-import { HospitalProps } from '@/domains/hospital';
+import { HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
@@ -38,25 +38,8 @@ const ClinicContent = (): ReactElement => {
     []
   );
 
-  const workerInfoRender = useCallback(
-    ({ label, value }: { label: string; value: number }): ReactElement => (
-      <>
-        {!!value && (
-          <li>
-            <label>
-              {label}: {value}位
-            </label>
-          </li>
-        )}
-      </>
-    ),
-    []
-  );
-
   useEffect(() => {
-    if (!isLoading && !hospital && !isError) {
-      notFound();
-    }
+    if (!isLoading && !hospital && !isError) notFound();
   }, [isLoading, hospital, isError, router]);
 
   if (isLoading) {
@@ -152,33 +135,20 @@ const ClinicContent = (): ReactElement => {
               <>
                 <h3 className="text-xl font-bold">本院醫生: {doctors.join(', ')}</h3>
                 <ul className="list-disc ml-5 grid grid-cols-1 md:grid-cols-3">
-                  {workerInfoRender({ label: '語言治療師', value: hospital['語言治療師'] })}
-                  {workerInfoRender({ label: '牙體技術師', value: hospital['牙體技術師'] })}
-                  {workerInfoRender({ label: '聽力師', value: hospital['聽力師'] })}
-                  {workerInfoRender({ label: '牙體技術士', value: hospital['牙體技術士'] })}
-                  {workerInfoRender({ label: '驗光師', value: hospital['驗光師'] })}
-                  {workerInfoRender({ label: '驗光生', value: hospital['驗光生'] })}
-                  {workerInfoRender({ label: '醫師', value: hospital['醫師'] })}
-                  {workerInfoRender({ label: '中醫師', value: hospital['中醫師'] })}
-                  {workerInfoRender({ label: '牙醫師', value: hospital['牙醫師'] })}
-                  {workerInfoRender({ label: '藥師', value: hospital['藥師'] })}
-                  {workerInfoRender({ label: '藥劑生', value: hospital['藥劑生'] })}
-                  {workerInfoRender({ label: '護理師', value: hospital['護理師'] })}
-                  {workerInfoRender({ label: '護士', value: hospital['護士'] })}
-                  {workerInfoRender({ label: '助產士', value: hospital['助產士'] })}
-                  {workerInfoRender({ label: '助產師', value: hospital['助產師'] })}
-                  {workerInfoRender({ label: '醫事檢驗師', value: hospital['醫事檢驗師'] })}
-                  {workerInfoRender({ label: '醫事檢驗生', value: hospital['醫事檢驗生'] })}
-                  {workerInfoRender({ label: '物理治療師', value: hospital['物理治療師'] })}
-                  {workerInfoRender({ label: '職能治療師', value: hospital['職能治療師'] })}
-                  {workerInfoRender({ label: '醫事放射師', value: hospital['醫事放射師'] })}
-                  {workerInfoRender({ label: '醫事放射士', value: hospital['醫事放射士'] })}
-                  {workerInfoRender({ label: '物理治療生', value: hospital['物理治療生'] })}
-                  {workerInfoRender({ label: '職能治療生', value: hospital['職能治療生'] })}
-                  {workerInfoRender({ label: '呼吸治療師', value: hospital['呼吸治療師'] })}
-                  {workerInfoRender({ label: '諮商心理師', value: hospital['諮商心理師'] })}
-                  {workerInfoRender({ label: '臨床心理師', value: hospital['臨床心理師'] })}
-                  {workerInfoRender({ label: '營養師', value: hospital['營養師'] })}
+                  {Object.keys(HospitalExtraFieldType).map((key) => {
+                    const label = HospitalExtraFieldType[key as keyof typeof HospitalExtraFieldType]; // Get the label from the enum
+                    const value = hospital[label]; // Get the value from hospital
+
+                    return (
+                      !!value && (
+                        <li key={label}>
+                          <label>
+                            {label}: {value}位
+                          </label>
+                        </li>
+                      )
+                    );
+                  })}
                 </ul>
               </>
             </Card>

@@ -14,7 +14,7 @@ import {
   StringSchema,
 } from 'yup';
 
-import { DepartmentsType } from '@/domains/hospital';
+import { DepartmentsType, HospitalExtraFieldType } from '@/domains/hospital';
 import { CountyType, districtOptions, DistrictOptionsProps, DistrictType, GenderType } from '@/domains/interfaces';
 
 interface RulesProps {
@@ -41,33 +41,33 @@ interface RulesProps {
   content: StringSchema<string, AnyObject>;
   keywords: ArraySchema<string[], AnyObject, '', ''>;
   featuredImg: StringSchema<string, AnyObject>;
-  ['語言治療師']: NumberSchema<number, AnyObject>;
-  ['牙體技術師']: NumberSchema<number, AnyObject>;
-  ['聽力師']: NumberSchema<number, AnyObject>;
-  ['牙體技術士']: NumberSchema<number, AnyObject>;
-  ['驗光師']: NumberSchema<number, AnyObject>;
-  ['驗光生']: NumberSchema<number, AnyObject>;
-  ['醫師']: NumberSchema<number, AnyObject>;
-  ['中醫師']: NumberSchema<number, AnyObject>;
-  ['牙醫師']: NumberSchema<number, AnyObject>;
-  ['藥師']: NumberSchema<number, AnyObject>;
-  ['藥劑生']: NumberSchema<number, AnyObject>;
-  ['護理師']: NumberSchema<number, AnyObject>;
-  ['護士']: NumberSchema<number, AnyObject>;
-  ['助產士']: NumberSchema<number, AnyObject>;
-  ['助產師']: NumberSchema<number, AnyObject>;
-  ['醫事檢驗師']: NumberSchema<number, AnyObject>;
-  ['醫事檢驗生']: NumberSchema<number, AnyObject>;
-  ['物理治療師']: NumberSchema<number, AnyObject>;
-  ['職能治療師']: NumberSchema<number, AnyObject>;
-  ['醫事放射師']: NumberSchema<number, AnyObject>;
-  ['醫事放射士']: NumberSchema<number, AnyObject>;
-  ['物理治療生']: NumberSchema<number, AnyObject>;
-  ['職能治療生']: NumberSchema<number, AnyObject>;
-  ['呼吸治療師']: NumberSchema<number, AnyObject>;
-  ['諮商心理師']: NumberSchema<number, AnyObject>;
-  ['臨床心理師']: NumberSchema<number, AnyObject>;
-  ['營養師']: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.SpeechTherapist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.DentalTechnician]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.Audiologist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.DentalTechnicianAssistant]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.Optometrist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.OptometricAssistant]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.Physician]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.ChineseMedicineDoctor]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.Dentist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.Pharmacist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.PharmacyAssistant]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.RegisteredNurse]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.Nurse]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.Midwife]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.MidwiferyAssistant]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.MedicalLaboratoryTechnologist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.MedicalLaboratoryAssistant]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.PhysicalTherapist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.OccupationalTherapist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.RadiologicTechnologist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.RadiologicAssistant]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.PhysicalTherapyAssistant]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.OccupationalTherapyAssistant]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.RespiratoryTherapist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.CounselingPsychologist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.ClinicalPsychologist]: NumberSchema<number, AnyObject>;
+  [HospitalExtraFieldType.Dietitian]: NumberSchema<number, AnyObject>;
 }
 
 const rules: RulesProps = {
@@ -106,33 +106,33 @@ const rules: RulesProps = {
   content: string().required(),
   keywords: array().of(string().required()).required(),
   featuredImg: string().url('無效的圖片網址格式').required(),
-  ['語言治療師']: number().required(),
-  ['牙體技術師']: number().required(),
-  ['聽力師']: number().required(),
-  ['牙體技術士']: number().required(),
-  ['驗光師']: number().required(),
-  ['驗光生']: number().required(),
-  ['醫師']: number().required(),
-  ['中醫師']: number().required(),
-  ['牙醫師']: number().required(),
-  ['藥師']: number().required(),
-  ['藥劑生']: number().required(),
-  ['護理師']: number().required(),
-  ['護士']: number().required(),
-  ['助產士']: number().required(),
-  ['助產師']: number().required(),
-  ['醫事檢驗師']: number().required(),
-  ['醫事檢驗生']: number().required(),
-  ['物理治療師']: number().required(),
-  ['職能治療師']: number().required(),
-  ['醫事放射師']: number().required(),
-  ['醫事放射士']: number().required(),
-  ['物理治療生']: number().required(),
-  ['職能治療生']: number().required(),
-  ['呼吸治療師']: number().required(),
-  ['諮商心理師']: number().required(),
-  ['臨床心理師']: number().required(),
-  ['營養師']: number().required(),
+  [HospitalExtraFieldType.SpeechTherapist]: number().required(),
+  [HospitalExtraFieldType.DentalTechnician]: number().required(),
+  [HospitalExtraFieldType.Audiologist]: number().required(),
+  [HospitalExtraFieldType.DentalTechnicianAssistant]: number().required(),
+  [HospitalExtraFieldType.Optometrist]: number().required(),
+  [HospitalExtraFieldType.OptometricAssistant]: number().required(),
+  [HospitalExtraFieldType.Physician]: number().required(),
+  [HospitalExtraFieldType.ChineseMedicineDoctor]: number().required(),
+  [HospitalExtraFieldType.Dentist]: number().required(),
+  [HospitalExtraFieldType.Pharmacist]: number().required(),
+  [HospitalExtraFieldType.PharmacyAssistant]: number().required(),
+  [HospitalExtraFieldType.RegisteredNurse]: number().required(),
+  [HospitalExtraFieldType.Nurse]: number().required(),
+  [HospitalExtraFieldType.Midwife]: number().required(),
+  [HospitalExtraFieldType.MidwiferyAssistant]: number().required(),
+  [HospitalExtraFieldType.MedicalLaboratoryTechnologist]: number().required(),
+  [HospitalExtraFieldType.MedicalLaboratoryAssistant]: number().required(),
+  [HospitalExtraFieldType.PhysicalTherapist]: number().required(),
+  [HospitalExtraFieldType.OccupationalTherapist]: number().required(),
+  [HospitalExtraFieldType.RadiologicTechnologist]: number().required(),
+  [HospitalExtraFieldType.RadiologicAssistant]: number().required(),
+  [HospitalExtraFieldType.PhysicalTherapyAssistant]: number().required(),
+  [HospitalExtraFieldType.OccupationalTherapyAssistant]: number().required(),
+  [HospitalExtraFieldType.RespiratoryTherapist]: number().required(),
+  [HospitalExtraFieldType.CounselingPsychologist]: number().required(),
+  [HospitalExtraFieldType.ClinicalPsychologist]: number().required(),
+  [HospitalExtraFieldType.Dietitian]: number().required(),
 };
 
 export const registerValidationSchema = object({
@@ -166,31 +166,31 @@ export const hospitalValidationSchema = object({
   content: rules.content,
   keywords: rules.keywords,
   featuredImg: rules.featuredImg,
-  ['語言治療師']: rules['語言治療師'],
-  ['牙體技術師']: rules['牙體技術師'],
-  ['聽力師']: rules['聽力師'],
-  ['牙體技術士']: rules['牙體技術士'],
-  ['驗光師']: rules['驗光師'],
-  ['驗光生']: rules['驗光生'],
-  ['醫師']: rules['醫師'],
-  ['中醫師']: rules['中醫師'],
-  ['牙醫師']: rules['牙醫師'],
-  ['藥師']: rules['藥師'],
-  ['藥劑生']: rules['藥劑生'],
-  ['護理師']: rules['護理師'],
-  ['護士']: rules['護士'],
-  ['助產士']: rules['助產士'],
-  ['助產師']: rules['助產師'],
-  ['醫事檢驗師']: rules['醫事檢驗師'],
-  ['醫事檢驗生']: rules['醫事檢驗生'],
-  ['物理治療師']: rules['物理治療師'],
-  ['職能治療師']: rules['職能治療師'],
-  ['醫事放射師']: rules['醫事放射師'],
-  ['醫事放射士']: rules['醫事放射士'],
-  ['物理治療生']: rules['物理治療生'],
-  ['職能治療生']: rules['職能治療生'],
-  ['呼吸治療師']: rules['呼吸治療師'],
-  ['諮商心理師']: rules['諮商心理師'],
-  ['臨床心理師']: rules['臨床心理師'],
-  ['營養師']: rules['營養師'],
+  [HospitalExtraFieldType.SpeechTherapist]: rules[HospitalExtraFieldType.SpeechTherapist],
+  [HospitalExtraFieldType.DentalTechnician]: rules[HospitalExtraFieldType.DentalTechnician],
+  [HospitalExtraFieldType.Audiologist]: rules[HospitalExtraFieldType.Audiologist],
+  [HospitalExtraFieldType.DentalTechnicianAssistant]: rules[HospitalExtraFieldType.DentalTechnicianAssistant],
+  [HospitalExtraFieldType.Optometrist]: rules[HospitalExtraFieldType.Optometrist],
+  [HospitalExtraFieldType.OptometricAssistant]: rules[HospitalExtraFieldType.OptometricAssistant],
+  [HospitalExtraFieldType.Physician]: rules[HospitalExtraFieldType.Physician],
+  [HospitalExtraFieldType.ChineseMedicineDoctor]: rules[HospitalExtraFieldType.ChineseMedicineDoctor],
+  [HospitalExtraFieldType.Dentist]: rules[HospitalExtraFieldType.Dentist],
+  [HospitalExtraFieldType.Pharmacist]: rules[HospitalExtraFieldType.Pharmacist],
+  [HospitalExtraFieldType.PharmacyAssistant]: rules[HospitalExtraFieldType.PharmacyAssistant],
+  [HospitalExtraFieldType.RegisteredNurse]: rules[HospitalExtraFieldType.RegisteredNurse],
+  [HospitalExtraFieldType.Nurse]: rules[HospitalExtraFieldType.Nurse],
+  [HospitalExtraFieldType.Midwife]: rules[HospitalExtraFieldType.Midwife],
+  [HospitalExtraFieldType.MidwiferyAssistant]: rules[HospitalExtraFieldType.MidwiferyAssistant],
+  [HospitalExtraFieldType.MedicalLaboratoryTechnologist]: rules[HospitalExtraFieldType.MedicalLaboratoryTechnologist],
+  [HospitalExtraFieldType.MedicalLaboratoryAssistant]: rules[HospitalExtraFieldType.MedicalLaboratoryAssistant],
+  [HospitalExtraFieldType.PhysicalTherapist]: rules[HospitalExtraFieldType.PhysicalTherapist],
+  [HospitalExtraFieldType.OccupationalTherapist]: rules[HospitalExtraFieldType.OccupationalTherapist],
+  [HospitalExtraFieldType.RadiologicTechnologist]: rules[HospitalExtraFieldType.RadiologicTechnologist],
+  [HospitalExtraFieldType.RadiologicAssistant]: rules[HospitalExtraFieldType.RadiologicAssistant],
+  [HospitalExtraFieldType.PhysicalTherapyAssistant]: rules[HospitalExtraFieldType.PhysicalTherapyAssistant],
+  [HospitalExtraFieldType.OccupationalTherapyAssistant]: rules[HospitalExtraFieldType.OccupationalTherapyAssistant],
+  [HospitalExtraFieldType.RespiratoryTherapist]: rules[HospitalExtraFieldType.RespiratoryTherapist],
+  [HospitalExtraFieldType.CounselingPsychologist]: rules[HospitalExtraFieldType.CounselingPsychologist],
+  [HospitalExtraFieldType.ClinicalPsychologist]: rules[HospitalExtraFieldType.ClinicalPsychologist],
+  [HospitalExtraFieldType.Dietitian]: rules[HospitalExtraFieldType.Dietitian],
 });
