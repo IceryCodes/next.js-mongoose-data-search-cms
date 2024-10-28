@@ -32,7 +32,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid email or password' });
     }
 
-    const token = generateToken(user._id.toString()); // Use _id in the token
+    const token = await generateToken({ _id: user._id.toString(), role: user.role }); // Use _id and role in the token
     res.status(HttpStatus.Ok).json({
       token,
       user: {

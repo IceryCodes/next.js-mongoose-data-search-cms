@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { getPageUrlByType, PageType, UserRoleType } from '@/domains/interfaces';
 
-const useAdminProtectedRoute = () => {
+const useAdminProtected = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const router = useRouter();
 
@@ -13,4 +13,4 @@ const useAdminProtectedRoute = () => {
   }
 };
 
-export default useAdminProtectedRoute;
+export default useAdminProtected;

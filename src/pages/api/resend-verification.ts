@@ -23,7 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserResendVerif
 
     if (user.isVerified) return res.status(HttpStatus.BadRequest).json({ message: '已通過驗證!' });
 
-    const verificationToken: string = generateToken(_id);
+    const verificationToken: string = await generateToken({ _id, role: user.role });
     const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}`;
 
     await sendEmail({

@@ -1,22 +1,45 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose';
+
+import { UserRoleType } from '@/domains/interfaces';
 
 const JWT_SECRET = process.env.NEXT_PRIVATE_JWT_SECRET;
 
-export const generateToken = (userId: string): string => jwt.sign({ _id: userId }, JWT_SECRET, { expiresIn: '1h' });
+export interface TokenProps {
+  _id: string;
+  role: UserRoleType;
+}
 
-export const verifyToken = (token: string): string => {
+export const generateToken = async ({ _id, role }: TokenProps): Promise<string> => {
+  if (!JWT_SECRET) throw new Error('JWT secret is missing');
+
+  // Convert secret to Uint8Array
+  const secretKey = new TextEncoder().encode(JWT_SECRET);
+
+  // Sign the token using SignJWT from jose
+  const token = await new SignJWT({ _id, role })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('1h')
+    .sign(secretKey);
+
+  return token;
+};
+
+export const verifyToken = async (token: string): Promise<TokenProps> => {
+  if (!JWT_SECRET) throw new Error('JWT secret is missing');
+
+  // Convert secret to Uint8Array
+  const secretKey = new TextEncoder().encode(JWT_SECRET);
   try {
-    // Verify the token and cast the result to JwtPayload
-    const decoded: JwtPayload = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const { payload } = await jwtVerify(token, secretKey); // Use the Uint8Array key
 
-    // Check if _id exists in decoded token
-    if (typeof decoded._id !== 'string') {
+    // Validate structure of decoded payload
+    if (typeof payload._id !== 'string' || typeof payload.role !== 'number') {
       throw new Error('Invalid token payload');
     }
 
-    return decoded._id; // Return user ID
+    return { _id: payload._id, role: payload.role };
   } catch (error) {
-    console.error('Invalid token', error);
+    console.error('Invalid token:', error);
     throw new Error('Invalid token');
   }
 };

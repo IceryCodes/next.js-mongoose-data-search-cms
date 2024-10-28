@@ -42,7 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
     const result: InsertOneResult<Omit<UserWithPasswordProps, '_id'>> = await usersCollection.insertOne(newUser);
     const userId: ObjectId = result.insertedId; // Get the generated ObjectId
 
-    const verificationToken: string = generateToken(userId.toString());
+    const verificationToken: string = await generateToken({ _id: userId.toString(), role: UserRoleType.None });
     const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}`;
     await sendEmail({
       to: email,

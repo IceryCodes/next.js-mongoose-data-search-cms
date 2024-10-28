@@ -1,15 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { HttpStatus } from '@/utils/api';
-import { generateToken, verifyToken } from '@/utils/token';
+import { generateToken, TokenProps, verifyToken } from '@/utils/token';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const token = req.headers.authorization?.split(' ')[1]; // Get token from headers
 
     if (token) {
-      const userId: string = verifyToken(token);
-      const newToken = generateToken(userId.toString());
+      const { _id, role }: TokenProps = await verifyToken(token);
+      const newToken: string = await generateToken({ _id: _id.toString(), role });
       return res.status(HttpStatus.Ok).json({ token: newToken });
     }
 

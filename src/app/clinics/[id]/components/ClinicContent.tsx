@@ -12,6 +12,7 @@ import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
 import { HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
+import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
 
@@ -95,7 +96,9 @@ const ClinicContent = (): ReactElement => {
             <Breadcrumb pageName={title} />
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-              <ManageHospitalContent hospital={hospital} refetch={refetch} />
+              <AdminProtected>
+                <ManageHospitalContent hospital={hospital} refetch={refetch} />
+              </AdminProtected>
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}
             </div>

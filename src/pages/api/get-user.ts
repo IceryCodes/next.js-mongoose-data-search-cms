@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getUsersCollection } from '@/lib/mongodb';
 import { GetUserReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import { verifyToken } from '@/utils/token';
+import { TokenProps, verifyToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnType>) => {
   if (req.method !== 'GET') {
@@ -19,11 +19,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
   }
 
   try {
-    const userId: string = verifyToken(token);
+    const { _id }: TokenProps = await verifyToken(token);
     const usersCollection = await getUsersCollection();
 
     // Find the user by ID
-    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+    const user = await usersCollection.findOne({ _id: new ObjectId(_id) });
 
     if (!user) {
       console.error('User not found');

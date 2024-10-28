@@ -5,7 +5,7 @@ import { UserWithPasswordProps } from '@/domains/user';
 import { getUsersCollection } from '@/lib/mongodb';
 import { UserVerifyReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import { verifyToken } from '@/utils/token';
+import { TokenProps, verifyToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<UserVerifyReturnType>) => {
   const { token } = req.query;
@@ -13,11 +13,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserVerifyRetur
   if (typeof token !== 'string') return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
 
   try {
-    const userId: string = verifyToken(token);
+    const { _id }: TokenProps = await verifyToken(token);
 
     const usersCollection = await getUsersCollection();
     const result: UpdateResult<Omit<UserWithPasswordProps, '_id'>> = await usersCollection.updateOne(
-      { _id: new ObjectId(userId) },
+      { _id: new ObjectId(_id) },
       { $set: { isVerified: true } }
     );
 
