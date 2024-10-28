@@ -5,11 +5,20 @@ import { HospitalProps } from '@/domains/hospital';
 import { getHospitalsCollection } from '@/lib/mongodb';
 import { UpdateHospitalReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import { isAdminToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalReturnType>) => {
   if (req.method !== 'PATCH') {
     res.setHeader('Allow', ['PATCH']);
     return res.status(HttpStatus.MethodNotAllowed).json({ message: `Method ${req.method} not allowed` });
+  }
+
+  try {
+    const isAdmin = await isAdminToken(req.headers.authorization);
+    if (!isAdmin) return res.status(HttpStatus.Forbidden).json({ message: 'Insufficient permissions' });
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
   }
 
   // Create an array of keys from HospitalProps
@@ -20,7 +29,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalR
   }
 
   if (typeof req.body._id !== 'string' || !ObjectId.isValid(req.body._id))
-    return res.status(HttpStatus.BadRequest).json({ message: '搜尋醫院失敗!' });
+    return res.status(HttpStatus.BadRequest).json({ message: '更新醫院失敗!' });
 
   try {
     const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
@@ -31,6 +40,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalR
 
     const updateData: Partial<HospitalProps> = {
       ...req.body,
+      createdAt: new Date(req.body.createdAt),
       updatedAt: new Date(),
     };
 

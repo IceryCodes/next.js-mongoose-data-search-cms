@@ -60,7 +60,7 @@ export const updateHospital = async (hospital: UpdateHospitalDto): Promise<Updat
       message: data.message,
     };
   } catch (error) {
-    const message: string = '搜尋醫院失敗!';
+    const message: string = '更新醫院失敗!';
     logApiError({ error, message });
 
     return {

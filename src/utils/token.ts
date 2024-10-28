@@ -40,6 +40,23 @@ export const verifyToken = async (token: string): Promise<TokenProps> => {
     return { _id: payload._id, role: payload.role };
   } catch (error) {
     console.error('Invalid token:', error);
-    throw new Error('Invalid token');
+    return { _id: '', role: 0 };
+  }
+};
+
+export const isAdminToken = async (authHeader: string | undefined): Promise<boolean> => {
+  if (!JWT_SECRET) throw new Error('JWT secret is missing');
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return false;
+
+  const token = authHeader.split(' ')[1]; // Extract the token from the header
+
+  try {
+    const { role } = await verifyToken(token);
+
+    return role === UserRoleType.Admin;
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return false;
   }
 };
