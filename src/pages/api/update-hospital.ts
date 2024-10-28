@@ -5,12 +5,23 @@ import { HospitalProps } from '@/domains/hospital';
 import { getHospitalsCollection } from '@/lib/mongodb';
 import { UpdateHospitalReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import { isAdminToken } from '@/utils/token';
+import { isAdminToken, isExpiredToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalReturnType>) => {
   if (req.method !== 'PATCH') {
     res.setHeader('Allow', ['PATCH']);
     return res.status(HttpStatus.MethodNotAllowed).json({ message: `Method ${req.method} not allowed` });
+  }
+
+  // renew token
+  if (req.headers.authorization) {
+    try {
+      const isExpired = await isExpiredToken(req.headers.authorization);
+      if (isExpired) return res.status(HttpStatus.Unauthorized).json({ message: 'Token expired' });
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
+    }
   }
 
   try {

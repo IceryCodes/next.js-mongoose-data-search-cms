@@ -94,19 +94,23 @@ apiOrigin.interceptors.response.use(
     originalRequest.retryAttempt = true; // Mark retry to avoid infinite loops
 
     try {
+      const token: string | null = sessionStorage.getItem('token');
+      // Ensure headers are initialized
+      const renewConfig = {
+        headers: {
+          Authorization: `Bearer ${token}`, // Send current token for authorization
+        },
+      };
+
       // Token renewal logic - assuming `/api/renew-token` is your renewal API
-      const renewResponse = await axios.post('/api/renew-token');
+      const renewResponse = await axios.post('/api/renew-token', {}, renewConfig);
       const newToken = renewResponse.data.token;
 
       // Store the new token in sessionStorage only in the browser
-      if (isBrowser) {
-        sessionStorage.setItem('token', newToken);
-      }
+      if (isBrowser) sessionStorage.setItem('token', newToken);
 
       // Ensure headers are initialized
-      if (!originalRequest.headers) {
-        originalRequest.headers = {} as AxiosHeaders; // Initialize headers if undefined
-      }
+      if (!originalRequest.headers) originalRequest.headers = {} as AxiosHeaders; // Initialize headers if undefined
 
       // Update original request's Authorization header with the new token
       originalRequest.headers.Authorization = `Bearer ${newToken}`;

@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose';
+import { JWTExpired } from 'jose/errors';
 
 import { UserRoleType } from '@/domains/interfaces';
 
@@ -39,8 +40,12 @@ export const verifyToken = async (token: string): Promise<TokenProps> => {
 
     return { _id: payload._id, role: payload.role };
   } catch (error) {
-    console.error('Invalid token:', error);
-    return { _id: '', role: 0 };
+    if (error instanceof JWTExpired) {
+      console.warn('Token verification failed: Token has expired');
+    } else {
+      console.warn('Token verification failed:', error);
+    }
+    throw error;
   }
 };
 
@@ -58,5 +63,25 @@ export const isAdminToken = async (authHeader: string | undefined): Promise<bool
   } catch (error) {
     console.error('Token verification failed:', error);
     return false;
+  }
+};
+
+export const isExpiredToken = async (authHeader: string | undefined): Promise<boolean> => {
+  if (!JWT_SECRET) throw new Error('JWT secret is missing');
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return true; // If no token, consider it expired
+
+  const token = authHeader.split(' ')[1]; // Extract the token from the header
+
+  try {
+    await verifyToken(token); // Try verifying the token
+    return false; // If no error, the token is valid (not expired)
+  } catch (error) {
+    if (error instanceof JWTExpired) {
+      return true; // If the error is a JWTExpired, then it's expired
+    }
+    // For other errors, you may choose to handle them differently or just return true
+    console.warn('Error verifying token:', error);
+    return true; // Treat other errors as expired or invalid
   }
 };
