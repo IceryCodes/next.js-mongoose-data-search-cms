@@ -10,7 +10,7 @@ import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
-import { HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
+import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
@@ -142,6 +142,11 @@ const ClinicContent = (): ReactElement => {
 
             <Card>
               <>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {departments.map((department: DepartmentsType) => (
+                    <Tag key={department} text={department} />
+                  ))}
+                </div>
                 {doctors && <h3 className="text-xl font-bold">本院醫生: {doctors.join(', ')}</h3>}
                 <ul className="list-disc ml-5 grid grid-cols-1 md:grid-cols-3">
                   {Object.keys(HospitalExtraFieldType).map((key) => {

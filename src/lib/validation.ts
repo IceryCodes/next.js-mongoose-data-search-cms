@@ -70,6 +70,9 @@ interface RulesProps {
   [HospitalExtraFieldType.CounselingPsychologist]: NumberSchema<number, AnyObject>;
   [HospitalExtraFieldType.ClinicalPsychologist]: NumberSchema<number, AnyObject>;
   [HospitalExtraFieldType.Dietitian]: NumberSchema<number, AnyObject>;
+
+  // pharmacy
+  healthInsuranceAuthorized: BooleanSchema<boolean, AnyObject>;
 }
 
 const rules: RulesProps = {
@@ -168,6 +171,9 @@ const rules: RulesProps = {
   [HospitalExtraFieldType.CounselingPsychologist]: number().required(),
   [HospitalExtraFieldType.ClinicalPsychologist]: number().required(),
   [HospitalExtraFieldType.Dietitian]: number().required(),
+
+  // pharmacy
+  healthInsuranceAuthorized: boolean().required('必須選擇是否為健保特約藥局'),
 };
 
 export const registerValidationSchema = object({
@@ -228,4 +234,24 @@ export const hospitalValidationSchema = object({
   [HospitalExtraFieldType.CounselingPsychologist]: rules[HospitalExtraFieldType.CounselingPsychologist],
   [HospitalExtraFieldType.ClinicalPsychologist]: rules[HospitalExtraFieldType.ClinicalPsychologist],
   [HospitalExtraFieldType.Dietitian]: rules[HospitalExtraFieldType.Dietitian],
+});
+
+export const pharmacyValidationSchema = object({
+  partner: rules.partner,
+  orgCode: rules.orgCode,
+  owner: rules.owner,
+  gender: rules.genderOptional,
+  doctors: rules.doctors,
+  websiteUrl: rules.websiteUrl,
+  email: rules.emailOptional,
+  phone: rules.phone,
+  county: rules.county,
+  district: rules.district,
+  address: rules.address,
+  title: rules.title,
+  excerpt: rules.excerpt,
+  content: rules.content,
+  keywords: rules.keywords,
+  featuredImg: rules.featuredImg,
+  healthInsuranceAuthorized: rules.healthInsuranceAuthorized,
 });

@@ -10,7 +10,7 @@ import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
 import SidebarLayout from '@/app/hospitals/[id]/components/SidebarLayout';
-import { HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
+import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
@@ -142,7 +142,12 @@ const HospitalContent = (): ReactElement => {
 
             <Card>
               <>
-                {doctors && <h3 className="text-xl font-bold">本院醫生: {doctors.join(', ')}</h3>}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {departments.map((department: DepartmentsType) => (
+                    <Tag key={department} text={department} />
+                  ))}
+                </div>
+                {doctors && <h3 className="text-xl font-bold">本院醫生: {doctors && doctors.join(', ')}</h3>}
                 <ul className="list-disc ml-5 grid grid-cols-1 md:grid-cols-3">
                   {Object.keys(HospitalExtraFieldType).map((key) => {
                     const label = HospitalExtraFieldType[key as keyof typeof HospitalExtraFieldType]; // Get the label from the enum

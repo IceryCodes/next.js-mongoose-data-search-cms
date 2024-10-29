@@ -52,6 +52,7 @@ export const getHospitals = async ({
     };
   }
 };
+
 export const updateHospital = async (hospital: UpdateHospitalDto): Promise<UpdateHospitalReturnType> => {
   try {
     const { data } = await apiOrigin.patch(`/update-hospital`, hospital);

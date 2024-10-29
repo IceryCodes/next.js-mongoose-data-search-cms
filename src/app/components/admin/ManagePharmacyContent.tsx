@@ -6,24 +6,23 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useToast } from '@/contexts/ToastContext';
-import { DepartmentsType, HospitalProps, UpdateHospitalProps } from '@/domains/hospital';
 import { CountyType, districtOptions, DistrictType, GenderType } from '@/domains/interfaces';
-import { useHospitalMutation } from '@/features/hospitals/hooks/useHospitalMutation';
-import { useEnum } from '@/hooks/utils/useEnum';
-import { hospitalValidationSchema } from '@/lib/validation';
+import { PharmacyProps, UpdatePharmacyProps } from '@/domains/pharmacy';
+import { usePharmacyMutation } from '@/features/pharmacies/hooks/usePharmacyMutation';
+import { pharmacyValidationSchema } from '@/lib/validation';
 
 import { Button, defaultButtonStyle } from '../buttons/Button';
 import FieldErrorlabel from '../FieldErrorlabel';
 import Popup from '../Popup';
 
-interface ManageHospitalContentProps {
-  hospital: HospitalProps;
+interface ManagePharmacyContentProps {
+  pharmacy: PharmacyProps;
   refetch: () => void;
 }
 
 interface FormFieldProps {
   titleText: string;
-  fieldName: keyof UpdateHospitalProps;
+  fieldName: keyof UpdatePharmacyProps;
   placeholder: string;
   col: number;
   type?: string;
@@ -31,13 +30,11 @@ interface FormFieldProps {
 
 const inputStyle: string = 'w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400';
 
-const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps) => {
-  const { hospitalExtraFieldMap } = useEnum();
-  const { isLoading, mutateAsync } = useHospitalMutation({ onSuccess: refetch });
+const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps) => {
+  const { isLoading, mutateAsync } = usePharmacyMutation({ onSuccess: refetch });
   const { showToast } = useToast();
 
   const [display, setDisplay] = useState<boolean>(false);
-  const [expand, setExpand] = useState<boolean>(false);
 
   const {
     control,
@@ -45,9 +42,9 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
     reset,
     watch,
     formState: { isDirty, errors },
-  } = useForm<UpdateHospitalProps>({
-    resolver: yupResolver(hospitalValidationSchema),
-    defaultValues: hospital,
+  } = useForm<UpdatePharmacyProps>({
+    resolver: yupResolver(pharmacyValidationSchema),
+    defaultValues: pharmacy,
   });
 
   const messageArray = useMemo((): string[] => {
@@ -84,10 +81,10 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
   );
 
   const onSubmit = useCallback(
-    async (data: UpdateHospitalProps) => {
+    async (data: UpdatePharmacyProps) => {
       try {
         const result = await mutateAsync({
-          _id: hospital._id,
+          _id: pharmacy._id,
           ...data,
           address: data.address.replaceAll(data.county, '').replaceAll(data.district, ''),
         });
@@ -101,12 +98,12 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
         console.error('Update error:', error);
       }
     },
-    [hospital._id, mutateAsync, reset, showToast]
+    [pharmacy._id, mutateAsync, reset, showToast]
   );
 
   const form = useMemo(
     (): ReactElement => (
-      <Popup title="編輯醫院" display={display} onClose={() => setDisplay(false)}>
+      <Popup title="編輯藥局" display={display} onClose={() => setDisplay(false)}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-6 gap-4 w-[500px]">
           <div className="flex flex-col col-span-3 justify-center">
             {messageArray.length > 0 &&
@@ -125,7 +122,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
           {formField({
             titleText: '標題',
             fieldName: 'title',
-            placeholder: '醫療機構',
+            placeholder: '藥局',
             col: 6,
           })}
 
@@ -288,37 +285,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
           })}
 
           <div className="flex flex-col col-span-6">
-            <label>科別</label>
-            <Controller
-              name="departments"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <div className="grid grid-cols-3 gap-2">
-                  {Object.values(DepartmentsType).map((department) => (
-                    <label key={department} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        value={department}
-                        checked={value?.includes(department)}
-                        onChange={(e) => {
-                          const isChecked = e.target.checked;
-                          const updatedDepartments = isChecked
-                            ? [...(value || []), department]
-                            : value?.filter((d) => d !== department) || [];
-                          onChange(updatedDepartments);
-                        }}
-                        className="mr-2"
-                      />
-                      {department}
-                    </label>
-                  ))}
-                </div>
-              )}
-            />
-          </div>
-
-          <div className="flex flex-col col-span-6">
-            <label>醫院醫生</label>
+            <label>藥局醫生</label>
             <Controller
               name="doctors"
               control={control}
@@ -331,7 +298,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
                     onChange={(event: ChangeEvent<HTMLInputElement>) =>
                       field.onChange(event.target.value ? event.target.value.split(',') : [])
                     }
-                    placeholder="醫院醫生 (多個用半形逗號分隔)"
+                    placeholder="藥局醫生 (多個用半形逗號分隔)"
                   />
                   <FieldErrorlabel error={error} />
                 </>
@@ -342,7 +309,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
           {formField({
             titleText: '簡述',
             fieldName: 'excerpt',
-            placeholder: '醫療機構的簡述',
+            placeholder: '藥局的簡述',
             col: 6,
           })}
           <div className="flex flex-col col-span-6">
@@ -352,7 +319,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <>
-                  <input className={inputStyle} type="text" {...field} placeholder="醫療機構的簡述" />
+                  <input className={inputStyle} type="text" {...field} placeholder="藥局的簡述" />
                   <FieldErrorlabel error={error} />
                 </>
               )}
@@ -366,54 +333,16 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <>
-                  <textarea className={`${inputStyle} h-40`} {...field} placeholder="醫療機構的詳細內容" />
+                  <textarea className={`${inputStyle} h-40`} {...field} placeholder="藥局的詳細內容" />
                   <FieldErrorlabel error={error} />
                 </>
               )}
             />
           </div>
-          <div className="col-span-6">
-            <Button type="button" text="詳細內容" onClick={() => setExpand(!expand)} />
-          </div>
-
-          {expand &&
-            Object.entries(hospitalExtraFieldMap).map(([label]) => (
-              <div key={label} className="flex flex-col col-span-2">
-                <label>{label}</label>
-                <Controller
-                  name={label as keyof UpdateHospitalProps}
-                  control={control}
-                  render={({ field: { value, onChange }, fieldState: { error } }) => (
-                    <>
-                      <input
-                        className={inputStyle}
-                        type="number"
-                        value={!isNaN(Number(value)) ? Number(value) : 0}
-                        onChange={(e) => onChange(Number(e.target.value))}
-                        placeholder={`輸入${label}人數`}
-                      />
-                      <FieldErrorlabel error={error} />
-                    </>
-                  )}
-                />
-              </div>
-            ))}
         </form>
       </Popup>
     ),
-    [
-      display,
-      handleSubmit,
-      onSubmit,
-      messageArray,
-      isLoading,
-      isDirty,
-      formField,
-      control,
-      expand,
-      hospitalExtraFieldMap,
-      county,
-    ]
+    [display, handleSubmit, onSubmit, messageArray, isLoading, isDirty, formField, control, county]
   );
 
   const onClick = () => setDisplay(true);
@@ -436,4 +365,4 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
   );
 };
 
-export default ManageHospitalContent;
+export default ManagePharmacyContent;
