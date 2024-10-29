@@ -212,7 +212,7 @@ export default [
       'react/require-default-props': 'off',
       'react/prop-types': 'off',
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'off',
+      'react-hooks/exhaustive-deps': 'error',
       'react/react-in-jsx-scope': 'off',
     },
   },

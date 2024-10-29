@@ -24,7 +24,7 @@ export const Button = ({
   className = '',
   onClick,
   disabled = false,
-  buttonStyle = ButtonStyleType.Blue,
+  buttonStyle = disabled ? ButtonStyleType.Gray : ButtonStyleType.Blue,
   ...restProps
 }: ButtonProps) => {
   const buttonClassName = useMemo((): string => {
@@ -36,7 +36,7 @@ export const Button = ({
       default:
         return '';
     }
-  }, []);
+  }, [buttonStyle]);
 
   return (
     <button

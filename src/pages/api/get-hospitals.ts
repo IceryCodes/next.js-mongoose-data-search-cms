@@ -5,8 +5,21 @@ import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/domains/
 import { getHospitalsCollection } from '@/lib/mongodb';
 import { GetHospitalsReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import { isExpiredToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsReturnType>) => {
+  // renew token
+  if (req.method !== 'GET') return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
+  if (req.headers.authorization) {
+    try {
+      const isExpired = await isExpiredToken(req.headers.authorization);
+      if (isExpired) return res.status(HttpStatus.Unauthorized).json({ message: 'Token expired' });
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
+    }
+  }
+
   const { query, county, departments, partner, category, page = '1', limit = '10' } = req.query;
 
   // Parse page and limit as integers

@@ -55,7 +55,7 @@ const VerifyBar = (): ReactElement => {
   useEffect(() => {
     if (!pathname?.includes(`${getPageUrlByType(PageType.VERIFY)}`))
       setVerifyBarDisplay(isAuthenticated && !user?.isVerified);
-  }, [isAuthenticated, user?.isVerified]);
+  }, [isAuthenticated, pathname, user?.isVerified]);
 
   return (
     <div

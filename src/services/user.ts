@@ -9,7 +9,7 @@ export const userQueryKeys = {
 
 export const getUser = async (token: string): Promise<GetUserReturnType> => {
   try {
-    const { data } = await apiOrigin.get('/user', {
+    const { data } = await apiOrigin.get('/get-user', {
       headers: { Authorization: `Bearer ${token}` },
     });
     return data;

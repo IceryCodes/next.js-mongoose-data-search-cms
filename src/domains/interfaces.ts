@@ -54,7 +54,9 @@ export enum CountyType {
   LianjiangCounty = '連江縣',
 }
 
-export const districtOptions = {
+export type DistrictOptionsProps = Record<CountyType, Record<string, string>>;
+
+export const districtOptions: DistrictOptionsProps = {
   [CountyType.TaipeiCity]: {
     中正區: '中正區',
     大同區: '大同區',
@@ -469,3 +471,8 @@ export const districtOptions = {
     東引鄉: '東引鄉',
   },
 };
+
+type CountyDistricts = typeof districtOptions;
+export type DistrictType = {
+  [K in keyof CountyDistricts]: keyof CountyDistricts[K];
+}[keyof CountyDistricts];

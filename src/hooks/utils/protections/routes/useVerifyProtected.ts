@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
 
-const useVerifyProtectedRoute = () => {
+const useVerifyProtected = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const router = useRouter();
 
@@ -13,4 +13,4 @@ const useVerifyProtectedRoute = () => {
   }
 };
 
-export default useVerifyProtectedRoute;
+export default useVerifyProtected;

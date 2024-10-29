@@ -7,7 +7,7 @@ import { Button } from '@/app/components/buttons/Button';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Pagination from '@/app/components/Pagination';
 import { CountyType, PageType } from '@/domains/interfaces';
-import { PharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
+import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';
 
 import PharmacyListItemCard from './PharmacyListItemCard';
@@ -15,7 +15,7 @@ import PharmacyListItemCard from './PharmacyListItemCard';
 const limit: number = 12;
 
 const PharmacyList = (): ReactElement => {
-  const { control, handleSubmit, getValues, reset } = useForm<PharmaciesDto>({
+  const { control, handleSubmit, getValues, reset } = useForm<GetPharmaciesDto>({
     defaultValues: {
       query: '',
       county: '',
@@ -44,11 +44,14 @@ const PharmacyList = (): ReactElement => {
 
   const onPageChange = useCallback((page: number) => setCurrentPage(page), []);
 
-  const onSubmit = useCallback((formData: PharmaciesDto) => {
-    refetch();
-    reset(formData);
-    setCurrentPage(1);
-  }, []);
+  const onSubmit = useCallback(
+    (formData: GetPharmaciesDto) => {
+      refetch();
+      reset(formData);
+      setCurrentPage(1);
+    },
+    [refetch, reset]
+  );
 
   return (
     <div className="container mx-auto flex flex-col gap-y-4">
@@ -86,8 +89,8 @@ const PharmacyList = (): ReactElement => {
               <div className="flex items-center">
                 <input
                   type="checkbox"
-                  value={value.toString()}
-                  onChange={(e) => onChange(e.target.checked.toString())}
+                  checked={value}
+                  onChange={(e) => onChange(e.target.checked)}
                   className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
                 <label className="text-sm">先豐科技合作夥伴</label>
@@ -102,8 +105,8 @@ const PharmacyList = (): ReactElement => {
               <div className="flex items-center">
                 <input
                   type="checkbox"
-                  value={value.toString()}
-                  onChange={(e) => onChange(e.target.checked.toString())}
+                  checked={value}
+                  onChange={(e) => onChange(e.target.checked)}
                   className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
                 <label className="text-sm">健保特約藥局</label>

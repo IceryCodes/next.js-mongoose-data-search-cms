@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { PharmacyDto } from '@/domains/pharmacy';
+import { GetPharmacyDto } from '@/domains/pharmacy';
 import { useQueryCallback } from '@/hooks/utils/useQueryCallback';
 import { GetPharmacyReturnType } from '@/services/interfaces';
 import { getPharmacy, pharmacyQueryKeys } from '@/services/pharmacy';
 import { QueryBaseProps, QueryBaseReturnType } from '@/utils/reactQuery';
 
-interface UsePharmacyQueryProps extends QueryBaseProps<GetPharmacyReturnType>, PharmacyDto {}
+interface UsePharmacyQueryProps extends QueryBaseProps<GetPharmacyReturnType>, GetPharmacyDto {}
 
 export const usePharmacyQuery = ({
   onSuccess,

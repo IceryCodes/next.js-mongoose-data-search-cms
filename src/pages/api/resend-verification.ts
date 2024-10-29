@@ -5,11 +5,21 @@ import { getUsersCollection } from '@/lib/mongodb';
 import { UserResendVerificationReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
 import sendEmail from '@/utils/sendEmail';
-import { generateToken } from '@/utils/token';
+import { generateToken, isExpiredToken } from '@/utils/token';
 import verificationEmailTemplate from '@/utils/verificationEmailTemplate';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<UserResendVerificationReturnType>) => {
+  // renew token
   if (req.method !== 'POST') return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
+  if (req.headers.authorization) {
+    try {
+      const isExpired = await isExpiredToken(req.headers.authorization);
+      if (isExpired) return res.status(HttpStatus.Unauthorized).json({ message: 'Token expired' });
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
+    }
+  }
 
   const { _id } = req.body;
 
@@ -23,7 +33,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserResendVerif
 
     if (user.isVerified) return res.status(HttpStatus.BadRequest).json({ message: '已通過驗證!' });
 
-    const verificationToken: string = generateToken(_id);
+    const verificationToken: string = await generateToken({ _id, role: user.role });
     const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}`;
 
     await sendEmail({

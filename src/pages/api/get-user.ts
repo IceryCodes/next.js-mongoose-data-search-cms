@@ -4,12 +4,19 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getUsersCollection } from '@/lib/mongodb';
 import { GetUserReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import { verifyToken } from '@/utils/token';
+import { isExpiredToken, TokenProps, verifyToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnType>) => {
-  if (req.method !== 'GET') {
-    console.error('Method not allowed');
-    return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
+  // renew token
+  if (req.method !== 'GET') return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
+  if (req.headers.authorization) {
+    try {
+      const isExpired = await isExpiredToken(req.headers.authorization);
+      if (isExpired) return res.status(HttpStatus.Unauthorized).json({ message: 'Token expired' });
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
+    }
   }
 
   const token = req.headers.authorization?.split(' ')[1];
@@ -19,11 +26,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
   }
 
   try {
-    const userId: string = verifyToken(token);
+    const { _id }: TokenProps = await verifyToken(token);
     const usersCollection = await getUsersCollection();
 
     // Find the user by ID
-    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+    const user = await usersCollection.findOne({ _id: new ObjectId(_id) });
 
     if (!user) {
       console.error('User not found');

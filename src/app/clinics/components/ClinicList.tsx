@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/app/components/buttons/Button';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Pagination from '@/app/components/Pagination';
-import { DepartmentsType, HospitalCategoryType, HospitalProps, HospitalsDto } from '@/domains/hospital';
+import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 
@@ -15,7 +15,7 @@ import ClinicListItemCard from './ClinicListItemCard';
 const limit: number = 12;
 
 const ClinicList = (): ReactElement => {
-  const { control, handleSubmit, getValues, reset } = useForm<HospitalsDto>({
+  const { control, handleSubmit, getValues, reset } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
       county: '',
@@ -45,11 +45,14 @@ const ClinicList = (): ReactElement => {
 
   const onPageChange = useCallback((page: number) => setCurrentPage(page), []);
 
-  const onSubmit = useCallback((formData: HospitalsDto) => {
-    refetch();
-    reset(formData);
-    setCurrentPage(1);
-  }, []);
+  const onSubmit = useCallback(
+    (formData: GetHospitalsDto) => {
+      refetch();
+      reset(formData);
+      setCurrentPage(1);
+    },
+    [refetch, reset]
+  );
 
   return (
     <div className="container mx-auto flex flex-col gap-y-4">
@@ -102,8 +105,8 @@ const ClinicList = (): ReactElement => {
               <div className="flex items-center">
                 <input
                   type="checkbox"
-                  value={value.toString()}
-                  onChange={(e) => onChange(e.target.checked.toString())}
+                  checked={value}
+                  onChange={(e) => onChange(e.target.checked)}
                   className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
                 <label className="text-sm">先豐科技合作夥伴</label>

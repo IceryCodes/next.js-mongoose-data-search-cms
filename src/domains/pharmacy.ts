@@ -1,12 +1,12 @@
 import { ObjectId } from 'mongodb';
 
-import { CountyType, GenderType } from '@/domains/interfaces';
+import { CountyType, DistrictType, GenderType } from '@/domains/interfaces';
 
-export interface PharmacyDto {
+export interface GetPharmacyDto {
   _id: string;
 }
 
-export interface PharmaciesDto {
+export interface GetPharmaciesDto {
   query: string;
   county: string;
   partner: boolean;
@@ -19,21 +19,24 @@ export interface PharmacyProps {
   _id: ObjectId;
   partner: boolean;
   orgCode: string;
-  owner: string;
-  gender: GenderType;
-  doctors: string[];
-  websiteUrl: string;
-  email: string;
-  phone: string;
+  owner?: string;
+  gender?: GenderType;
+  doctors?: string[];
+  websiteUrl?: string;
+  email?: string;
+  phone?: string;
   county: CountyType;
-  district: string;
+  district: DistrictType;
   address: string;
   title: string;
-  excerpt: string;
-  content: string;
-  keywords: string[];
-  featuredImg: string;
+  excerpt?: string;
+  content?: string;
+  keywords?: string[];
+  featuredImg?: string;
   healthInsuranceAuthorized: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type UpdatePharmacyProps = Omit<PharmacyProps, '_id' | 'createdAt' | 'updatedAt'>;
+export interface UpdatePharmacyDto extends UpdatePharmacyProps, Pick<PharmacyProps, '_id'> {}

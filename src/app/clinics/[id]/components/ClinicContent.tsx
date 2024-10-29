@@ -5,12 +5,14 @@ import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import SidebarLayout from '@/app/clinics/[id]/components/SidebarLayout';
+import ManageHospitalContent from '@/app/components/admin/ManageHospitalContent';
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
-import { HospitalProps } from '@/domains/hospital';
+import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
+import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
 
@@ -20,7 +22,7 @@ const ClinicContent = (): ReactElement => {
   const router = useRouter();
 
   const { composeGender } = useEnum();
-  const { data, isLoading, isError } = useHospitalQuery({ _id });
+  const { data, isLoading, isError, refetch } = useHospitalQuery({ _id });
   const hospital: HospitalProps | null | undefined = data?.hospital;
 
   const mainInfoRender = useCallback(
@@ -38,25 +40,8 @@ const ClinicContent = (): ReactElement => {
     []
   );
 
-  const workerInfoRender = useCallback(
-    ({ label, value }: { label: string; value: number }): ReactElement => (
-      <>
-        {!!value && (
-          <li>
-            <label>
-              {label}: {value}位
-            </label>
-          </li>
-        )}
-      </>
-    ),
-    []
-  );
-
   useEffect(() => {
-    if (!isLoading && !hospital && !isError) {
-      notFound();
-    }
+    if (!isLoading && !hospital && !isError) notFound();
   }, [isLoading, hospital, isError, router]);
 
   if (isLoading) {
@@ -111,6 +96,9 @@ const ClinicContent = (): ReactElement => {
             <Breadcrumb pageName={title} />
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <AdminProtected>
+                <ManageHospitalContent hospital={hospital} refetch={refetch} />
+              </AdminProtected>
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}
             </div>
@@ -119,24 +107,28 @@ const ClinicContent = (): ReactElement => {
               <>
                 <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
                 <ul className="list-disc ml-5">
-                  {owner && mainInfoRender({ label: '負責人', value: <span>{owner + composeGender(gender)}</span> })}
+                  {owner &&
+                    mainInfoRender({ label: '負責人', value: <span>{owner + (gender && composeGender(gender))}</span> })}
                   {mainInfoRender({ label: '機構代碼', value: <span>{orgCode}</span> })}
-                  {mainInfoRender({
-                    label: '聯絡電話',
-                    value: ConvertLink({ text: phone, type: LinkType.Phone }),
-                  })}
-                  {mainInfoRender({
-                    label: '聯絡信箱',
-                    value: ConvertLink({ text: email, type: LinkType.Email }),
-                  })}
+                  {phone &&
+                    mainInfoRender({
+                      label: '聯絡電話',
+                      value: ConvertLink({ text: phone, type: LinkType.Phone }),
+                    })}
+                  {email &&
+                    mainInfoRender({
+                      label: '聯絡信箱',
+                      value: ConvertLink({ text: email, type: LinkType.Email }),
+                    })}
                   {mainInfoRender({
                     label: '診所地址',
                     value: ConvertLink({ text: `${county}${district}${address}`, type: LinkType.Address }),
                   })}
-                  {mainInfoRender({
-                    label: '診所網站',
-                    value: ConvertLink({ text: websiteUrl, type: LinkType.Website }),
-                  })}
+                  {websiteUrl &&
+                    mainInfoRender({
+                      label: '診所網站',
+                      value: ConvertLink({ text: websiteUrl, type: LinkType.Website }),
+                    })}
                 </ul>
               </>
             </Card>
@@ -150,35 +142,27 @@ const ClinicContent = (): ReactElement => {
 
             <Card>
               <>
-                <h3 className="text-xl font-bold">本院醫生: {doctors.join(', ')}</h3>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {departments.map((department: DepartmentsType) => (
+                    <Tag key={department} text={department} />
+                  ))}
+                </div>
+                {doctors && <h3 className="text-xl font-bold">本院醫生: {doctors.join(', ')}</h3>}
                 <ul className="list-disc ml-5 grid grid-cols-1 md:grid-cols-3">
-                  {workerInfoRender({ label: '語言治療師', value: hospital['語言治療師'] })}
-                  {workerInfoRender({ label: '牙體技術師', value: hospital['牙體技術師'] })}
-                  {workerInfoRender({ label: '聽力師', value: hospital['聽力師'] })}
-                  {workerInfoRender({ label: '牙體技術士', value: hospital['牙體技術士'] })}
-                  {workerInfoRender({ label: '驗光師', value: hospital['驗光師'] })}
-                  {workerInfoRender({ label: '驗光生', value: hospital['驗光生'] })}
-                  {workerInfoRender({ label: '醫師', value: hospital['醫師'] })}
-                  {workerInfoRender({ label: '中醫師', value: hospital['中醫師'] })}
-                  {workerInfoRender({ label: '牙醫師', value: hospital['牙醫師'] })}
-                  {workerInfoRender({ label: '藥師', value: hospital['藥師'] })}
-                  {workerInfoRender({ label: '藥劑生', value: hospital['藥劑生'] })}
-                  {workerInfoRender({ label: '護理師', value: hospital['護理師'] })}
-                  {workerInfoRender({ label: '護士', value: hospital['護士'] })}
-                  {workerInfoRender({ label: '助產士', value: hospital['助產士'] })}
-                  {workerInfoRender({ label: '助產師', value: hospital['助產師'] })}
-                  {workerInfoRender({ label: '醫事檢驗師', value: hospital['醫事檢驗師'] })}
-                  {workerInfoRender({ label: '醫事檢驗生', value: hospital['醫事檢驗生'] })}
-                  {workerInfoRender({ label: '物理治療師', value: hospital['物理治療師'] })}
-                  {workerInfoRender({ label: '職能治療師', value: hospital['職能治療師'] })}
-                  {workerInfoRender({ label: '醫事放射師', value: hospital['醫事放射師'] })}
-                  {workerInfoRender({ label: '醫事放射士', value: hospital['醫事放射士'] })}
-                  {workerInfoRender({ label: '物理治療生', value: hospital['物理治療生'] })}
-                  {workerInfoRender({ label: '職能治療生', value: hospital['職能治療生'] })}
-                  {workerInfoRender({ label: '呼吸治療師', value: hospital['呼吸治療師'] })}
-                  {workerInfoRender({ label: '諮商心理師', value: hospital['諮商心理師'] })}
-                  {workerInfoRender({ label: '臨床心理師', value: hospital['臨床心理師'] })}
-                  {workerInfoRender({ label: '營養師', value: hospital['營養師'] })}
+                  {Object.keys(HospitalExtraFieldType).map((key) => {
+                    const label = HospitalExtraFieldType[key as keyof typeof HospitalExtraFieldType]; // Get the label from the enum
+                    const value = hospital[label]; // Get the value from hospital
+
+                    return (
+                      !!value && (
+                        <li key={label}>
+                          <label>
+                            {label}: {value}位
+                          </label>
+                        </li>
+                      )
+                    );
+                  })}
                 </ul>
               </>
             </Card>

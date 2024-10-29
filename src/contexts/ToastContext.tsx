@@ -17,7 +17,7 @@ const ToastContext = createContext<ToastContextProps | undefined>(undefined);
 const defaultToastInfo: ShowToastProps = { message: '' };
 
 export const ToastProvider = ({ children }: { children: ReactElement }): ReactElement => {
-  const [toast, setToast] = useState<{ message: string; duration?: number; toastStyle?: ToastStyleType }>(defaultToastInfo);
+  const [toast, setToast] = useState<ShowToastProps>(defaultToastInfo);
 
   const showToast = ({ message, duration = 3000, toastStyle = ToastStyleType.Normal }: ShowToastProps) => {
     setToast({ message, duration, toastStyle });

@@ -7,7 +7,7 @@ import { Button, ButtonStyleType } from '@/app/components/buttons/Button';
 import Card from '@/app/components/Card';
 import PharmacyListItemCard from '@/app/pharmacies/components/PharmacyListItemCard';
 import { CountyType, getPageUrlByType, PageType } from '@/domains/interfaces';
-import { PharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
+import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';
 
 interface SidebarLayoutProps {
@@ -19,7 +19,7 @@ const limit: number = 5;
 
 const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
   const router = useRouter();
-  const { control, handleSubmit, getValues, reset } = useForm<PharmaciesDto>({
+  const { control, handleSubmit, getValues, reset } = useForm<GetPharmaciesDto>({
     defaultValues: {
       query: '',
       county,
@@ -41,10 +41,13 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
     limit,
   });
 
-  const onSubmit = useCallback((formData: PharmaciesDto) => {
-    refetch();
-    reset(formData);
-  }, []);
+  const onSubmit = useCallback(
+    (formData: GetPharmaciesDto) => {
+      refetch();
+      reset(formData);
+    },
+    [refetch, reset]
+  );
 
   return (
     <div className="flex gap-x-8">
@@ -72,8 +75,8 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
                   <div className="flex items-center">
                     <input
                       type="checkbox"
-                      value={value.toString()}
-                      onChange={(e) => onChange(e.target.checked.toString())}
+                      checked={value}
+                      onChange={(e) => onChange(e.target.checked)}
                       className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <label className="text-sm">先豐科技合作夥伴</label>
@@ -88,8 +91,8 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
                   <div className="flex items-center">
                     <input
                       type="checkbox"
-                      value={value.toString()}
-                      onChange={(e) => onChange(e.target.checked.toString())}
+                      checked={value}
+                      onChange={(e) => onChange(e.target.checked)}
                       className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <label className="text-sm">健保特約藥局</label>

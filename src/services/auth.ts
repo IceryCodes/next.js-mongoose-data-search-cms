@@ -10,7 +10,7 @@ export const userRegister = async ({
   password,
 }: UserRegisterDto): Promise<UserLoginReturnType> => {
   try {
-    const { data } = await apiOrigin.post('/register', {
+    const { data } = await apiOrigin.post('/user-register', {
       firstName,
       lastName,
       gender,
@@ -30,7 +30,7 @@ export const userRegister = async ({
 
 export const userLogin = async ({ email, password }: UserLoginDto): Promise<UserLoginReturnType> => {
   try {
-    const { data } = await apiOrigin.post('/login', { email, password });
+    const { data } = await apiOrigin.post('/user-login', { email, password });
     return data;
   } catch (error) {
     const message: string = '登入失敗!';

@@ -5,8 +5,21 @@ import { HospitalProps } from '@/domains/hospital';
 import { getHospitalsCollection } from '@/lib/mongodb';
 import { GetHospitalReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import { isExpiredToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalReturnType>) => {
+  // renew token
+  if (req.method !== 'GET') return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
+  if (req.headers.authorization) {
+    try {
+      const isExpired = await isExpiredToken(req.headers.authorization);
+      if (isExpired) return res.status(HttpStatus.Unauthorized).json({ message: 'Token expired' });
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
+    }
+  }
+
   const { _id } = req.query;
 
   if (typeof _id !== 'string' || !ObjectId.isValid(_id)) {
