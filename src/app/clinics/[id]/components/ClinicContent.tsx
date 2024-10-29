@@ -107,24 +107,28 @@ const ClinicContent = (): ReactElement => {
               <>
                 <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
                 <ul className="list-disc ml-5">
-                  {owner && mainInfoRender({ label: '負責人', value: <span>{owner + composeGender(gender)}</span> })}
+                  {owner &&
+                    mainInfoRender({ label: '負責人', value: <span>{owner + (gender && composeGender(gender))}</span> })}
                   {mainInfoRender({ label: '機構代碼', value: <span>{orgCode}</span> })}
-                  {mainInfoRender({
-                    label: '聯絡電話',
-                    value: ConvertLink({ text: phone, type: LinkType.Phone }),
-                  })}
-                  {mainInfoRender({
-                    label: '聯絡信箱',
-                    value: ConvertLink({ text: email, type: LinkType.Email }),
-                  })}
+                  {phone &&
+                    mainInfoRender({
+                      label: '聯絡電話',
+                      value: ConvertLink({ text: phone, type: LinkType.Phone }),
+                    })}
+                  {email &&
+                    mainInfoRender({
+                      label: '聯絡信箱',
+                      value: ConvertLink({ text: email, type: LinkType.Email }),
+                    })}
                   {mainInfoRender({
                     label: '診所地址',
                     value: ConvertLink({ text: `${county}${district}${address}`, type: LinkType.Address }),
                   })}
-                  {mainInfoRender({
-                    label: '診所網站',
-                    value: ConvertLink({ text: websiteUrl, type: LinkType.Website }),
-                  })}
+                  {websiteUrl &&
+                    mainInfoRender({
+                      label: '診所網站',
+                      value: ConvertLink({ text: websiteUrl, type: LinkType.Website }),
+                    })}
                 </ul>
               </>
             </Card>
@@ -138,7 +142,7 @@ const ClinicContent = (): ReactElement => {
 
             <Card>
               <>
-                <h3 className="text-xl font-bold">本院醫生: {doctors.join(', ')}</h3>
+                {doctors && <h3 className="text-xl font-bold">本院醫生: {doctors.join(', ')}</h3>}
                 <ul className="list-disc ml-5 grid grid-cols-1 md:grid-cols-3">
                   {Object.keys(HospitalExtraFieldType).map((key) => {
                     const label = HospitalExtraFieldType[key as keyof typeof HospitalExtraFieldType]; // Get the label from the enum

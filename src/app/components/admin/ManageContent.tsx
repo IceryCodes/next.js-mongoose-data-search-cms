@@ -1,18 +1,19 @@
 'use client';
 
-import { ReactElement, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useToast } from '@/contexts/ToastContext';
-import { HospitalProps, UpdateHospitalProps } from '@/domains/hospital';
-import { CountyType, districtOptions, DistrictType } from '@/domains/interfaces';
+import { DepartmentsType, HospitalProps, UpdateHospitalProps } from '@/domains/hospital';
+import { CountyType, districtOptions, DistrictType, GenderType } from '@/domains/interfaces';
 import { useHospitalMutation } from '@/features/user/useHospitalMutation';
 import { useEnum } from '@/hooks/utils/useEnum';
 import { hospitalValidationSchema } from '@/lib/validation';
 
-import { Button } from '../buttons/Button';
+import { Button, defaultButtonStyle } from '../buttons/Button';
+import FieldErrorlabel from '../FieldErrorlabel';
 import Popup from '../Popup';
 
 interface ManageHospitalContentProps {
@@ -33,11 +34,15 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
     handleSubmit,
     reset,
     watch,
-    formState: { isDirty },
+    formState: { isDirty, errors },
   } = useForm<UpdateHospitalProps>({
     resolver: yupResolver(hospitalValidationSchema),
     defaultValues: hospital,
   });
+
+  const messageArray = useMemo((): string[] => {
+    return Object.values(errors).flatMap((error) => (Array.isArray(error) ? error.map((e) => e.message) : [error.message]));
+  }, [errors]);
 
   // Watch the `county` field for changes
   const county = watch('county');
@@ -45,7 +50,11 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
   const onSubmit = useCallback(
     async (data: UpdateHospitalProps) => {
       try {
-        const result = await mutateAsync({ _id: hospital._id, ...data });
+        const result = await mutateAsync({
+          _id: hospital._id,
+          ...data,
+          address: data.address.replaceAll(data.county, '').replaceAll(data.district, ''),
+        });
         if (typeof result === 'string') throw new Error(result);
 
         const { message } = result;
@@ -53,7 +62,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
 
         reset(data);
       } catch (error) {
-        console.error('Login error:', error);
+        console.error('Update error:', error);
       }
     },
     [hospital._id, mutateAsync, reset, showToast]
@@ -63,13 +72,76 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
     (): ReactElement => (
       <Popup title="編輯醫院" display={display} onClose={() => setDisplay(false)}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-6 gap-4 w-[500px]">
-          {isLoading && <label className="col-span-6">更新中...</label>}
-          <div className="flex justify-end col-span-6">
+          <div className="flex flex-col col-span-3 justify-center">
+            {messageArray.length > 0 &&
+              messageArray.map((message, index) => (
+                <label key={index} className="text-red-500 text-[12px]">
+                  {message}
+                </label>
+              ))}
+            {isLoading && <label>更新中...</label>}
+          </div>
+
+          <div className="flex justify-end col-span-3 items-center">
             <Button type="submit" text="提交" disabled={!isDirty} />
           </div>
 
+          <div className="flex flex-col col-span-6">
+            <label>標題</label>
+            <Controller
+              name="title"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <input
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    type="text"
+                    {...field}
+                    placeholder="醫療機構"
+                  />
+                  <FieldErrorlabel error={error} />
+                </>
+              )}
+            />
+          </div>
+
+          <Controller
+            name="partner"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <div className="flex items-center col-span-3">
+                <input
+                  type="checkbox"
+                  checked={value}
+                  onChange={(e) => onChange(e.target.checked)}
+                  className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label className="text-sm">先豐科技合作夥伴</label>
+              </div>
+            )}
+          />
+
           <div className="flex flex-col col-span-3">
-            <label>縣市</label>
+            <label onClick={() => onSubmit}>機構代碼</label>
+            <Controller
+              name="orgCode"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <input
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    type="text"
+                    {...field}
+                    placeholder="機構代碼"
+                  />
+                  <FieldErrorlabel error={error} />
+                </>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col col-span-3">
+            <label onClick={() => onSubmit}>縣市</label>
             <Controller
               name="county"
               control={control}
@@ -83,7 +155,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
                       </option>
                     ))}
                   </select>
-                  {error && <p className="text-red-500">{error.message}</p>}
+                  <FieldErrorlabel error={error} />
                 </>
               )}
             />
@@ -104,26 +176,45 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
                       </option>
                     ))}
                   </select>
-                  {error && <p className="text-red-500">{error.message}</p>}
+                  <FieldErrorlabel error={error} />
                 </>
               )}
             />
           </div>
 
           <div className="flex flex-col col-span-3">
-            <label>標題</label>
+            <label>電話</label>
             <Controller
-              name="title"
+              name="phone"
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <>
                   <input
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    type="text"
+                    type="tel"
                     {...field}
-                    placeholder="醫療機構的標題"
+                    placeholder="聯絡電話"
                   />
-                  {error && <p className="text-red-500">{error.message}</p>}
+                  <FieldErrorlabel error={error} />
+                </>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col col-span-3">
+            <label>信箱</label>
+            <Controller
+              name="email"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <input
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    type="email"
+                    {...field}
+                    placeholder="聯絡信箱"
+                  />
+                  <FieldErrorlabel error={error} />
                 </>
               )}
             />
@@ -140,9 +231,9 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                     type="text"
                     {...field}
-                    placeholder="完整地址"
+                    placeholder="完整地址(無需包含縣市及地址)"
                   />
-                  {error && <p className="text-red-500">{error.message}</p>}
+                  <FieldErrorlabel error={error} />
                 </>
               )}
             />
@@ -159,16 +250,82 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                     type="text"
                     {...field}
-                    placeholder="關鍵字 (多個用逗號分隔)"
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      field.onChange(event.target.value ? event.target.value.split(',') : [])
+                    }
+                    placeholder="關鍵字 (多個用半形逗號分隔)"
                   />
-                  {error && <p className="text-red-500">{error.message}</p>}
+                  <FieldErrorlabel error={error} />
                 </>
               )}
             />
           </div>
 
           <div className="flex flex-col col-span-3">
-            <label>特色圖片網址</label>
+            <label>負責人</label>
+            <Controller
+              name="owner"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <input
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    type="text"
+                    {...field}
+                    placeholder="負責人姓名"
+                  />
+                  <FieldErrorlabel error={error} />
+                </>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col col-span-3">
+            <label>負責人性別</label>
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <div>
+                  <div className="flex justify-around gap-x-2">
+                    <Button
+                      element={<span>男</span>}
+                      onClick={() => field.onChange(GenderType.Male)}
+                      className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Male ? 'bg-blue-400 text-white' : 'bg-white text-gray-700'}`}
+                    />
+                    <Button
+                      element={<span>女</span>}
+                      onClick={() => field.onChange(GenderType.Female)}
+                      className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Female ? 'bg-blue-400 text-white' : 'bg-white text-gray-700'}`}
+                    />
+                  </div>
+                  <FieldErrorlabel error={error} />
+                </div>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col col-span-3">
+            <label>網站網址</label>
+            <Controller
+              name="websiteUrl"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <input
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    type="url"
+                    {...field}
+                    placeholder={process.env.NEXT_PUBLIC_BASE_URL}
+                  />
+                  <FieldErrorlabel error={error} />
+                </>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col col-span-3">
+            <label>預覽圖網址</label>
             <Controller
               name="featuredImg"
               control={control}
@@ -178,16 +335,68 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                     type="url"
                     {...field}
-                    placeholder="https://example.com/image.jpg"
+                    placeholder={`${process.env.NEXT_PUBLIC_BASE_URL}/image.jpg`}
                   />
-                  {error && <p className="text-red-500">{error.message}</p>}
+                  <FieldErrorlabel error={error} />
                 </>
               )}
             />
           </div>
 
           <div className="flex flex-col col-span-6">
-            <label>摘錄</label>
+            <label>科別</label>
+            <Controller
+              name="departments"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <div className="grid grid-cols-3 gap-2">
+                  {Object.values(DepartmentsType).map((department) => (
+                    <label key={department} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        value={department}
+                        checked={value?.includes(department)}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+                          const updatedDepartments = isChecked
+                            ? [...(value || []), department]
+                            : value?.filter((d) => d !== department) || [];
+                          onChange(updatedDepartments);
+                        }}
+                        className="mr-2"
+                      />
+                      {department}
+                    </label>
+                  ))}
+                </div>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col col-span-6">
+            <label>醫院醫生</label>
+            <Controller
+              name="doctors"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <input
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    type="text"
+                    {...field}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      field.onChange(event.target.value ? event.target.value.split(',') : [])
+                    }
+                    placeholder="醫院醫生 (多個用半形逗號分隔)"
+                  />
+                  <FieldErrorlabel error={error} />
+                </>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col col-span-6">
+            <label>簡述</label>
             <Controller
               name="excerpt"
               control={control}
@@ -197,9 +406,9 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                     type="text"
                     {...field}
-                    placeholder="醫療機構的摘錄"
+                    placeholder="醫療機構的簡述"
                   />
-                  {error && <p className="text-red-500">{error.message}</p>}
+                  <FieldErrorlabel error={error} />
                 </>
               )}
             />
@@ -217,7 +426,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
                     {...field}
                     placeholder="醫療機構的詳細內容"
                   />
-                  {error && <p className="text-red-500">{error.message}</p>}
+                  <FieldErrorlabel error={error} />
                 </>
               )}
             />
@@ -242,7 +451,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
                         onChange={(e) => onChange(Number(e.target.value))}
                         placeholder={`輸入${label}人數`}
                       />
-                      {error && <p className="text-red-500">{error.message}</p>}
+                      <FieldErrorlabel error={error} />
                     </>
                   )}
                 />
@@ -251,7 +460,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
         </form>
       </Popup>
     ),
-    [display, isLoading, handleSubmit, onSubmit, isDirty, control, expand, hospitalExtraFieldMap, county]
+    [display, handleSubmit, onSubmit, isLoading, messageArray, isDirty, control, expand, hospitalExtraFieldMap, county]
   );
 
   const onClick = () => setDisplay(true);

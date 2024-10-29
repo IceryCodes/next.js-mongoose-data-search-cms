@@ -23,24 +23,26 @@ interface RulesProps {
   lastName: StringSchema<string, AnyObject, undefined, ''>;
   email: StringSchema<string, AnyObject, undefined, ''>;
   password: StringSchema<string, AnyObject, undefined, ''>;
-  gender: MixedSchema<NonNullable<GenderType | undefined>, AnyObject, undefined, ''>;
+  gender: MixedSchema<NonNullable<GenderType>, AnyObject, undefined, ''>;
 
   // hospital
   partner: BooleanSchema<boolean, AnyObject>;
   orgCode: StringSchema<string, AnyObject>;
-  owner: StringSchema<string, AnyObject>;
-  doctors: ArraySchema<string[], AnyObject, '', ''>;
+  owner: StringSchema<string | undefined, AnyObject>;
+  genderOptional: MixedSchema<GenderType | undefined, AnyObject, undefined, ''>;
+  doctors: ArraySchema<string[] | undefined, AnyObject, '', ''>;
   departments: ArraySchema<DepartmentsType[], AnyObject, '', ''>;
-  websiteUrl: StringSchema<string, AnyObject, undefined, ''>;
-  phone: StringSchema<string, AnyObject>;
+  websiteUrl: StringSchema<string | undefined, AnyObject, undefined, ''>;
+  phone: StringSchema<string | undefined, AnyObject>;
+  emailOptional: StringSchema<string | undefined, AnyObject>;
   county: StringSchema<CountyType, AnyObject>;
   district: MixedSchema<DistrictType, AnyObject>;
   address: StringSchema<string, AnyObject>;
   title: StringSchema<string, AnyObject>;
-  excerpt: StringSchema<string, AnyObject>;
-  content: StringSchema<string, AnyObject>;
-  keywords: ArraySchema<string[], AnyObject, '', ''>;
-  featuredImg: StringSchema<string, AnyObject>;
+  excerpt: StringSchema<string | undefined, AnyObject>;
+  content: StringSchema<string | undefined, AnyObject>;
+  keywords: ArraySchema<string[] | undefined, AnyObject, '', ''>;
+  featuredImg: StringSchema<string | undefined, AnyObject>;
   [HospitalExtraFieldType.SpeechTherapist]: NumberSchema<number, AnyObject>;
   [HospitalExtraFieldType.DentalTechnician]: NumberSchema<number, AnyObject>;
   [HospitalExtraFieldType.Audiologist]: NumberSchema<number, AnyObject>;
@@ -72,25 +74,45 @@ interface RulesProps {
 
 const rules: RulesProps = {
   // user
-  firstName: string().required('名字是必填項目').min(2, '名字至少需要2個字'),
-  lastName: string().required('姓氏是必填項目').min(2, '姓氏至少需要2個字'),
+  firstName: string()
+    .required('名字是必填項目')
+    .min(2, '名字至少需要2個字')
+    .matches(/^[^\s#!@*()\\"';/%^=_$`,.?:+]+$/, '名字不能包含空格或特殊字符'),
+  lastName: string()
+    .required('姓氏是必填項目')
+    .min(2, '姓氏至少需要2個字')
+    .matches(/^[^\s#!@*()\\"';/%^=_$`,.?:+]+$/, '姓氏不能包含空格或特殊字符'),
   email: string().email('無效的信箱格式').required('信箱是必填項目'),
   password: yup
     .string()
     .required('密碼是必填項目')
     .min(8, '密碼至少需要8個字')
     .matches(/(?=.*[0-9])(?=.*[A-Z])/, '密碼必須包含至少一個數字和一個大寫字母'),
-  gender: mixed<GenderType>().oneOf([GenderType.Male, GenderType.Female], '性別是必填項目').required('性別是必填項目'),
+  gender: mixed<GenderType>().oneOf([GenderType.Male, GenderType.Female], '性別必須為有效選項').required('性別是必填項目'),
 
   // hospital
   partner: boolean().required('必須選擇是否為合作夥伴'),
-  orgCode: string().required('機構代碼是必填項目'),
-  owner: string().required('擁有者是必填項目'),
-  doctors: array().of(string().required()).required(),
-  departments: array().of(mixed<DepartmentsType>().required()).required(),
-  websiteUrl: string().url('無效的網址格式').required(),
-  phone: string().required('電話是必填項目'),
-  county: string().oneOf(Object.values(CountyType), '縣市必須是有效的選項').required(),
+  orgCode: string()
+    .required('機構代碼是必填項目')
+    .matches(/^[^\s#!@*()\\"';/%^=_$`,.?:+]+$/, '機構代碼不能包含空格或特殊字符'),
+  owner: string(),
+  genderOptional: mixed<GenderType>().oneOf([GenderType.None, GenderType.Male, GenderType.Female], '性別必須為有效選項'),
+  doctors: array()
+    .of(
+      string()
+        .min(2, '醫生姓名至少需要2個字')
+        .matches(/^[^#!@*()\\";/%^=_$`,.?:+]+$/, '不能包含特殊字符')
+        .required('醫生姓名是必填項目')
+    )
+    .required('醫生姓名是必填項目'),
+  departments: array().of(mixed<DepartmentsType>().required()).required('科別是必填項目'),
+  websiteUrl: string().url('無效的網址格式'),
+  phone: string()
+    .matches(/^(?!.*#.*#)(?!.*#$)[0-9#]{1,15}$/, '請輸入有效的電話號碼')
+    .min(6, '電話號碼過短')
+    .max(15, '電話號碼過長'),
+  emailOptional: string().email('無效的信箱格式'),
+  county: string().oneOf(Object.values(CountyType), '縣市必須是有效的選項').required('縣市是必填項目'),
   district: mixed<DistrictType>()
     .test('is-valid-district', '請選擇有效的區域', function (value) {
       const county: keyof DistrictOptionsProps = this.parent.county;
@@ -99,13 +121,26 @@ const rules: RulesProps = {
       const validDistricts = districtOptions[county];
       return typeof value === 'string' && Object.values(validDistricts).includes(value);
     })
-    .required('區域為必填'),
-  address: string().required('地址是必填項目'),
-  title: string().required('名稱是必填項目'),
-  excerpt: string().required(),
-  content: string().required(),
-  keywords: array().of(string().required()).required(),
-  featuredImg: string().url('無效的圖片網址格式').required(),
+    .required('區域是必填項目'),
+  address: string()
+    .min(2, '地址至少需要2個字')
+    .matches(/^[^\s#!@*\\"';/%^=_$`,.?:+]+$/, '地址不能包含空格或特殊字符')
+    .required('地址是必填項目'),
+  title: string()
+    .min(2, '標題至少需要2個字')
+    .matches(/^[^#!@*()\\"';/%^=_$`,.?:]+$/, '標題不能包含空格或特殊字符')
+    .required('名稱是必填項目'),
+  excerpt: string(),
+  content: string(),
+  keywords: array()
+    .of(
+      string()
+        .min(2, '關鍵字至少需要2個字')
+        .matches(/^[^#!@*()\\";/%^=_$`,.?:]+$/, '關鍵字不能包含特殊字符')
+        .required('關鍵字是必填項目')
+    )
+    .required('關鍵字是必填項目'),
+  featuredImg: string().url('無效的圖片網址格式'),
   [HospitalExtraFieldType.SpeechTherapist]: number().required(),
   [HospitalExtraFieldType.DentalTechnician]: number().required(),
   [HospitalExtraFieldType.Audiologist]: number().required(),
@@ -152,11 +187,11 @@ export const hospitalValidationSchema = object({
   partner: rules.partner,
   orgCode: rules.orgCode,
   owner: rules.owner,
-  gender: rules.gender,
+  gender: rules.genderOptional,
   doctors: rules.doctors,
   departments: rules.departments,
   websiteUrl: rules.websiteUrl,
-  email: rules.email,
+  email: rules.emailOptional,
   phone: rules.phone,
   county: rules.county,
   district: rules.district,

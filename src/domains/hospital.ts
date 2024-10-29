@@ -8,31 +8,37 @@ export enum HospitalCategoryType {
 }
 
 export enum DepartmentsType {
-  GeneralTraditionalChineseMedicine = '中醫一般科',
+  ZhongyiGeneralDepartment = '中醫一般科',
   InternalMedicine = '內科',
-  Other = '其他',
   Surgical = '外科',
   ObstetricsAndGynecology = '婦產科',
-  HomeMedicine = '家醫科',
+  FamilyMedicine = '家醫科',
   Pediatrics = '小兒科',
   RehabilitationDepartment = '復健科',
-  DepartmentOfEmergencyMedicine = '急診醫學科',
+  EmergencyMedicine = '急診醫學科',
   Radiology = '放射科',
   PlasticSurgery = '整形外科',
-  DepartmentOfNuclearMedicine = '核子醫學科',
+  NuclearMedicine = '核子醫學科',
   Urology = '泌尿科',
-  NephrologyDepartment = '洗腎科',
+  Nephrology = '洗腎科',
   Dentistry = '牙科',
-  PathologyDepartment = '病理科',
+  Pathology = '病理科',
   Dermatology = '皮膚科',
   Ophthalmology = '眼科',
   Neurosurgery = '神經外科',
   Neurology = '神經科',
   Psychiatry = '精神科',
   Otolaryngology = '耳鼻喉科',
-  DepartmentOfOccupationalMedicine = '職業醫學科',
+  OccupationalMedicine = '職業醫學科',
   Orthopedics = '骨科',
-  AnesthesiaDepartment = '麻醉科',
+  Anesthesiology = '麻醉科',
+  WesternMedicineGeneralDepartment = '西醫一般科',
+  GeneralDentistry = '牙醫一般科',
+  RadiologicalDiagnosis = '放射診斷科',
+  RadiationOncology = '放射腫瘤科',
+  AnatomicPathology = '解剖病理科',
+  ClinicalPathology = '臨床病理科',
+  Other = '其他',
 }
 
 export enum HospitalExtraFieldType {
@@ -69,21 +75,21 @@ export interface HospitalProps {
   _id: ObjectId;
   partner: boolean;
   orgCode: string;
-  owner: string;
-  gender: GenderType;
-  doctors: string[];
+  owner?: string;
+  gender?: GenderType;
+  doctors?: string[];
   departments: DepartmentsType[];
-  websiteUrl: string;
-  email: string;
-  phone: string;
+  websiteUrl?: string;
+  email?: string;
+  phone?: string;
   county: CountyType;
   district: DistrictType;
   address: string;
   title: string;
-  excerpt: string;
-  content: string;
-  keywords: string[];
-  featuredImg: string;
+  excerpt?: string;
+  content?: string;
+  keywords?: string[];
+  featuredImg?: string;
   [HospitalExtraFieldType.SpeechTherapist]: number;
   [HospitalExtraFieldType.DentalTechnician]: number;
   [HospitalExtraFieldType.Audiologist]: number;
