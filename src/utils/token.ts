@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { SignJWT, jwtVerify } from 'jose';
 import { JWTExpired } from 'jose/errors';
 
@@ -83,5 +84,28 @@ export const isExpiredToken = async (authHeader: string | undefined): Promise<bo
     // For other errors, you may choose to handle them differently or just return true
     console.warn('Error verifying token:', error);
     return true; // Treat other errors as expired or invalid
+  }
+};
+
+export const renewToken = async (token: string | null): Promise<string | null> => {
+  if (!token) return null; // Return null if no token is provided
+
+  try {
+    const renewResponse = await axios.post(
+      '/api/renew-token',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const newToken = renewResponse.data.token;
+    sessionStorage.setItem('token', newToken); // Store the new token
+    return newToken; // Return the new token
+  } catch (error) {
+    console.error('Token renewal failed:', error);
+    return null; // Return null if renewal fails
   }
 };

@@ -4,7 +4,7 @@ import { ReactElement, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
-import ManageHospitalContent from '@/app/components/admin/ManageContent';
+import ManageHospitalContent from '@/app/components/admin/ManageHospitalContent';
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';

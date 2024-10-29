@@ -1,6 +1,8 @@
 import type { AxiosError, AxiosHeaders, AxiosResponse, CreateAxiosDefaults, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
 
+import { renewToken } from './token';
+
 // Extend InternalAxiosRequestConfig to include retryAttempt
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   retryAttempt?: boolean; // Optional property to track retry state
@@ -82,47 +84,23 @@ apiOrigin.interceptors.request.use(
 apiOrigin.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as CustomAxiosRequestConfig; // Cast to extended config
+    const originalRequest = error.config as CustomAxiosRequestConfig;
 
-    // Check if originalRequest exists and is defined before retrying
     if (!originalRequest || error.response?.status !== HttpStatus.Unauthorized || originalRequest.retryAttempt) {
-      if (enableAxiosLogs) console.error('Response Error:', error); // Only log in dev
-
-      return Promise.reject(error); // Reject if original request is undefined or retry logic isn't applicable
+      return Promise.reject(error);
     }
 
-    originalRequest.retryAttempt = true; // Mark retry to avoid infinite loops
+    originalRequest.retryAttempt = true;
 
-    try {
-      const token: string | null = sessionStorage.getItem('token');
-      // Ensure headers are initialized
-      const renewConfig = {
-        headers: {
-          Authorization: `Bearer ${token}`, // Send current token for authorization
-        },
-      };
+    const token: string | null = sessionStorage.getItem('token');
+    const newToken: string | null = await renewToken(token); // Renew the token
 
-      // Token renewal logic - assuming `/api/renew-token` is your renewal API
-      const renewResponse = await axios.post('/api/renew-token', {}, renewConfig);
-      const newToken = renewResponse.data.token;
-
-      // Store the new token in sessionStorage only in the browser
-      if (isBrowser) sessionStorage.setItem('token', newToken);
-
-      // Ensure headers are initialized
-      if (!originalRequest.headers) originalRequest.headers = {} as AxiosHeaders; // Initialize headers if undefined
-
-      // Update original request's Authorization header with the new token
+    if (newToken) {
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
-
-      // Retry the original request with the new token
-      return apiOrigin(originalRequest);
-    } catch (error) {
-      const message: string = '更新憑證失敗!';
-      logApiError({ error, message });
-
-      return Promise.reject(error); // Reject if token renewal fails
+      return apiOrigin(originalRequest); // Retry the original request with the new token
     }
+
+    return Promise.reject(error); // Reject if renewal fails
   }
 );
 

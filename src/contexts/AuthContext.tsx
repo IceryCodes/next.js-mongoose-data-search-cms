@@ -3,7 +3,7 @@ import { createContext, ReactElement, useCallback, useContext, useEffect, useSta
 import { useRouter } from 'next/navigation';
 
 import { UserProps } from '@/domains/user';
-import { TokenProps, verifyToken } from '@/utils/token';
+import { renewToken, TokenProps, verifyToken } from '@/utils/token';
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -48,17 +48,32 @@ export const AuthProvider = ({ children }: { children: ReactElement }): ReactEle
 
       if (tokenData) {
         try {
+          // Check if the token is valid
           const { _id }: TokenProps = await verifyToken(tokenData);
           if (_id && userData) {
             setIsAuthenticated(true);
             setToken(tokenData);
             setUser(JSON.parse(userData));
           } else {
+            const newToken: string | null = await renewToken(tokenData);
+            if (newToken && userData) {
+              setIsAuthenticated(true);
+              setToken(newToken);
+              setUser(JSON.parse(userData));
+            } else {
+              logout();
+            }
+          }
+        } catch {
+          console.warn('Token renewing...');
+          const newToken: string | null = await renewToken(tokenData);
+          if (newToken && userData) {
+            setIsAuthenticated(true);
+            setToken(newToken);
+            setUser(JSON.parse(userData));
+          } else {
             logout();
           }
-        } catch (error) {
-          console.error('init error:', error);
-          logout();
         }
       }
     };
