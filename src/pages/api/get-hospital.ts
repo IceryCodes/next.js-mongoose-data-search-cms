@@ -29,7 +29,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalRetu
   try {
     const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
 
-    const hospital: WithId<HospitalProps> | null = await hospitalsCollection.findOne({ _id: new ObjectId(_id) });
+    const hospital: WithId<HospitalProps> | null = await hospitalsCollection.findOne({
+      _id: new ObjectId(_id),
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    });
 
     res.status(HttpStatus.Ok).json({ hospital: hospital || null, message: 'Success' });
   } catch (error) {

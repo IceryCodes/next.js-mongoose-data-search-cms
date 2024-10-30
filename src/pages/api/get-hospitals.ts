@@ -35,6 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
     const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
 
     const mongoQuery: Record<string, unknown> = {}; // Type-safe object
+    mongoQuery.$or = [{ deletedAt: null }, { deletedAt: { $exists: false } }];
 
     if (partner === 'true') mongoQuery.partner = true;
 

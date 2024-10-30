@@ -56,7 +56,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalR
     };
 
     const result = await pharmaciesCollection.updateOne(
-      { _id: pharmacyId },
+      { _id: pharmacyId, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] },
       {
         $set: updateData,
       }

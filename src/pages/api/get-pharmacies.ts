@@ -33,6 +33,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetPharmaciesRe
     const pharmaciesCollection: Collection<PharmacyProps> = await getPharmaciesCollection();
 
     const mongoQuery: Record<string, unknown> = {}; // Type-safe object
+    mongoQuery.$or = [{ deletedAt: null }, { deletedAt: { $exists: false } }];
 
     if (partner === 'true') mongoQuery.partner = true;
 

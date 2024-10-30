@@ -36,12 +36,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const pharmaciesCollection: Collection<PharmacyProps> = await getPharmaciesCollection();
-    const pharmacy = await pharmaciesCollection.findOne({ _id: new ObjectId(req.body._id as string) });
+    const pharmacy = await pharmaciesCollection.findOne({
+      _id: new ObjectId(req.body._id as string),
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    });
     if (!pharmacy) return res.status(HttpStatus.NotFound).json({ message: '藥局不存在' });
 
     const result = await pharmaciesCollection.updateOne(
       { _id: new ObjectId(req.body._id as string) },
-      { $set: { deleted: new Date() } }
+      { $set: { deletedAt: new Date() } }
     );
 
     if (result.modifiedCount === 0) {

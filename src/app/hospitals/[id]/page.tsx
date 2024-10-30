@@ -30,7 +30,7 @@ export const generateMetadata = async ({ params }: { params: { id: string } }): 
     creator: process.env.NEXT_PUBLIC_SITE_NAME,
     generator: process.env.NEXT_PUBLIC_SITE_NAME,
     applicationName: process.env.NEXT_PUBLIC_SITE_NAME,
-    keywords: [process.env.NEXT_PUBLIC_SITE_NAME, pageName, ...hospital!.keywords!],
+    keywords: [process.env.NEXT_PUBLIC_SITE_NAME, pageName, ...(hospital?.keywords || [])],
     metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL),
     openGraph: {
       type: 'website',

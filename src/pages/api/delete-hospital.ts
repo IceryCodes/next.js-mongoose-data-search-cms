@@ -36,12 +36,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
-    const hospital = await hospitalsCollection.findOne({ _id: new ObjectId(req.body._id as string) });
+    const hospital = await hospitalsCollection.findOne({
+      _id: new ObjectId(req.body._id as string),
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    });
     if (!hospital) return res.status(HttpStatus.NotFound).json({ message: '醫院不存在' });
 
     const result = await hospitalsCollection.updateOne(
       { _id: new ObjectId(req.body._id as string) },
-      { $set: { deleted: new Date() } }
+      { $set: { deletedAt: new Date() } }
     );
 
     if (result.modifiedCount === 0) {

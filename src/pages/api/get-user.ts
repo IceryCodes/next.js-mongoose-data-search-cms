@@ -30,7 +30,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
     const usersCollection = await getUsersCollection();
 
     // Find the user by ID
-    const user = await usersCollection.findOne({ _id: new ObjectId(_id) });
+    const user = await usersCollection.findOne({
+      _id: new ObjectId(_id),
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    });
 
     if (!user) {
       console.error('User not found');
