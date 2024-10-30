@@ -62,7 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalR
       }
     );
 
-    if (result.modifiedCount === 0) return res.status(HttpStatus.NotFound).json({ message: '未更新!' });
+    if (result.modifiedCount === 0) return res.status(HttpStatus.NotFound).json({ message: '醫院不存在!' });
 
     res.status(HttpStatus.Ok).json({ message: `已更新${updateData.title}!` });
   } catch (error) {

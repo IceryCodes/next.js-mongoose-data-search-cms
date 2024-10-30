@@ -8,7 +8,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useToast } from '@/contexts/ToastContext';
 import { CountyType, districtOptions, DistrictType, GenderType } from '@/domains/interfaces';
 import { UpdatePharmacyProps } from '@/domains/pharmacy';
-import { useCreatePharmacyMutation } from '@/features/hospitals/hooks/useCreatePharmacyMutation';
+import { useCreatePharmacyMutation } from '@/features/pharmacies/hooks/useCreatePharmacyMutation';
 import { pharmacyValidationSchema } from '@/lib/validation';
 
 import { Button, defaultButtonStyle } from '../buttons/Button';

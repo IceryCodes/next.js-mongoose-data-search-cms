@@ -5,12 +5,14 @@ import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import SidebarLayout from '@/app/clinics/[id]/components/SidebarLayout';
+import DeleteHospitalContent from '@/app/components/admin/DeleteHospitalContent';
 import ManageHospitalContent from '@/app/components/admin/ManageHospitalContent';
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
 import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
+import { getPageUrlByType, PageType } from '@/domains/interfaces';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
@@ -18,11 +20,11 @@ import ConvertLink, { LinkType } from '@/utils/links';
 
 const ClinicContent = (): ReactElement => {
   const params = useParams();
-  const _id: string = params?.id as string;
+  const paramsId: string = params?.id as string;
   const router = useRouter();
 
   const { composeGender } = useEnum();
-  const { data, isLoading, isError, refetch } = useHospitalQuery({ _id });
+  const { data, isLoading, isError, refetch } = useHospitalQuery({ _id: paramsId });
   const hospital: HospitalProps | null | undefined = data?.hospital;
 
   const mainInfoRender = useCallback(
@@ -58,6 +60,7 @@ const ClinicContent = (): ReactElement => {
   if (!hospital) return <span>沒有符合診所</span>;
 
   const {
+    _id,
     partner,
     orgCode,
     owner,
@@ -97,7 +100,14 @@ const ClinicContent = (): ReactElement => {
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <AdminProtected>
-                <ManageHospitalContent hospital={hospital} refetch={refetch} />
+                <>
+                  <ManageHospitalContent hospital={hospital} refetch={refetch} />
+                  <DeleteHospitalContent
+                    _id={_id}
+                    title={title}
+                    afterDelete={() => router.push(getPageUrlByType(PageType.CLINICS))}
+                  />
+                </>
               </AdminProtected>
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}

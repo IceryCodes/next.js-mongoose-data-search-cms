@@ -4,11 +4,13 @@ import { ReactElement, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
+import DeletePharmacyContent from '@/app/components/admin/DeletePharmacyContent';
 import ManagePharmacyContent from '@/app/components/admin/ManagePharmacyContent';
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Card from '@/app/components/Card';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Tag from '@/app/components/tags/Tag';
+import { getPageUrlByType, PageType } from '@/domains/interfaces';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { usePharmacyQuery } from '@/features/pharmacies/hooks/usePharmacyQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
@@ -19,11 +21,11 @@ import SidebarLayout from './SidebarLayout';
 
 const PharmacyContent = (): ReactElement => {
   const params = useParams();
-  const _id: string = params?.id as string;
+  const paramsId: string = params?.id as string;
   const router = useRouter();
 
   const { composeGender } = useEnum();
-  const { data, isLoading, isError, refetch } = usePharmacyQuery({ _id });
+  const { data, isLoading, isError, refetch } = usePharmacyQuery({ _id: paramsId });
   const pharmacy: PharmacyProps | null | undefined = data?.pharmacy;
 
   const mainInfoRender = useCallback(
@@ -76,6 +78,7 @@ const PharmacyContent = (): ReactElement => {
   if (!pharmacy) return <span>沒有符合藥局</span>;
 
   const {
+    _id,
     partner,
     orgCode,
     owner,
@@ -114,7 +117,14 @@ const PharmacyContent = (): ReactElement => {
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <AdminProtected>
-                <ManagePharmacyContent pharmacy={pharmacy} refetch={refetch} />
+                <>
+                  <ManagePharmacyContent pharmacy={pharmacy} refetch={refetch} />
+                  <DeletePharmacyContent
+                    _id={_id}
+                    title={title}
+                    afterDelete={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
+                  />
+                </>
               </AdminProtected>
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}

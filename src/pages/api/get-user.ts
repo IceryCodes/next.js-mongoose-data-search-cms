@@ -34,7 +34,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
 
     if (!user) {
       console.error('User not found');
-      return res.status(HttpStatus.NotFound).json({ message: 'User not found' });
+      return res.status(HttpStatus.NotFound).json({ message: '帳號不存在!' });
     }
 
     // Return user details (exclude password)

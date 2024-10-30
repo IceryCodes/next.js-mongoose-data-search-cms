@@ -31,17 +31,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
   }
 
-  // Validate required fields in the request body
   const requiredFields = Object.keys({} as PharmacyProps) as (keyof PharmacyProps)[];
   for (const field of requiredFields) {
     if (req.body[field] === undefined) return res.status(HttpStatus.BadRequest).json({ message: `缺少所需資訊: ${field}` });
   }
 
-  // Create the pharmacy record
   try {
     const pharmaciesCollection: Collection<PharmacyProps> = await getPharmaciesCollection();
 
-    // Set createdAt and updatedAt fields
     const newPharmacy: PharmacyProps = {
       ...req.body,
       createdAt: new Date(),

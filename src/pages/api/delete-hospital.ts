@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { HospitalProps } from '@/domains/hospital';
@@ -7,8 +7,8 @@ import { HttpStatus } from '@/utils/api';
 import { isAdminToken, isExpiredToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
+  if (req.method !== 'DELETE') {
+    res.setHeader('Allow', ['DELETE']);
     return res.status(HttpStatus.MethodNotAllowed).json({ message: `Method ${req.method} not allowed` });
   }
 
@@ -31,29 +31,26 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
   }
 
-  const requiredFields = Object.keys({} as HospitalProps) as (keyof HospitalProps)[];
-  for (const field of requiredFields) {
-    if (req.body[field] === undefined) return res.status(HttpStatus.BadRequest).json({ message: `缺少所需資訊: ${field}` });
-  }
+  if (typeof req.body._id !== 'string' || !ObjectId.isValid(req.body._id))
+    return res.status(HttpStatus.BadRequest).json({ message: '刪除醫院失敗!' });
 
   try {
     const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
+    const hospital = await hospitalsCollection.findOne({ _id: new ObjectId(req.body._id as string) });
+    if (!hospital) return res.status(HttpStatus.NotFound).json({ message: '醫院不存在' });
 
-    const newHospital: HospitalProps = {
-      ...req.body,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    const result = await hospitalsCollection.updateOne(
+      { _id: new ObjectId(req.body._id as string) },
+      { $set: { deleted: new Date() } }
+    );
 
-    const result = await hospitalsCollection.insertOne(newHospital);
-
-    if (result.insertedId) {
-      return res.status(HttpStatus.Created).json({ message: `已新增${newHospital.title}!`, hospitalId: result.insertedId });
-    } else {
-      return res.status(HttpStatus.InternalServerError).json({ message: '新增醫院失敗!' });
+    if (result.modifiedCount === 0) {
+      return res.status(HttpStatus.NotFound).json({ message: '醫院不存在!' });
     }
+
+    res.status(HttpStatus.Ok).json({ message: `已刪除${hospital.title}!` });
   } catch (error) {
-    console.error('Error creating hospital:', error);
+    console.error('Error soft deleting hospital:', error);
     res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });
   }
 };
