@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
 
-import { UpdatePharmacyDto } from '@/domains/pharmacy';
-import { UpdatePharmacyReturnType } from '@/services/interfaces';
-import { updatePharmacy } from '@/services/pharmacy';
+import { CreateHospitalDto } from '@/domains/hospital';
+import { createHospital } from '@/services/hospital';
+import { UpdateHospitalReturnType } from '@/services/interfaces';
 import type { UseMutationFn } from '@/utils/reactQuery';
 
-export const usePharmacyMutation: UseMutationFn<UpdatePharmacyReturnType, UpdatePharmacyDto> = (args) => {
+export const useCreateHospitalMutation: UseMutationFn<UpdateHospitalReturnType, CreateHospitalDto> = (args) => {
   const { onError, onSuccess, mutationPrefixKey = [] } = args ?? {};
   const {
     isPending: isLoading,
@@ -18,7 +18,7 @@ export const usePharmacyMutation: UseMutationFn<UpdatePharmacyReturnType, Update
     mutateAsync,
   } = useMutation({
     mutationKey: [...mutationPrefixKey],
-    mutationFn: updatePharmacy,
+    mutationFn: createHospital,
     onSuccess,
     onError,
   });

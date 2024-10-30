@@ -8,7 +8,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useToast } from '@/contexts/ToastContext';
 import { DepartmentsType, HospitalProps, UpdateHospitalProps } from '@/domains/hospital';
 import { CountyType, districtOptions, DistrictType, GenderType } from '@/domains/interfaces';
-import { useHospitalMutation } from '@/features/hospitals/hooks/useHospitalMutation';
+import { useUpdateHospitalMutation } from '@/features/hospitals/hooks/useUpdateHospitalMutation';
 import { useEnum } from '@/hooks/utils/useEnum';
 import { hospitalValidationSchema } from '@/lib/validation';
 
@@ -33,7 +33,7 @@ const inputStyle: string = 'w-full p-2 border rounded-md focus:outline-none focu
 
 const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps) => {
   const { hospitalExtraFieldMap } = useEnum();
-  const { isLoading, mutateAsync } = useHospitalMutation({ onSuccess: refetch });
+  const { isLoading, mutateAsync } = useUpdateHospitalMutation({ onSuccess: refetch });
   const { showToast } = useToast();
 
   const [display, setDisplay] = useState<boolean>(false);
@@ -123,7 +123,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
           </div>
 
           {formField({
-            titleText: '標題',
+            titleText: '標題(含"醫院"則歸類為醫院)',
             fieldName: 'title',
             placeholder: '醫療機構',
             col: 6,
