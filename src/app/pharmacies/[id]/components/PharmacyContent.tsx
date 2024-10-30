@@ -95,7 +95,7 @@ const PharmacyContent = (): ReactElement => {
   } = pharmacy;
   const usedExcerpt: string = excerpt
     ? excerpt
-    : `${title}是一間位於${county}${district}${address}的藥局! ${healthInsuranceAuthorized ? '是健保特約的藥局' : ''}，負責人為${owner! + (gender && composeGender(gender))}，電話是${phone}!`;
+    : `${title}是一間位於${county}${district}${address}的藥局! ${healthInsuranceAuthorized ? '是健保特約的藥局，' : ''}${owner && `負責人為${owner! + (gender && composeGender(gender))}，`}電話是${phone}!`;
 
   return (
     <div className="container mx-auto p-6">

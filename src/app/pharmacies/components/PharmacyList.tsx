@@ -3,12 +3,14 @@ import { ReactElement, useCallback, useState } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
 
+import CreatePharmacyContent from '@/app/components/admin/CreatePharmacyContent';
 import { Button } from '@/app/components/buttons/Button';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Pagination from '@/app/components/Pagination';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';
+import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 
 import PharmacyListItemCard from './PharmacyListItemCard';
 
@@ -55,7 +57,12 @@ const PharmacyList = (): ReactElement => {
 
   return (
     <div className="container mx-auto flex flex-col gap-y-4">
-      <h1 className="text-2xl font-bold">{PageType.PHARMACIES}</h1>
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+        <h1 className="text-2xl font-bold">{PageType.PHARMACIES}</h1>
+        <AdminProtected>
+          <CreatePharmacyContent />
+        </AdminProtected>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex gap-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-4/5">
