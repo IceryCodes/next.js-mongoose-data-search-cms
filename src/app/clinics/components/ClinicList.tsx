@@ -3,10 +3,10 @@ import { ReactElement, useCallback, useState } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
 
-import CreateHospitalContent from '@/app/components/admin/CreateHospitalContent';
-import { Button } from '@/app/components/buttons/Button';
-import GoogleMapComponent from '@/app/components/GoogleMapComponent';
-import Pagination from '@/app/components/Pagination';
+import CreateHospitalContent from '@/app/global-components/admin/CreateHospitalContent';
+import { Button } from '@/app/global-components/buttons/Button';
+import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
+import Pagination from '@/app/global-components/Pagination';
 import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';

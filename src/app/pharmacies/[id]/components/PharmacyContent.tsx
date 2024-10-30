@@ -4,12 +4,12 @@ import { ReactElement, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
-import DeletePharmacyContent from '@/app/components/admin/DeletePharmacyContent';
-import ManagePharmacyContent from '@/app/components/admin/ManagePharmacyContent';
-import Breadcrumb from '@/app/components/Breadcrumb';
-import Card from '@/app/components/Card';
-import GoogleMapComponent from '@/app/components/GoogleMapComponent';
-import Tag from '@/app/components/tags/Tag';
+import DeletePharmacyContent from '@/app/global-components/admin/DeletePharmacyContent';
+import ManagePharmacyContent from '@/app/global-components/admin/ManagePharmacyContent';
+import Breadcrumb from '@/app/global-components/Breadcrumb';
+import Card from '@/app/global-components/Card';
+import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
+import Tag from '@/app/global-components/tags/Tag';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { usePharmacyQuery } from '@/features/pharmacies/hooks/usePharmacyQuery';

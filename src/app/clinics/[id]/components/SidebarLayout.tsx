@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
 import ClinicListItemCard from '@/app/clinics/components/ClinicListItemCard';
-import { Button, ButtonStyleType } from '@/app/components/buttons/Button';
-import Card from '@/app/components/Card';
+import { Button, ButtonStyleType } from '@/app/global-components/buttons/Button';
+import Card from '@/app/global-components/Card';
 import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
 import { CountyType, getPageUrlByType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';

@@ -3,8 +3,8 @@ import { ReactElement, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
-import { Button, ButtonStyleType } from '@/app/components/buttons/Button';
-import Card from '@/app/components/Card';
+import { Button, ButtonStyleType } from '@/app/global-components/buttons/Button';
+import Card from '@/app/global-components/Card';
 import PharmacyListItemCard from '@/app/pharmacies/components/PharmacyListItemCard';
 import { CountyType, getPageUrlByType, PageType } from '@/domains/interfaces';
 import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';

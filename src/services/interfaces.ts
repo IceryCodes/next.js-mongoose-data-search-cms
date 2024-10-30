@@ -13,11 +13,11 @@ export interface GetHospitalsReturnType {
   message: string;
 }
 
-export interface UpdateHospitalReturnType {
+export interface HospitalUpdateReturnType {
   message: string;
 }
 
-export interface UpdatePharmacyReturnType {
+export interface PharmacyUpdateReturnType {
   message: string;
 }
 
@@ -53,5 +53,9 @@ export interface UserVerifyReturnType {
 }
 
 export interface UserResendVerificationReturnType {
+  message: string;
+}
+
+export interface UserUpdateReturnType {
   message: string;
 }

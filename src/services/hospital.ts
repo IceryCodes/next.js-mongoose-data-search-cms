@@ -7,7 +7,7 @@ import {
 } from '@/domains/hospital';
 import { apiOrigin, logApiError } from '@/utils/api';
 
-import { GetHospitalReturnType, GetHospitalsReturnType, UpdateHospitalReturnType } from './interfaces';
+import { GetHospitalReturnType, GetHospitalsReturnType, HospitalUpdateReturnType } from './interfaces';
 
 export const hospitalQueryKeys = {
   getHospital: 'getHospital',
@@ -59,7 +59,7 @@ export const getHospitals = async ({
   }
 };
 
-export const updateHospital = async (hospital: UpdateHospitalDto): Promise<UpdateHospitalReturnType> => {
+export const updateHospital = async (hospital: UpdateHospitalDto): Promise<HospitalUpdateReturnType> => {
   try {
     const { data } = await apiOrigin.patch(`/update-hospital`, hospital);
 
@@ -76,7 +76,7 @@ export const updateHospital = async (hospital: UpdateHospitalDto): Promise<Updat
   }
 };
 
-export const createHospital = async (hospital: CreateHospitalDto): Promise<UpdateHospitalReturnType> => {
+export const createHospital = async (hospital: CreateHospitalDto): Promise<HospitalUpdateReturnType> => {
   try {
     const { data } = await apiOrigin.post(`/create-hospital`, hospital);
 
@@ -93,7 +93,7 @@ export const createHospital = async (hospital: CreateHospitalDto): Promise<Updat
   }
 };
 
-export const deleteHospital = async ({ _id }: DeleteHospitalDto): Promise<UpdateHospitalReturnType> => {
+export const deleteHospital = async ({ _id }: DeleteHospitalDto): Promise<HospitalUpdateReturnType> => {
   try {
     const { data } = await apiOrigin.delete(`/delete-hospital`, {
       data: { _id },

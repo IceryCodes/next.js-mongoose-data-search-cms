@@ -5,10 +5,10 @@ import { ReactElement, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { Button } from '@/app/global-components/buttons/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { PageType, PageTypeMap } from '@/domains/interfaces';
 
-import { Button } from './buttons/Button';
 import VerifyBar from './VerifyBar';
 
 const linkStyle: string =
@@ -68,6 +68,7 @@ const Header = ({ children }: { children: ReactElement }) => {
                 const pageType = PageTypeMap[key];
 
                 if (pageType === PageType.LOGIN || pageType === PageType.REGISTER) if (isAuthenticated) return;
+                if (pageType === PageType.PROFILE && !isAuthenticated) return;
                 if (pageType === PageType.VERIFY) return;
 
                 return (

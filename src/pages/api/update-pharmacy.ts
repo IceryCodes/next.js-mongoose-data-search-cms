@@ -3,11 +3,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { PharmacyProps } from '@/domains/pharmacy';
 import { getPharmaciesCollection } from '@/lib/mongodb';
-import { UpdateHospitalReturnType } from '@/services/interfaces';
+import { HospitalUpdateReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
 import { isAdminToken, isExpiredToken } from '@/utils/token';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalReturnType>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateReturnType>) => {
   if (req.method !== 'PATCH') {
     res.setHeader('Allow', ['PATCH']);
     return res.status(HttpStatus.MethodNotAllowed).json({ message: `Method ${req.method} not allowed` });

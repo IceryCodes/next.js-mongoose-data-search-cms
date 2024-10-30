@@ -7,14 +7,6 @@ export interface UserLoginDto {
   password: string;
 }
 
-export interface UserRegisterDto {
-  firstName: string;
-  lastName: string;
-  gender: GenderType;
-  email: string;
-  password: string;
-}
-
 export interface UserVerifyDto {
   token: string;
 }
@@ -22,6 +14,15 @@ export interface UserVerifyDto {
 export interface UserResendVerificationDto {
   _id: string;
 }
+
+export interface UserUpdateDto {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  gender: GenderType;
+}
+
+export type UserRegisterDto = UserLoginDto & Omit<UserUpdateDto, '_id'>;
 
 export interface UserWithPasswordProps extends UserRegisterDto {
   _id: ObjectId;
@@ -32,3 +33,6 @@ export interface UserWithPasswordProps extends UserRegisterDto {
 }
 
 export type UserProps = Omit<UserWithPasswordProps, 'password'>;
+
+export type UserUpdateProps = Omit<UserProps, '_id' | 'email' | 'role' | 'isVerified' | 'createdAt' | 'updatedAt'>;
+export type DeleteUserDto = Pick<UserProps, '_id'>;

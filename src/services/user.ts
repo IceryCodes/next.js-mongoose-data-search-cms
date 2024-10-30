@@ -1,5 +1,5 @@
-import { UserVerifyDto } from '@/domains/user';
-import { GetUserReturnType, UserVerifyReturnType } from '@/services/interfaces';
+import { DeleteUserDto, UserVerifyDto } from '@/domains/user';
+import { GetUserReturnType, UserUpdateReturnType, UserVerifyReturnType } from '@/services/interfaces';
 import { apiOrigin, logApiError } from '@/utils/api';
 
 export const userQueryKeys = {
@@ -30,9 +30,28 @@ export const verifyUser = async ({ token }: UserVerifyDto): Promise<UserVerifyRe
     });
     return data;
   } catch (error) {
-    const message: string = '驗證失敗!';
+    const message: string = '帳號驗證失敗!';
     logApiError({ error, message });
 
     throw { message };
+  }
+};
+
+export const deleteUser = async ({ _id }: DeleteUserDto): Promise<UserUpdateReturnType> => {
+  try {
+    const { data } = await apiOrigin.delete(`/delete-user`, {
+      data: { _id },
+    });
+
+    return {
+      message: data.message,
+    };
+  } catch (error) {
+    const message: string = '刪除帳號失敗!';
+    logApiError({ error, message });
+
+    return {
+      message,
+    };
   }
 };

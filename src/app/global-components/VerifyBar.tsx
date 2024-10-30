@@ -4,12 +4,12 @@ import { ReactElement, useEffect, useState } from 'react';
 
 import { usePathname } from 'next/navigation';
 
+import { Button } from '@/app/global-components/buttons/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
 import { useResendVerificationMutation } from '@/features/user/useAuthMutation';
 
-import { Button } from './buttons/Button';
 import { ToastStyleType } from './Toast';
 
 const VerifyBar = (): ReactElement => {

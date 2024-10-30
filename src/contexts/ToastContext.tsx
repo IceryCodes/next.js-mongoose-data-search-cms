@@ -1,6 +1,6 @@
 import { createContext, ReactElement, useContext, useState } from 'react';
 
-import Toast, { ToastStyleType } from '@/app/components/Toast';
+import Toast, { ToastStyleType } from '@/app/global-components/Toast';
 
 interface ShowToastProps {
   message: string;

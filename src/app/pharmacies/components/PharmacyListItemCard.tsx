@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import Tag from '@/app/components/tags/Tag';
+import Tag from '@/app/global-components/tags/Tag';
 import { DistrictType, getPageUrlByType, PageType } from '@/domains/interfaces';
 
 interface PharmacyListItemCardProps {

@@ -5,12 +5,12 @@ import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import SidebarLayout from '@/app/clinics/[id]/components/SidebarLayout';
-import DeleteHospitalContent from '@/app/components/admin/DeleteHospitalContent';
-import ManageHospitalContent from '@/app/components/admin/ManageHospitalContent';
-import Breadcrumb from '@/app/components/Breadcrumb';
-import Card from '@/app/components/Card';
-import GoogleMapComponent from '@/app/components/GoogleMapComponent';
-import Tag from '@/app/components/tags/Tag';
+import DeleteHospitalContent from '@/app/global-components/admin/DeleteHospitalContent';
+import ManageHospitalContent from '@/app/global-components/admin/ManageHospitalContent';
+import Breadcrumb from '@/app/global-components/Breadcrumb';
+import Card from '@/app/global-components/Card';
+import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
+import Tag from '@/app/global-components/tags/Tag';
 import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';

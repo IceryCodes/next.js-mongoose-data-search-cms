@@ -189,6 +189,12 @@ export const loginValidationSchema = object({
   password: rules.password,
 });
 
+export const profileValidationSchema = object({
+  firstName: rules.firstName,
+  lastName: rules.lastName,
+  gender: rules.gender,
+});
+
 export const hospitalValidationSchema = object({
   partner: rules.partner,
   orgCode: rules.orgCode,

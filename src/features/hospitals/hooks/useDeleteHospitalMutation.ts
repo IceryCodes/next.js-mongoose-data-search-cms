@@ -4,10 +4,10 @@ import { useMutation } from '@tanstack/react-query';
 
 import { DeleteHospitalDto } from '@/domains/hospital';
 import { deleteHospital } from '@/services/hospital';
-import { UpdateHospitalReturnType } from '@/services/interfaces';
+import { HospitalUpdateReturnType } from '@/services/interfaces';
 import type { UseMutationFn } from '@/utils/reactQuery';
 
-export const useDeleteHospitalMutation: UseMutationFn<UpdateHospitalReturnType, DeleteHospitalDto> = (args) => {
+export const useDeleteHospitalMutation: UseMutationFn<HospitalUpdateReturnType, DeleteHospitalDto> = (args) => {
   const { onError, onSuccess, mutationPrefixKey = [] } = args ?? {};
   const {
     isPending: isLoading,

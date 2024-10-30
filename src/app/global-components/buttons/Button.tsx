@@ -3,6 +3,7 @@ import { ButtonHTMLAttributes, MouseEventHandler, ReactElement, useMemo } from '
 export enum ButtonStyleType {
   Blue = 0,
   Gray = 1,
+  Red = 2,
 }
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -33,6 +34,8 @@ export const Button = ({
         return 'bg-blue-500 hover:bg-blue-600 text-white';
       case ButtonStyleType.Gray:
         return 'bg-gray-500 hover:bg-gray-600 text-white';
+      case ButtonStyleType.Red:
+        return 'bg-red-500 hover:bg-red-600 text-white';
       default:
         return '';
     }
@@ -41,7 +44,7 @@ export const Button = ({
   return (
     <button
       type={type ?? 'button'}
-      className={element ? className : `${buttonClassName} ${defaultButtonStyle} ${className}`}
+      className={element ? className : `${buttonClassName} ${defaultButtonStyle} transition-all duration-300 ${className}`}
       onClick={onClick}
       disabled={disabled}
       {...restProps}

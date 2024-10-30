@@ -2,7 +2,7 @@
 
 import { ReactElement, useEffect } from 'react';
 
-import { Button } from './buttons/Button';
+import { Button } from '@/app/global-components/buttons/Button';
 
 export enum ToastStyleType {
   Normal = 'bg-blue-400',

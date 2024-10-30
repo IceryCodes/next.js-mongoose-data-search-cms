@@ -3,11 +3,11 @@ import { useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 
 import { DeletePharmacyDto } from '@/domains/pharmacy';
-import { UpdatePharmacyReturnType } from '@/services/interfaces';
+import { PharmacyUpdateReturnType } from '@/services/interfaces';
 import { deletePharmacy } from '@/services/pharmacy';
 import type { UseMutationFn } from '@/utils/reactQuery';
 
-export const useDeletePharmacyMutation: UseMutationFn<UpdatePharmacyReturnType, DeletePharmacyDto> = (args) => {
+export const useDeletePharmacyMutation: UseMutationFn<PharmacyUpdateReturnType, DeletePharmacyDto> = (args) => {
   const { onError, onSuccess, mutationPrefixKey = [] } = args ?? {};
   const {
     isPending: isLoading,

@@ -25,6 +25,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const usersCollection = await getUsersCollection();
+
+    // Check if the email already exists
+    const existingUser = await usersCollection.findOne({ email });
+    if (existingUser) {
+      return res.status(HttpStatus.BadRequest).json({ message: '此電子郵件已被註冊' });
+    }
+
     const timeStamp: Date = new Date();
 
     const newUser: Omit<UserWithPasswordProps, '_id'> = {

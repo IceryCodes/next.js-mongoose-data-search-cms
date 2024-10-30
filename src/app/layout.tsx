@@ -9,7 +9,7 @@ import localFont from 'next/font/local';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 
-import Header from './components/Header';
+import Header from './global-components/Header';
 
 import './globals.css';
 
