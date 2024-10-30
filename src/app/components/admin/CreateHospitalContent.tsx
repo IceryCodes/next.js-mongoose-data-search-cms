@@ -6,35 +6,80 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useToast } from '@/contexts/ToastContext';
+import { DepartmentsType, HospitalExtraFieldType, UpdateHospitalProps } from '@/domains/hospital';
 import { CountyType, districtOptions, DistrictType, GenderType } from '@/domains/interfaces';
-import { PharmacyProps, UpdatePharmacyProps } from '@/domains/pharmacy';
-import { useUpdatePharmacyMutation } from '@/features/pharmacies/hooks/useUpdatePharmacyMutation';
-import { pharmacyValidationSchema } from '@/lib/validation';
+import { useCreateHospitalMutation } from '@/features/hospitals/hooks/useCreateHospitalMutation';
+import { useEnum } from '@/hooks/utils/useEnum';
+import { hospitalValidationSchema } from '@/lib/validation';
 
 import { Button, defaultButtonStyle } from '../buttons/Button';
 import FieldErrorlabel from '../FieldErrorlabel';
 import Popup from '../Popup';
 
-interface ManagePharmacyContentProps {
-  pharmacy: PharmacyProps;
-  refetch: () => void;
-}
-
 interface FormFieldProps {
   titleText: string;
-  fieldName: keyof UpdatePharmacyProps;
+  fieldName: keyof UpdateHospitalProps;
   placeholder: string;
   col: number;
   type?: string;
 }
 
+const defaultHospital: UpdateHospitalProps = {
+  partner: false,
+  orgCode: '',
+  owner: '',
+  gender: GenderType.None,
+  doctors: [],
+  departments: [],
+  websiteUrl: '',
+  email: '',
+  phone: '',
+  county: '' as CountyType,
+  district: '',
+  address: '',
+  title: '',
+  excerpt: '',
+  content: '',
+  keywords: [],
+  featuredImg: '',
+  [HospitalExtraFieldType.SpeechTherapist]: 0,
+  [HospitalExtraFieldType.DentalTechnician]: 0,
+  [HospitalExtraFieldType.Audiologist]: 0,
+  [HospitalExtraFieldType.DentalTechnicianAssistant]: 0,
+  [HospitalExtraFieldType.Optometrist]: 0,
+  [HospitalExtraFieldType.OptometricAssistant]: 0,
+  [HospitalExtraFieldType.Physician]: 0,
+  [HospitalExtraFieldType.ChineseMedicineDoctor]: 0,
+  [HospitalExtraFieldType.Dentist]: 0,
+  [HospitalExtraFieldType.Pharmacist]: 0,
+  [HospitalExtraFieldType.PharmacyAssistant]: 0,
+  [HospitalExtraFieldType.RegisteredNurse]: 0,
+  [HospitalExtraFieldType.Nurse]: 0,
+  [HospitalExtraFieldType.Midwife]: 0,
+  [HospitalExtraFieldType.MidwiferyAssistant]: 0,
+  [HospitalExtraFieldType.MedicalLaboratoryTechnologist]: 0,
+  [HospitalExtraFieldType.MedicalLaboratoryAssistant]: 0,
+  [HospitalExtraFieldType.PhysicalTherapist]: 0,
+  [HospitalExtraFieldType.OccupationalTherapist]: 0,
+  [HospitalExtraFieldType.RadiologicTechnologist]: 0,
+  [HospitalExtraFieldType.RadiologicAssistant]: 0,
+  [HospitalExtraFieldType.PhysicalTherapyAssistant]: 0,
+  [HospitalExtraFieldType.OccupationalTherapyAssistant]: 0,
+  [HospitalExtraFieldType.RespiratoryTherapist]: 0,
+  [HospitalExtraFieldType.CounselingPsychologist]: 0,
+  [HospitalExtraFieldType.ClinicalPsychologist]: 0,
+  [HospitalExtraFieldType.Dietitian]: 0,
+};
+
 const inputStyle: string = 'w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400';
 
-const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps) => {
-  const { isLoading, mutateAsync } = useUpdatePharmacyMutation({ onSuccess: refetch });
+const CreateHospitalContent = () => {
+  const { hospitalExtraFieldMap } = useEnum();
+  const { isLoading, mutateAsync } = useCreateHospitalMutation();
   const { showToast } = useToast();
 
   const [display, setDisplay] = useState<boolean>(false);
+  const [expand, setExpand] = useState<boolean>(false);
 
   const {
     control,
@@ -42,9 +87,9 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
     reset,
     watch,
     formState: { isDirty, errors },
-  } = useForm<UpdatePharmacyProps>({
-    resolver: yupResolver(pharmacyValidationSchema),
-    defaultValues: pharmacy,
+  } = useForm<UpdateHospitalProps>({
+    resolver: yupResolver(hospitalValidationSchema),
+    defaultValues: defaultHospital,
   });
 
   const messageArray = useMemo((): string[] => {
@@ -81,10 +126,9 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
   );
 
   const onSubmit = useCallback(
-    async (data: UpdatePharmacyProps) => {
+    async (data: UpdateHospitalProps) => {
       try {
         const result = await mutateAsync({
-          _id: pharmacy._id,
           ...data,
           address: data.address.replaceAll(data.county, '').replaceAll(data.district, ''),
         });
@@ -98,12 +142,12 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
         console.error('Update error:', error);
       }
     },
-    [pharmacy._id, mutateAsync, reset, showToast]
+    [mutateAsync, reset, showToast]
   );
 
   const form = useMemo(
     (): ReactElement => (
-      <Popup title="編輯藥局" display={display} onClose={() => setDisplay(false)}>
+      <Popup title="新增醫院或診所" display={display} onClose={() => setDisplay(false)}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-6 gap-4 w-[500px]">
           <div className="flex flex-col col-span-3 justify-center">
             {messageArray.length > 0 &&
@@ -120,9 +164,9 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
           </div>
 
           {formField({
-            titleText: '標題',
+            titleText: '標題(含"醫院"則歸類為醫院)',
             fieldName: 'title',
-            placeholder: '藥局',
+            placeholder: '醫療機構',
             col: 6,
           })}
 
@@ -285,7 +329,37 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
           })}
 
           <div className="flex flex-col col-span-6">
-            <label>藥局醫生</label>
+            <label>科別</label>
+            <Controller
+              name="departments"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <div className="grid grid-cols-3 gap-2">
+                  {Object.values(DepartmentsType).map((department) => (
+                    <label key={department} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        value={department}
+                        checked={value?.includes(department)}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+                          const updatedDepartments = isChecked
+                            ? [...(value || []), department]
+                            : value?.filter((d) => d !== department) || [];
+                          onChange(updatedDepartments);
+                        }}
+                        className="mr-2"
+                      />
+                      {department}
+                    </label>
+                  ))}
+                </div>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col col-span-6">
+            <label>醫院醫生</label>
             <Controller
               name="doctors"
               control={control}
@@ -298,7 +372,7 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
                     onChange={(event: ChangeEvent<HTMLInputElement>) =>
                       field.onChange(event.target.value ? event.target.value.split(',') : [])
                     }
-                    placeholder="藥局醫生 (多個用半形逗號分隔)"
+                    placeholder="醫院醫生 (多個用半形逗號分隔)"
                   />
                   <FieldErrorlabel error={error} />
                 </>
@@ -309,7 +383,7 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
           {formField({
             titleText: '簡述',
             fieldName: 'excerpt',
-            placeholder: '藥局的簡述',
+            placeholder: '醫療機構的簡述',
             col: 6,
           })}
           <div className="flex flex-col col-span-6">
@@ -319,7 +393,7 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <>
-                  <input className={inputStyle} type="text" {...field} placeholder="藥局的簡述" />
+                  <input className={inputStyle} type="text" {...field} placeholder="醫療機構的簡述" />
                   <FieldErrorlabel error={error} />
                 </>
               )}
@@ -333,16 +407,54 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <>
-                  <textarea className={`${inputStyle} h-40`} {...field} placeholder="藥局的詳細內容" />
+                  <textarea className={`${inputStyle} h-40`} {...field} placeholder="醫療機構的詳細內容" />
                   <FieldErrorlabel error={error} />
                 </>
               )}
             />
           </div>
+          <div className="col-span-6">
+            <Button type="button" text="詳細內容" onClick={() => setExpand(!expand)} />
+          </div>
+
+          {expand &&
+            Object.entries(hospitalExtraFieldMap).map(([label]) => (
+              <div key={label} className="flex flex-col col-span-2">
+                <label>{label}</label>
+                <Controller
+                  name={label as keyof UpdateHospitalProps}
+                  control={control}
+                  render={({ field: { value, onChange }, fieldState: { error } }) => (
+                    <>
+                      <input
+                        className={inputStyle}
+                        type="number"
+                        value={!isNaN(Number(value)) ? Number(value) : 0}
+                        onChange={(e) => onChange(Number(e.target.value))}
+                        placeholder={`輸入${label}人數`}
+                      />
+                      <FieldErrorlabel error={error} />
+                    </>
+                  )}
+                />
+              </div>
+            ))}
         </form>
       </Popup>
     ),
-    [display, handleSubmit, onSubmit, messageArray, isLoading, isDirty, formField, control, county]
+    [
+      display,
+      handleSubmit,
+      onSubmit,
+      messageArray,
+      isLoading,
+      isDirty,
+      formField,
+      control,
+      expand,
+      hospitalExtraFieldMap,
+      county,
+    ]
   );
 
   const onClick = () => setDisplay(true);
@@ -358,11 +470,13 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
         strokeWidth="2"
         className="w-6 h-6 cursor-pointer text-gray-600 hover:text-blue-600 transition"
       >
-        <path d="M3 17.25V21h3.75l11.39-11.39-3.75-3.75L3 17.25zM16 3l5 5-2 2-5-5 2-2z" />
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="16" />
+        <line x1="8" y1="12" x2="16" y2="12" />
       </svg>
       {form}
     </>
   );
 };
 
-export default ManagePharmacyContent;
+export default CreateHospitalContent;

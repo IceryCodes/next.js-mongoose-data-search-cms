@@ -137,3 +137,5 @@ export interface GetHospitalsDto {
 
 export type UpdateHospitalProps = Omit<HospitalProps, '_id' | 'createdAt' | 'updatedAt'>;
 export interface UpdateHospitalDto extends UpdateHospitalProps, Pick<HospitalProps, '_id'> {}
+export type CreateHospitalDto = UpdateHospitalProps;
+export type DeleteHospitalDto = Pick<HospitalProps, '_id'>;

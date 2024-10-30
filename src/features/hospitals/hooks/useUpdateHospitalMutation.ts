@@ -7,7 +7,7 @@ import { updateHospital } from '@/services/hospital';
 import { UpdateHospitalReturnType } from '@/services/interfaces';
 import type { UseMutationFn } from '@/utils/reactQuery';
 
-export const useHospitalMutation: UseMutationFn<UpdateHospitalReturnType, UpdateHospitalDto> = (args) => {
+export const useUpdateHospitalMutation: UseMutationFn<UpdateHospitalReturnType, UpdateHospitalDto> = (args) => {
   const { onError, onSuccess, mutationPrefixKey = [] } = args ?? {};
   const {
     isPending: isLoading,

@@ -1,4 +1,10 @@
-import { GetHospitalDto, GetHospitalsDto, UpdateHospitalDto } from '@/domains/hospital';
+import {
+  CreateHospitalDto,
+  DeleteHospitalDto,
+  GetHospitalDto,
+  GetHospitalsDto,
+  UpdateHospitalDto,
+} from '@/domains/hospital';
 import { apiOrigin, logApiError } from '@/utils/api';
 
 import { GetHospitalReturnType, GetHospitalsReturnType, UpdateHospitalReturnType } from './interfaces';
@@ -62,6 +68,42 @@ export const updateHospital = async (hospital: UpdateHospitalDto): Promise<Updat
     };
   } catch (error) {
     const message: string = '更新醫院失敗!';
+    logApiError({ error, message });
+
+    return {
+      message,
+    };
+  }
+};
+
+export const createHospital = async (hospital: CreateHospitalDto): Promise<UpdateHospitalReturnType> => {
+  try {
+    const { data } = await apiOrigin.post(`/create-hospital`, hospital);
+
+    return {
+      message: data.message,
+    };
+  } catch (error) {
+    const message: string = '新增醫院失敗!';
+    logApiError({ error, message });
+
+    return {
+      message,
+    };
+  }
+};
+
+export const deleteHospital = async ({ _id }: DeleteHospitalDto): Promise<UpdateHospitalReturnType> => {
+  try {
+    const { data } = await apiOrigin.delete(`/delete-hospital`, {
+      data: { _id },
+    });
+
+    return {
+      message: data.message,
+    };
+  } catch (error) {
+    const message: string = '刪除醫院失敗!';
     logApiError({ error, message });
 
     return {

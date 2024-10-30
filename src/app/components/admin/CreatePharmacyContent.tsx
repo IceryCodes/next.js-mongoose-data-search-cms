@@ -7,18 +7,13 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { useToast } from '@/contexts/ToastContext';
 import { CountyType, districtOptions, DistrictType, GenderType } from '@/domains/interfaces';
-import { PharmacyProps, UpdatePharmacyProps } from '@/domains/pharmacy';
-import { useUpdatePharmacyMutation } from '@/features/pharmacies/hooks/useUpdatePharmacyMutation';
+import { UpdatePharmacyProps } from '@/domains/pharmacy';
+import { useCreatePharmacyMutation } from '@/features/pharmacies/hooks/useCreatePharmacyMutation';
 import { pharmacyValidationSchema } from '@/lib/validation';
 
 import { Button, defaultButtonStyle } from '../buttons/Button';
 import FieldErrorlabel from '../FieldErrorlabel';
 import Popup from '../Popup';
-
-interface ManagePharmacyContentProps {
-  pharmacy: PharmacyProps;
-  refetch: () => void;
-}
 
 interface FormFieldProps {
   titleText: string;
@@ -28,10 +23,30 @@ interface FormFieldProps {
   type?: string;
 }
 
+const defaultPharmacy: UpdatePharmacyProps = {
+  partner: false,
+  orgCode: '',
+  owner: '',
+  gender: GenderType.None,
+  doctors: [],
+  websiteUrl: '',
+  email: '',
+  phone: '',
+  county: '' as CountyType,
+  district: '',
+  address: '',
+  title: '',
+  excerpt: '',
+  content: '',
+  keywords: [],
+  featuredImg: '',
+  healthInsuranceAuthorized: false,
+};
+
 const inputStyle: string = 'w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400';
 
-const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps) => {
-  const { isLoading, mutateAsync } = useUpdatePharmacyMutation({ onSuccess: refetch });
+const CreatePharmacyContent = () => {
+  const { isLoading, mutateAsync } = useCreatePharmacyMutation();
   const { showToast } = useToast();
 
   const [display, setDisplay] = useState<boolean>(false);
@@ -44,7 +59,7 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
     formState: { isDirty, errors },
   } = useForm<UpdatePharmacyProps>({
     resolver: yupResolver(pharmacyValidationSchema),
-    defaultValues: pharmacy,
+    defaultValues: defaultPharmacy,
   });
 
   const messageArray = useMemo((): string[] => {
@@ -84,7 +99,6 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
     async (data: UpdatePharmacyProps) => {
       try {
         const result = await mutateAsync({
-          _id: pharmacy._id,
           ...data,
           address: data.address.replaceAll(data.county, '').replaceAll(data.district, ''),
         });
@@ -98,12 +112,12 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
         console.error('Update error:', error);
       }
     },
-    [pharmacy._id, mutateAsync, reset, showToast]
+    [mutateAsync, reset, showToast]
   );
 
   const form = useMemo(
     (): ReactElement => (
-      <Popup title="編輯藥局" display={display} onClose={() => setDisplay(false)}>
+      <Popup title="新增藥局" display={display} onClose={() => setDisplay(false)}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-6 gap-4 w-[500px]">
           <div className="flex flex-col col-span-3 justify-center">
             {messageArray.length > 0 &&
@@ -358,11 +372,13 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
         strokeWidth="2"
         className="w-6 h-6 cursor-pointer text-gray-600 hover:text-blue-600 transition"
       >
-        <path d="M3 17.25V21h3.75l11.39-11.39-3.75-3.75L3 17.25zM16 3l5 5-2 2-5-5 2-2z" />
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="16" />
+        <line x1="8" y1="12" x2="16" y2="12" />
       </svg>
       {form}
     </>
   );
 };
 
-export default ManagePharmacyContent;
+export default CreatePharmacyContent;

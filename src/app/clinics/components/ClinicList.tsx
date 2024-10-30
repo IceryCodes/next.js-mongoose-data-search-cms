@@ -3,12 +3,14 @@ import { ReactElement, useCallback, useState } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
 
+import CreateHospitalContent from '@/app/components/admin/CreateHospitalContent';
 import { Button } from '@/app/components/buttons/Button';
 import GoogleMapComponent from '@/app/components/GoogleMapComponent';
 import Pagination from '@/app/components/Pagination';
 import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
+import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 
 import ClinicListItemCard from './ClinicListItemCard';
 
@@ -56,7 +58,12 @@ const ClinicList = (): ReactElement => {
 
   return (
     <div className="container mx-auto flex flex-col gap-y-4">
-      <h1 className="text-2xl font-bold">{PageType.CLINICS}</h1>
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+        <h1 className="text-2xl font-bold">{PageType.CLINICS}</h1>
+        <AdminProtected>
+          <CreateHospitalContent />
+        </AdminProtected>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex gap-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-4/5">

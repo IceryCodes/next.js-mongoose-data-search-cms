@@ -20,7 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
 
     const usersCollection = await getUsersCollection();
 
-    const user = await usersCollection.findOne({ email });
+    const user = await usersCollection.findOne({ email, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] });
 
     if (!user) {
       return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid email or password' });

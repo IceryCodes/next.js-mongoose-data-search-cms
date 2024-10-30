@@ -1,4 +1,10 @@
-import { GetPharmaciesDto, GetPharmacyDto, UpdatePharmacyDto } from '@/domains/pharmacy';
+import {
+  CreatePharmacyDto,
+  DeletePharmacyDto,
+  GetPharmaciesDto,
+  GetPharmacyDto,
+  UpdatePharmacyDto,
+} from '@/domains/pharmacy';
 import { apiOrigin, logApiError } from '@/utils/api';
 
 import { GetPharmaciesReturnType, GetPharmacyReturnType, UpdatePharmacyReturnType } from './interfaces';
@@ -63,6 +69,42 @@ export const updatePharmacy = async (pharmacy: UpdatePharmacyDto): Promise<Updat
     };
   } catch (error) {
     const message: string = '更新藥局失敗!';
+    logApiError({ error, message });
+
+    return {
+      message,
+    };
+  }
+};
+
+export const createPharmacy = async (hospital: CreatePharmacyDto): Promise<UpdatePharmacyReturnType> => {
+  try {
+    const { data } = await apiOrigin.post(`/create-pharmacy`, hospital);
+
+    return {
+      message: data.message,
+    };
+  } catch (error) {
+    const message: string = '新增藥局失敗!';
+    logApiError({ error, message });
+
+    return {
+      message,
+    };
+  }
+};
+
+export const deletePharmacy = async ({ _id }: DeletePharmacyDto): Promise<UpdatePharmacyReturnType> => {
+  try {
+    const { data } = await apiOrigin.delete(`/delete-pharmacy`, {
+      data: { _id },
+    });
+
+    return {
+      message: data.message,
+    };
+  } catch (error) {
+    const message: string = '刪除藥局失敗!';
     logApiError({ error, message });
 
     return {

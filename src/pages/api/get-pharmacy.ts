@@ -29,7 +29,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetPharmacyRetu
   try {
     const pharmaciesCollection: Collection<PharmacyProps> = await getPharmaciesCollection();
 
-    const pharmacy: WithId<PharmacyProps> | null = await pharmaciesCollection.findOne({ _id: new ObjectId(_id) });
+    const pharmacy: WithId<PharmacyProps> | null = await pharmaciesCollection.findOne({
+      _id: new ObjectId(_id),
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    });
 
     res.status(HttpStatus.Ok).json({ pharmacy: pharmacy || null, message: 'Success' });
   } catch (error) {
