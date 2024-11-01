@@ -2,7 +2,9 @@ import { ReactElement } from 'react';
 
 import { Metadata } from 'next';
 
+import { HospitalProps } from '@/domains/hospital';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { metadataInfo } from '@/domains/metadatas';
 import { getHospital } from '@/services/hospital';
 import { GetHospitalReturnType } from '@/services/interfaces';
 
@@ -12,43 +14,24 @@ export const generateMetadata = async ({ params }: { params: { id: string } }): 
   const { id } = params;
 
   let _id: string = '';
-  let title: string = '';
+  let pageName: string = '';
   const { hospital }: GetHospitalReturnType = await getHospital({ _id: id });
   if (hospital) {
     _id = hospital._id.toString();
-    title = hospital.title;
+    pageName = hospital.title;
   }
 
-  const currentPath: string = `${process.env.NEXT_PUBLIC_BASE_URL}/${getPageUrlByType(PageType.CLINICS)}/${_id}`;
-  const pageName: string = title;
+  const currentPath: string = `${process.env.NEXT_PUBLIC_BASE_URL}${getPageUrlByType(PageType.HOSPITALS)}/${_id}`;
 
-  return {
-    title: `${pageName} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
-    description: '介紹',
-    authors: [{ name: process.env.NEXT_PUBLIC_SITE_NAME, url: currentPath }],
-    publisher: process.env.NEXT_PUBLIC_SITE_NAME,
-    creator: process.env.NEXT_PUBLIC_SITE_NAME,
-    generator: process.env.NEXT_PUBLIC_SITE_NAME,
-    applicationName: process.env.NEXT_PUBLIC_SITE_NAME,
-    keywords: [process.env.NEXT_PUBLIC_SITE_NAME, pageName, ...(hospital?.keywords || [])],
-    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL),
-    openGraph: {
-      type: 'website',
-      title: process.env.NEXT_PUBLIC_SITE_NAME,
-      description: 'pageExcerpt',
-      emails: ['sales@mtmtech.com.tw'],
-      siteName: process.env.NEXT_PUBLIC_SITE_NAME,
-      images: {
-        url: process.env.NEXT_PUBLIC_FEATURED_IMAGE,
-        secureUrl: process.env.NEXT_PUBLIC_FEATURED_IMAGE,
-        alt: process.env.NEXT_PUBLIC_SITE_NAME,
-        type: 'image/png',
-        width: 1920,
-        height: 1080,
-      },
-      url: currentPath,
-    },
-  };
+  return metadataInfo({
+    pageName,
+    currentPath,
+    description: hospital?.excerpt,
+    keywords: hospital?.keywords,
+    email: hospital?.email,
+    featuredImage: hospital?.featuredImg,
+    data: hospital as HospitalProps,
+  });
 };
 
 const Page = (): ReactElement => <ClinicContent />;

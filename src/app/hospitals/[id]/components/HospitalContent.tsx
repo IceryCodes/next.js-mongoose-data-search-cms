@@ -13,6 +13,7 @@ import Tag from '@/app/global-components/tags/Tag';
 import SidebarLayout from '@/app/hospitals/[id]/components/SidebarLayout';
 import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { defaultHospitalExcerpt } from '@/domains/metadatas';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
@@ -79,9 +80,7 @@ const HospitalContent = (): ReactElement => {
     featuredImg,
   } = hospital;
 
-  const usedExcerpt: string = excerpt
-    ? excerpt
-    : `${title}是一間提供${departments.join(', ')}的醫院! 位於${county}${district}${address}，電話是${phone}!`;
+  const usedExcerpt: string = excerpt ? excerpt : defaultHospitalExcerpt(hospital);
 
   return (
     <div className="container mx-auto p-6">

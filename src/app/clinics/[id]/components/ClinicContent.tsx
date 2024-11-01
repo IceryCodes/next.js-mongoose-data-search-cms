@@ -13,6 +13,7 @@ import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
 import Tag from '@/app/global-components/tags/Tag';
 import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { defaultClicnicExcerpt } from '@/domains/metadatas';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
@@ -79,9 +80,7 @@ const ClinicContent = (): ReactElement => {
     featuredImg,
   } = hospital;
 
-  const usedExcerpt: string = excerpt
-    ? excerpt
-    : `${title}是一間提供${departments.join(', ')}的診所! 位於${county}${district}${address}，電話是${phone}!`;
+  const usedExcerpt: string = excerpt ? excerpt : defaultClicnicExcerpt(hospital);
 
   return (
     <div className="container mx-auto p-6">

@@ -11,6 +11,7 @@ import Card from '@/app/global-components/Card';
 import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
 import Tag from '@/app/global-components/tags/Tag';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { defaultPharmacyExcerpt } from '@/domains/metadatas';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { usePharmacyQuery } from '@/features/pharmacies/hooks/usePharmacyQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
@@ -42,21 +43,6 @@ const PharmacyContent = (): ReactElement => {
     ),
     []
   );
-
-  // const workerInfoRender = useCallback(
-  //   ({ label, value }: { label: string; value: number }): ReactElement => (
-  //     <>
-  //       {!!value && (
-  //         <li>
-  //           <label>
-  //             {label}: {value}位
-  //           </label>
-  //         </li>
-  //       )}
-  //     </>
-  //   ),
-  //   []
-  // );
 
   useEffect(() => {
     if (!isLoading && !pharmacy && !isError) {
@@ -96,9 +82,7 @@ const PharmacyContent = (): ReactElement => {
     featuredImg,
     healthInsuranceAuthorized,
   } = pharmacy;
-  const usedExcerpt: string = excerpt
-    ? excerpt
-    : `${title}是一間位於${county}${district}${address}的藥局! ${healthInsuranceAuthorized ? '是健保特約的藥局，' : ''}${owner && `負責人為${owner! + (gender && composeGender(gender))}，`}電話是${phone}!`;
+  const usedExcerpt: string = excerpt ? excerpt : defaultPharmacyExcerpt(pharmacy);
 
   return (
     <div className="container mx-auto p-6">

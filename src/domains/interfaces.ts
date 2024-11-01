@@ -1,4 +1,5 @@
 export enum PageType {
+  HOME = '首頁',
   HOSPITALS = '醫院搜尋',
   CLINICS = '診所搜尋',
   PHARMACIES = '藥局搜尋',
