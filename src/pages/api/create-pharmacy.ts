@@ -41,6 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const newPharmacy: PharmacyProps = {
       ...req.body,
+      managers: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     };

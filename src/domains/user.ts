@@ -28,6 +28,7 @@ export interface UserWithPasswordProps extends UserRegisterDto {
   _id: ObjectId;
   role: UserRoleType;
   isVerified: boolean;
+  manages: string[];
   createdAt: Date;
   updatedAt: Date;
 }

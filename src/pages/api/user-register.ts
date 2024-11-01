@@ -42,6 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       password: hashedPassword,
       role: UserRoleType.None,
       isVerified: false,
+      manages: [],
       createdAt: timeStamp,
       updatedAt: timeStamp,
     };
@@ -65,6 +66,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       email,
       role: UserRoleType.None,
       isVerified: false,
+      manages: [],
       createdAt: timeStamp,
       updatedAt: timeStamp,
     };

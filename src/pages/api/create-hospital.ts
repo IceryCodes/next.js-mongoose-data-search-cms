@@ -41,6 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const newHospital: HospitalProps = {
       ...req.body,
+      managers: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     };
