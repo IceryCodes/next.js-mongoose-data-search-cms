@@ -10,15 +10,17 @@ import { ToastStyleType } from '@/app/global-components/Toast';
 import { useToast } from '@/contexts/ToastContext';
 import { HospitalProps } from '@/domains/hospital';
 import { ManageCategoryType } from '@/domains/manage';
+import { PharmacyProps } from '@/domains/pharmacy';
 import { useUpdateManagesMutation } from '@/features/manages/hooks/useUpdateManagesMutation';
 
 interface UserRoleAsignProps {
+  manageType: ManageCategoryType;
   userId?: ObjectId;
   userName?: string;
-  selectedHospitals: HospitalProps[];
+  selectedHospitals: (HospitalProps | PharmacyProps)[];
 }
 
-const UserRoleAsign = ({ userId, userName, selectedHospitals }: UserRoleAsignProps): ReactElement => {
+const UserRoleAsign = ({ manageType, userId, userName, selectedHospitals }: UserRoleAsignProps): ReactElement => {
   const { showToast } = useToast();
 
   const { isLoading, mutateAsync } = useUpdateManagesMutation();
@@ -29,8 +31,8 @@ const UserRoleAsign = ({ userId, userName, selectedHospitals }: UserRoleAsignPro
     try {
       const result = await mutateAsync({
         user_id: userId?.toString(),
-        entity_type: ManageCategoryType.Hospital,
-        entity_ids: selectedHospitals.map(({ _id }: HospitalProps) => _id.toString()),
+        entity_type: manageType,
+        entity_ids: selectedHospitals.map(({ _id }) => _id.toString()),
       });
 
       const { message } = result;
@@ -39,7 +41,7 @@ const UserRoleAsign = ({ userId, userName, selectedHospitals }: UserRoleAsignPro
       console.error('Update error:', error);
       showToast({ message: '更新錯誤!', toastStyle: ToastStyleType.Warning });
     }
-  }, [mutateAsync, selectedHospitals, showToast, userId]);
+  }, [manageType, mutateAsync, selectedHospitals, showToast, userId]);
 
   return (
     <div className="w-full">

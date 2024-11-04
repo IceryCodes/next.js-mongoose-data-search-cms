@@ -20,7 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const userObjectId = new ObjectId(user_id);
     const finalEntityObjectIds = entity_ids.map((id) => new ObjectId(id));
 
-    if (entity_type === ManageCategoryType.Hospital) {
+    if (entity_type === ManageCategoryType.Hospital || entity_type === ManageCategoryType.Clinic) {
       const hospitalManagesCollection = await getHospitalManagesCollection();
 
       // Fetch current managed hospital records for the user

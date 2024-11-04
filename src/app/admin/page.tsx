@@ -9,8 +9,8 @@ import AdminContent from './components/AdminContent';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   return metadataInfo({
-    pageName: PageType.PROFILE,
-    currentPath: `${process.env.NEXT_PUBLIC_BASE_URL}${getPageUrlByType(PageType.PROFILE)}`,
+    pageName: PageType.ADMIN,
+    currentPath: `${process.env.NEXT_PUBLIC_BASE_URL}${getPageUrlByType(PageType.ADMIN)}`,
   });
 };
 

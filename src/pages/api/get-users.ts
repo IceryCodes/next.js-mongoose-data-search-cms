@@ -29,7 +29,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUsersReturnT
   }
 
   const { email } = req.query;
-  if (!email) res.status(HttpStatus.NotFound).json({ message: '找不到帳號！' });
 
   try {
     const usersCollection: Collection<Omit<UserWithPasswordProps, '_id'>> = await getUsersCollection();

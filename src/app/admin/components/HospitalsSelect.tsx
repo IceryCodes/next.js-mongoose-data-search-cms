@@ -2,11 +2,12 @@ import { ReactElement, useMemo, useState } from 'react';
 
 import { Button } from '@/app/global-components/buttons/Button';
 import { HospitalProps } from '@/domains/hospital';
+import { PharmacyProps } from '@/domains/pharmacy';
 
 interface HospitalsSelectProps {
-  hospitals: HospitalProps[];
-  selectedHospitals: HospitalProps[];
-  onChange: (newTargetKeys: HospitalProps[]) => void;
+  hospitals: (HospitalProps | PharmacyProps)[];
+  selectedHospitals: (HospitalProps | PharmacyProps)[];
+  onChange: (newTargetKeys: (HospitalProps | PharmacyProps)[]) => void;
 }
 
 const HospitalsSelect = ({ hospitals, selectedHospitals, onChange }: HospitalsSelectProps): ReactElement => {

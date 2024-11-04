@@ -2,10 +2,13 @@ import { useCallback, useMemo } from 'react';
 
 import { HospitalExtraFieldType } from '@/domains/hospital';
 import { GenderType, UserRoleType } from '@/domains/interfaces';
+import { ManageCategoryType } from '@/domains/manage';
 
 interface UsePatientSelectionTicketEnumReturnType {
   roleMap: Record<UserRoleType, string>;
   composeRole: (genderToTrans: UserRoleType) => string;
+  manageMap: Record<ManageCategoryType, string>;
+  composeManage: (genderToTrans: ManageCategoryType) => string;
   genderMap: Record<GenderType, string>;
   composeGender: (genderToTrans: GenderType) => string;
   hospitalExtraFieldMap: Record<HospitalExtraFieldType, string>;
@@ -26,6 +29,21 @@ export const useEnum = (): UsePatientSelectionTicketEnumReturnType => {
       return roleMap[roleToTrans] ?? 'Unknown';
     },
     [roleMap]
+  );
+
+  const manageMap = useMemo<Record<ManageCategoryType, string>>(() => {
+    return {
+      [ManageCategoryType.Hospital]: '管理醫院',
+      [ManageCategoryType.Clinic]: '管理診所',
+      [ManageCategoryType.Pharmacy]: '管理藥局',
+    };
+  }, []);
+
+  const composeManage = useCallback(
+    (manageToTrans: ManageCategoryType): string => {
+      return manageMap[manageToTrans] ?? 'Unknown';
+    },
+    [manageMap]
   );
 
   const genderMap = useMemo<Record<GenderType, string>>(() => {
@@ -83,6 +101,24 @@ export const useEnum = (): UsePatientSelectionTicketEnumReturnType => {
   );
 
   return useMemo<UsePatientSelectionTicketEnumReturnType>(() => {
-    return { roleMap, composeRole, genderMap, composeGender, hospitalExtraFieldMap, composeHospitalExtraField };
-  }, [roleMap, composeRole, composeGender, genderMap, hospitalExtraFieldMap, composeHospitalExtraField]);
+    return {
+      roleMap,
+      composeRole,
+      manageMap,
+      composeManage,
+      genderMap,
+      composeGender,
+      hospitalExtraFieldMap,
+      composeHospitalExtraField,
+    };
+  }, [
+    roleMap,
+    composeRole,
+    manageMap,
+    composeManage,
+    genderMap,
+    composeGender,
+    hospitalExtraFieldMap,
+    composeHospitalExtraField,
+  ]);
 };

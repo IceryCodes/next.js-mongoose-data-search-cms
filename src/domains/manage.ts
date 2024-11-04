@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 
 export enum ManageCategoryType {
   Hospital = 'hospital',
+  Clinic = 'clinic',
   Pharmacy = 'pharmacy',
 }
 
