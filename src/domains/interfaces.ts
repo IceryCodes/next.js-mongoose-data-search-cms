@@ -7,7 +7,7 @@ export enum PageType {
   LOGIN = '登入',
   VERIFY = '帳號驗證',
   PROFILE = '個人帳號',
-  ADMIN = '管理',
+  ADMIN = '後台管理',
 }
 
 export const PageTypeMap: { [key: string]: string } = Object.fromEntries(

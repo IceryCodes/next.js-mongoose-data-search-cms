@@ -5,6 +5,7 @@ import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/app/global-components/buttons/Button';
 import Card from '@/app/global-components/Card';
 import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
+import { PageType } from '@/domains/interfaces';
 import { ManageCategoryType } from '@/domains/manage';
 import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { GetUsersDto, UserProps } from '@/domains/user';
@@ -137,23 +138,22 @@ const AdminContent = (): ReactElement => {
 
   return (
     <div className="p-4 flex flex-col justify-center gap-y-4 w-full">
-      <Card>
-        <div className="flex gap-x-4">
-          {Object.values(ManageCategoryType).map((type) => (
-            <Button
-              key={type}
-              text={composeManage(type)}
-              onClick={() =>
-                handleManageSearch(
-                  type,
-                  type === ManageCategoryType.Hospital ? initHospitalSearchParams : initPharmacySearchParams
-                )
-              }
-              disabled={type === manageType}
-            />
-          ))}
-        </div>
-      </Card>
+      <div className="flex gap-x-4 items-center">
+        <h1 className="text-2xl font-bold">{PageType.ADMIN}</h1>
+        {Object.values(ManageCategoryType).map((type) => (
+          <Button
+            key={type}
+            text={composeManage(type)}
+            onClick={() =>
+              handleManageSearch(
+                type,
+                type === ManageCategoryType.Hospital ? initHospitalSearchParams : initPharmacySearchParams
+              )
+            }
+            disabled={type === manageType}
+          />
+        ))}
+      </div>
 
       <div className="flex gap-x-4">
         <div className="flex flex-col flex-[1] gap-y-4">
