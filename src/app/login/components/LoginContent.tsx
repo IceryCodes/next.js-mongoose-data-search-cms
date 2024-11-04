@@ -11,7 +11,7 @@ import { ToastStyleType } from '@/app/global-components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { UserLoginDto } from '@/domains/user';
-import { useUserLoginMutation } from '@/features/user/useAuthMutation';
+import { useUserLoginMutation } from '@/features/user/hooks/useAuthMutation';
 import { loginValidationSchema } from '@/lib/validation';
 
 const LoginContent = (): ReactElement => {

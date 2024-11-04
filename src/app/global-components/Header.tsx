@@ -7,7 +7,8 @@ import Link from 'next/link';
 
 import { Button } from '@/app/global-components/buttons/Button';
 import { useAuth } from '@/contexts/AuthContext';
-import { PageType, PageTypeMap } from '@/domains/interfaces';
+import { getPageUrlByType, PageType, PageTypeMap } from '@/domains/interfaces';
+import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 
 import VerifyBar from './VerifyBar';
 
@@ -69,7 +70,7 @@ const Header = ({ children }: { children: ReactElement }) => {
 
                 if (pageType === PageType.LOGIN || pageType === PageType.REGISTER) if (isAuthenticated) return;
                 if (pageType === PageType.PROFILE && !isAuthenticated) return;
-                if (pageType === PageType.HOME || pageType === PageType.VERIFY) return;
+                if (pageType === PageType.HOME || pageType === PageType.VERIFY || pageType === PageType.ADMIN) return;
 
                 return (
                   <Link key={key} href={`/${key.toLowerCase()}`} className={linkStyle} onClick={() => setMenuOpen(false)}>
@@ -77,6 +78,13 @@ const Header = ({ children }: { children: ReactElement }) => {
                   </Link>
                 );
               })}
+
+              <AdminProtected>
+                <Link href={getPageUrlByType(PageType.ADMIN)} className={linkStyle}>
+                  <li>{PageType.ADMIN}</li>
+                </Link>
+              </AdminProtected>
+
               {isAuthenticated && (
                 <Link href="" className={linkStyle} onClick={Logout}>
                   <li>登出</li>

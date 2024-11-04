@@ -21,6 +21,10 @@ export interface PharmacyUpdateReturnType {
   message: string;
 }
 
+export interface ManageUpdateReturnType {
+  message: string;
+}
+
 export interface GetPharmacyReturnType {
   pharmacy?: PharmacyProps | null;
   message: string;
@@ -32,8 +36,20 @@ export interface GetPharmaciesReturnType {
   message: string;
 }
 
+export interface ManageProps {
+  hospitals: HospitalProps[];
+  pharmacies: PharmacyProps[];
+}
+
 export interface GetUserReturnType {
-  user?: UserProps | null;
+  user?: UserProps;
+  manage?: ManageProps;
+  message: string;
+}
+
+export interface GetUsersReturnType {
+  users?: UserProps[];
+  total?: number;
   message: string;
 }
 

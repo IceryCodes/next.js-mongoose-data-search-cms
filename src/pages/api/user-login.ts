@@ -43,7 +43,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
         email: user.email,
         role: user.role,
         isVerified: user.isVerified,
-        manages: user.manages,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

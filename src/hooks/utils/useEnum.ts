@@ -1,9 +1,11 @@
 import { useCallback, useMemo } from 'react';
 
 import { HospitalExtraFieldType } from '@/domains/hospital';
-import { GenderType } from '@/domains/interfaces';
+import { GenderType, UserRoleType } from '@/domains/interfaces';
 
 interface UsePatientSelectionTicketEnumReturnType {
+  roleMap: Record<UserRoleType, string>;
+  composeRole: (genderToTrans: UserRoleType) => string;
   genderMap: Record<GenderType, string>;
   composeGender: (genderToTrans: GenderType) => string;
   hospitalExtraFieldMap: Record<HospitalExtraFieldType, string>;
@@ -11,6 +13,21 @@ interface UsePatientSelectionTicketEnumReturnType {
 }
 
 export const useEnum = (): UsePatientSelectionTicketEnumReturnType => {
+  const roleMap = useMemo<Record<UserRoleType, string>>(() => {
+    return {
+      [UserRoleType.None]: '一般用戶',
+      [UserRoleType.Admin]: '網站管理員',
+      [UserRoleType.Manager]: '管理員',
+    };
+  }, []);
+
+  const composeRole = useCallback(
+    (roleToTrans: UserRoleType): string => {
+      return roleMap[roleToTrans] ?? 'Unknown';
+    },
+    [roleMap]
+  );
+
   const genderMap = useMemo<Record<GenderType, string>>(() => {
     return {
       [GenderType.None]: '',
@@ -66,6 +83,6 @@ export const useEnum = (): UsePatientSelectionTicketEnumReturnType => {
   );
 
   return useMemo<UsePatientSelectionTicketEnumReturnType>(() => {
-    return { genderMap, composeGender, hospitalExtraFieldMap, composeHospitalExtraField };
-  }, [composeGender, genderMap, hospitalExtraFieldMap, composeHospitalExtraField]);
+    return { roleMap, composeRole, genderMap, composeGender, hospitalExtraFieldMap, composeHospitalExtraField };
+  }, [roleMap, composeRole, composeGender, genderMap, hospitalExtraFieldMap, composeHospitalExtraField]);
 };

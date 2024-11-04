@@ -28,7 +28,6 @@ export interface UserWithPasswordProps extends UserRegisterDto {
   _id: ObjectId;
   role: UserRoleType;
   isVerified: boolean;
-  manages: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,3 +36,7 @@ export type UserProps = Omit<UserWithPasswordProps, 'password'>;
 
 export type UserUpdateProps = Omit<UserProps, '_id' | 'email' | 'role' | 'isVerified' | 'createdAt' | 'updatedAt'>;
 export type DeleteUserDto = Pick<UserProps, '_id'>;
+
+export type GetUserDto = Partial<Pick<UserProps, '_id'>>;
+
+export type GetUsersDto = Pick<UserProps, 'email'>;

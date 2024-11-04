@@ -8,7 +8,7 @@ import { Button } from '@/app/global-components/buttons/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
-import { useResendVerificationMutation } from '@/features/user/useAuthMutation';
+import { useResendVerificationMutation } from '@/features/user/hooks/useAuthMutation';
 
 import { ToastStyleType } from './Toast';
 

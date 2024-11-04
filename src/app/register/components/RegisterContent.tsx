@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { GenderType } from '@/domains/interfaces';
 import { UserRegisterDto } from '@/domains/user';
-import { useUserRegisterMutation } from '@/features/user/useAuthMutation';
+import { useUserRegisterMutation } from '@/features/user/hooks/useAuthMutation';
 import { registerValidationSchema } from '@/lib/validation';
 
 const RegisterContent = (): ReactElement => {

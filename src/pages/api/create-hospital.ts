@@ -3,10 +3,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { HospitalProps } from '@/domains/hospital';
 import { getHospitalsCollection } from '@/lib/mongodb';
+import { HospitalUpdateReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
 import { isAdminToken, isExpiredToken } from '@/utils/token';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateReturnType>) => {
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
     return res.status(HttpStatus.MethodNotAllowed).json({ message: `Method ${req.method} not allowed` });
@@ -49,7 +50,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const result = await hospitalsCollection.insertOne(newHospital);
 
     if (result.insertedId) {
-      return res.status(HttpStatus.Created).json({ message: `已新增${newHospital.title}!`, hospitalId: result.insertedId });
+      return res.status(HttpStatus.Created).json({ message: `已新增${newHospital.title}!` });
     } else {
       return res.status(HttpStatus.InternalServerError).json({ message: '新增醫院失敗!' });
     }
