@@ -29,6 +29,7 @@ export const useUsersQuery = ({
     error,
     data = {
       users: [],
+      total: 0,
       message: '',
     },
     refetch,

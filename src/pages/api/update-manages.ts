@@ -1,8 +1,14 @@
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { CreateManageDto, HospitalManageProps, ManageCategoryType, PharmacyManageProps } from '@/domains/manage';
-import { getHospitalManagesCollection, getPharmacyManagesCollection } from '@/lib/mongodb';
+import {
+  ClinicManageProps,
+  CreateManageDto,
+  HospitalManageProps,
+  ManageCategoryType,
+  PharmacyManageProps,
+} from '@/domains/manage';
+import { getClinicManagesCollection, getHospitalManagesCollection, getPharmacyManagesCollection } from '@/lib/mongodb';
 import { HttpStatus } from '@/utils/api';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -20,7 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const userObjectId = new ObjectId(user_id);
     const finalEntityObjectIds = entity_ids.map((id) => new ObjectId(id));
 
-    if (entity_type === ManageCategoryType.Hospital || entity_type === ManageCategoryType.Clinic) {
+    if (entity_type === ManageCategoryType.Hospital) {
       const hospitalManagesCollection = await getHospitalManagesCollection();
 
       // Fetch current managed hospital records for the user
@@ -52,6 +58,42 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         await hospitalManagesCollection.deleteMany({
           user_id: userObjectId,
           hospital_id: { $in: toRemove.map((id) => new ObjectId(id)) },
+        });
+      }
+
+      return res.status(HttpStatus.Ok).json({
+        message: '更新管理機構成功!',
+      });
+    } else if (entity_type === ManageCategoryType.Clinic) {
+      const clicnicManagesCollection = await getClinicManagesCollection();
+
+      // Fetch current managed clicnic records for the user
+      const currentRecords = await clicnicManagesCollection.find({ user_id: userObjectId }).toArray();
+      const currentClinicIds = currentRecords.map((record) => record.clinic_id.toString());
+
+      // Determine which records to add or remove based on final entity_ids
+      const toAdd = finalEntityObjectIds.filter((id) => !currentClinicIds.includes(id.toString()));
+      // const toKeep = finalEntityObjectIds.filter((id) => currentClinicIds.includes(id.toString()));
+      const toRemove = currentClinicIds.filter((id) => !finalEntityObjectIds.some((entityId) => entityId.toString() === id));
+
+      // Insert new records for hospitals not yet managed by the user
+      if (toAdd.length > 0) {
+        const newHospitalManages: ClinicManageProps[] = toAdd.map((clicnicId) => ({
+          _id: new ObjectId(),
+          user_id: userObjectId,
+          clinic_id: clicnicId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }));
+
+        await clicnicManagesCollection.insertMany(newHospitalManages);
+      }
+
+      // Remove records for hospitals that are no longer in the final entity_ids list
+      if (toRemove.length > 0) {
+        await clicnicManagesCollection.deleteMany({
+          user_id: userObjectId,
+          clinic_id: { $in: toRemove.map((id) => new ObjectId(id)) },
         });
       }
 

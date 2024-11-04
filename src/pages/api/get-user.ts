@@ -2,10 +2,11 @@ import { Collection, ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { HospitalProps } from '@/domains/hospital';
-import { HospitalManageProps, PharmacyManageProps } from '@/domains/manage';
+import { ClinicManageProps, HospitalManageProps, PharmacyManageProps } from '@/domains/manage';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { UserWithPasswordProps } from '@/domains/user';
 import {
+  getClinicManagesCollection,
   getHospitalManagesCollection,
   getHospitalsCollection,
   getPharmaciesCollection,
@@ -53,6 +54,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
     const usersCollection: Collection<Omit<UserWithPasswordProps, '_id'>> = await getUsersCollection();
     const hospitalManageCollection: Collection<HospitalManageProps> = await getHospitalManagesCollection();
     const pharmacyManageCollection: Collection<PharmacyManageProps> = await getPharmacyManagesCollection();
+    const clinicManageCollection: Collection<ClinicManageProps> = await getClinicManagesCollection();
     const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
     const pharmaciesCollection: Collection<PharmacyProps> = await getPharmaciesCollection();
 
@@ -71,12 +73,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
     const hospitalManageRecords = await hospitalManageCollection.find({ user_id: new ObjectId(_id) }).toArray();
     const hospitalIds = hospitalManageRecords.map((record) => record.hospital_id);
 
+    // Fetch hospital manages and get hospital IDs
+    const clinicManageRecords = await clinicManageCollection.find({ user_id: new ObjectId(_id) }).toArray();
+    const clinicIds = clinicManageRecords.map((record) => record.clinic_id);
+
     // Fetch pharmacy manages and get pharmacy IDs
     const pharmacyManageRecords = await pharmacyManageCollection.find({ user_id: new ObjectId(_id) }).toArray();
     const pharmacyIds = pharmacyManageRecords.map((record) => record.pharmacy_id);
 
     // Fetch hospital details
     const managedHospitals = await hospitalsCollection.find({ _id: { $in: hospitalIds } }).toArray();
+
+    // Fetch clinic details
+    const managedCclinics = await hospitalsCollection.find({ _id: { $in: clinicIds } }).toArray();
 
     // Fetch pharmacy details
     const managedPharmacies = await pharmaciesCollection.find({ _id: { $in: pharmacyIds } }).toArray();
@@ -96,6 +105,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
       },
       manage: {
         hospitals: managedHospitals,
+        clinics: managedCclinics,
         pharmacies: managedPharmacies,
       },
       message: 'Success',

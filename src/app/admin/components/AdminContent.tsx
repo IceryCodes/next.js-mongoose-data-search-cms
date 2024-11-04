@@ -21,7 +21,7 @@ import UserRoleAsign from './UserRoleAsign';
 import UserSearch from './UserSearch';
 import UsersSelect from './UsersSelect';
 
-const limit: number = 50;
+const limit = 50;
 
 const AdminContent = (): ReactElement => {
   useAdminProtected();
@@ -29,21 +29,19 @@ const AdminContent = (): ReactElement => {
 
   const [manageType, setManageType] = useState<ManageCategoryType>(ManageCategoryType.Hospital);
 
-  const initHospitalsSearcch = useMemo(
+  // Separate search params for each manage type
+  const initHospitalSearchParams = useMemo(
     (): GetHospitalsDto => ({
       query: '',
       county: '',
       departments: '' as DepartmentsType,
       partner: false,
-      category:
-        manageType.toString() === HospitalCategoryType.Hospital
-          ? HospitalCategoryType.Hospital
-          : HospitalCategoryType.Clinic,
+      category: manageType === ManageCategoryType.Hospital ? HospitalCategoryType.Hospital : HospitalCategoryType.Clinic,
     }),
     [manageType]
   );
 
-  const initPharmaciesSearcch = useMemo(
+  const initPharmacySearchParams = useMemo(
     (): GetPharmaciesDto => ({
       query: '',
       county: '',
@@ -53,22 +51,19 @@ const AdminContent = (): ReactElement => {
     []
   );
 
-  const [startSearch, setStartSearch] = useState<boolean>(false);
   const [usersSearch, setUsersSearch] = useState<GetUsersDto>({ email: '' });
+  const [hospitalsSearch, setHospitalsSearch] = useState<GetHospitalsDto>(initHospitalSearchParams);
+  const [pharmaciesSearch, setPharmaciesSearch] = useState<GetPharmaciesDto>(initPharmacySearchParams);
   const [selectedUser, setSelectedUser] = useState<UserProps | null>(null);
-
-  const [hospitalsSearch, setHospitalsSearch] = useState<GetHospitalsDto>(initHospitalsSearcch);
-
-  const [pharmaciesSearch, setPharmaciesSearch] = useState<GetPharmaciesDto>(initPharmaciesSearcch);
-
   const [selectedHospitals, setSelectedHospitals] = useState<(HospitalProps | PharmacyProps)[]>([]);
 
-  const { data: usersData } = useUsersQuery({
+  // Queries for each type
+  const { data: { users = [], total: totalUsers = 0 } = {}, refetch: refetchUsers } = useUsersQuery({
     email: usersSearch.email,
-    enabled: startSearch,
+    enabled: !!usersSearch.email,
   });
 
-  const { data: { hospitals = [] } = {}, refetch: refetchHospitals } = useHospitalsQuery({
+  const { data: { hospitals = [], total: totalHospitals = 0 } = {}, refetch: refetchHospitals } = useHospitalsQuery({
     query: hospitalsSearch.query,
     county: hospitalsSearch.county,
     departments: hospitalsSearch.departments,
@@ -78,7 +73,7 @@ const AdminContent = (): ReactElement => {
     enabled: manageType === ManageCategoryType.Hospital || manageType === ManageCategoryType.Clinic,
   });
 
-  const { data: { pharmacies = [] } = {}, refetch: refetchPharmacies } = usePharmaciesQuery({
+  const { data: { pharmacies = [], total: totalPharmacies = 0 } = {}, refetch: refetchPharmacies } = usePharmaciesQuery({
     query: pharmaciesSearch.query,
     county: pharmaciesSearch.county,
     partner: pharmaciesSearch.partner,
@@ -87,39 +82,20 @@ const AdminContent = (): ReactElement => {
     enabled: manageType === ManageCategoryType.Pharmacy,
   });
 
-  const { data: userData, refetch } = useUserQuery({
+  const { data: userData } = useUserQuery({
     _id: selectedUser?._id,
     enabled: !!selectedUser?._id,
   });
 
-  // Remove deplicate items but keep the selected
-  const hospitalList = useMemo(
-    (): HospitalProps[] =>
-      [...selectedHospitals, ...hospitals].filter(
-        (item, index, self) => index === self.findIndex((t) => t._id === item._id)
-      ) as HospitalProps[],
-    [hospitals, selectedHospitals]
-  );
-  const pharmacyList = useMemo(
-    (): PharmacyProps[] =>
-      [...selectedHospitals, ...pharmacies].filter(
-        (item, index, self) => index === self.findIndex((t) => t._id === item._id)
-      ) as PharmacyProps[],
-    [pharmacies, selectedHospitals]
-  );
+  // Handle hospital and pharmacy searches
+  const handleManageSearch = useCallback(
+    async (type: ManageCategoryType, formData: GetHospitalsDto | GetPharmaciesDto) => {
+      if (manageType !== type) setManageType(type);
 
-  const searchUsers = useCallback(({ email }: GetUsersDto) => {
-    setUsersSearch({ email });
-    setSelectedUser(null);
-    setStartSearch(!!email);
-  }, []);
-
-  const searchHospitals = useCallback(
-    (formData: GetHospitalsDto | GetPharmaciesDto) => {
-      if (manageType === ManageCategoryType.Hospital || manageType === ManageCategoryType.Clinic) {
+      if (type === ManageCategoryType.Hospital || type === ManageCategoryType.Clinic) {
         setHospitalsSearch(formData as GetHospitalsDto);
         refetchHospitals();
-      } else if (manageType === ManageCategoryType.Pharmacy) {
+      } else if (type === ManageCategoryType.Pharmacy) {
         setPharmaciesSearch(formData as GetPharmaciesDto);
         refetchPharmacies();
       }
@@ -127,45 +103,52 @@ const AdminContent = (): ReactElement => {
     [manageType, refetchHospitals, refetchPharmacies]
   );
 
-  const onChangeType = useCallback(
-    (type: ManageCategoryType) => {
-      setUsersSearch({ email: '' });
+  // Handle user search separately
+  const handleUserSearch = useCallback(
+    async (formData: GetUsersDto) => {
+      if (formData.email) {
+        setUsersSearch(formData);
+        await refetchUsers();
+      } else {
+        setUsersSearch({ email: '' });
+      }
       setSelectedUser(null);
-      setManageType(type);
     },
-    [setManageType]
+    [refetchUsers]
   );
 
-  useEffect(() => {
-    if (selectedUser?._id) refetch();
-  }, [refetch, selectedUser?._id]);
+  // Combine lists while removing duplicates
+  const combinedList = useMemo((): (HospitalProps | PharmacyProps)[] => {
+    const list = manageType === ManageCategoryType.Pharmacy ? pharmacies : hospitals;
+    return [...selectedHospitals, ...list].filter(
+      (item, index, self) => index === self.findIndex((t) => t._id === item._id)
+    );
+  }, [hospitals, pharmacies, selectedHospitals, manageType]);
 
   useEffect(() => {
-    let newSelected: (HospitalProps | PharmacyProps)[] = [];
-    if (manageType === ManageCategoryType.Hospital || manageType === ManageCategoryType.Clinic) {
-      newSelected = userData?.manage?.hospitals ?? [];
+    if (manageType === ManageCategoryType.Hospital) {
+      setSelectedHospitals(userData?.manage?.hospitals ?? []);
+    } else if (manageType === ManageCategoryType.Clinic) {
+      setSelectedHospitals(userData?.manage?.clinics ?? []);
     } else if (manageType === ManageCategoryType.Pharmacy) {
-      newSelected = userData?.manage?.pharmacies ?? [];
+      setSelectedHospitals(userData?.manage?.pharmacies ?? []);
     }
-
-    setSelectedHospitals(newSelected);
-  }, [manageType, userData?.manage?.hospitals, userData?.manage?.pharmacies]);
-
-  useEffect(() => {
-    const searchParams = manageType === ManageCategoryType.Pharmacy ? initPharmaciesSearcch : initHospitalsSearcch;
-    setSelectedHospitals([]);
-    searchHospitals(searchParams);
-  }, [manageType, initHospitalsSearcch, initPharmaciesSearcch, searchHospitals]);
+  }, [manageType, userData?.manage?.clinics, userData?.manage?.hospitals, userData?.manage?.pharmacies]);
 
   return (
     <div className="p-4 flex flex-col justify-center gap-y-4 w-full">
       <Card>
         <div className="flex gap-x-4">
-          {Object.values(ManageCategoryType).map((type: ManageCategoryType) => (
+          {Object.values(ManageCategoryType).map((type) => (
             <Button
               key={type}
               text={composeManage(type)}
-              onClick={() => onChangeType(type)}
+              onClick={() =>
+                handleManageSearch(
+                  type,
+                  type === ManageCategoryType.Hospital ? initHospitalSearchParams : initPharmacySearchParams
+                )
+              }
               disabled={type === manageType}
             />
           ))}
@@ -176,13 +159,9 @@ const AdminContent = (): ReactElement => {
         <div className="flex flex-col flex-[1] gap-y-4">
           <Card>
             <div className="flex flex-col gap-y-2">
-              <UserSearch searchUsers={searchUsers} />
-              <UsersSelect
-                users={usersData?.users ?? []}
-                selectedUser={selectedUser}
-                userData={userData}
-                onChange={setSelectedUser}
-              />
+              <label>結果: {totalUsers}</label>
+              <UserSearch searchUsers={handleUserSearch} />
+              <UsersSelect users={users} selectedUser={selectedUser} userData={userData} onChange={setSelectedUser} />
             </div>
           </Card>
         </div>
@@ -192,9 +171,10 @@ const AdminContent = (): ReactElement => {
             <label className="text-red-400">請先選擇帳號</label>
           ) : (
             <>
-              <HospitalSearch searchHospitals={searchHospitals} />
+              <label>結果: {manageType === ManageCategoryType.Pharmacy ? totalPharmacies : totalHospitals}</label>
+              <HospitalSearch searchHospitals={(formData) => handleManageSearch(manageType, formData)} />
               <HospitalsSelect
-                hospitals={manageType === ManageCategoryType.Pharmacy ? pharmacyList : hospitalList}
+                hospitals={combinedList}
                 selectedHospitals={selectedHospitals}
                 onChange={setSelectedHospitals}
               />

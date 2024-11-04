@@ -14,6 +14,14 @@ export interface HospitalManageProps {
   updatedAt: Date;
 }
 
+export interface ClinicManageProps {
+  _id: ObjectId;
+  user_id: ObjectId;
+  clinic_id: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface PharmacyManageProps {
   _id: ObjectId;
   user_id: ObjectId;

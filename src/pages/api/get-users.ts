@@ -29,6 +29,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUsersReturnT
   }
 
   const { email } = req.query;
+  if (!email)
+    res.status(HttpStatus.Ok).json({
+      users: [],
+      total: 0,
+      message: 'Success',
+    });
 
   try {
     const usersCollection: Collection<Omit<UserWithPasswordProps, '_id'>> = await getUsersCollection();

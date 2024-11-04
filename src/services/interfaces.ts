@@ -38,6 +38,7 @@ export interface GetPharmaciesReturnType {
 
 export interface ManageProps {
   hospitals: HospitalProps[];
+  clinics: HospitalProps[];
   pharmacies: PharmacyProps[];
 }
 

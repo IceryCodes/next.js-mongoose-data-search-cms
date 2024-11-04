@@ -1,7 +1,7 @@
 import { Collection, MongoClient } from 'mongodb';
 
 import { HospitalProps } from '@/domains/hospital';
-import { HospitalManageProps, PharmacyManageProps } from '@/domains/manage';
+import { ClinicManageProps, HospitalManageProps, PharmacyManageProps } from '@/domains/manage';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { UserWithPasswordProps } from '@/domains/user';
 
@@ -44,6 +44,13 @@ export const getHospitalManagesCollection = async (): Promise<Collection<Hospita
   const client = await connectToDatabase();
   const database = client.db('hospital_search');
   return database.collection<HospitalManageProps>('hospital_manages');
+};
+
+// Function to get the clinic manages collection
+export const getClinicManagesCollection = async (): Promise<Collection<ClinicManageProps>> => {
+  const client = await connectToDatabase();
+  const database = client.db('hospital_search');
+  return database.collection<ClinicManageProps>('clinic_manages');
 };
 
 // Function to get the pharmacy manages collection
