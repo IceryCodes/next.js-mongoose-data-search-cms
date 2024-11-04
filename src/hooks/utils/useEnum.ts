@@ -20,7 +20,7 @@ export const useEnum = (): UsePatientSelectionTicketEnumReturnType => {
     return {
       [UserRoleType.None]: '一般用戶',
       [UserRoleType.Admin]: '網站管理員',
-      [UserRoleType.Manager]: '管理員',
+      [UserRoleType.Manager]: '管理人員',
     };
   }, []);
 

@@ -5,7 +5,6 @@ import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/app/global-components/buttons/Button';
 import Card from '@/app/global-components/Card';
 import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
-import { PageType } from '@/domains/interfaces';
 import { ManageCategoryType } from '@/domains/manage';
 import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { GetUsersDto, UserProps } from '@/domains/user';
@@ -16,10 +15,10 @@ import { useUsersQuery } from '@/features/user/hooks/useUsersQuery';
 import useAdminProtected from '@/hooks/utils/protections/routes/useAdminProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
 
-import HospitalSearch from './HospitalSearch';
-import HospitalsSelect from './HospitalsSelect';
-import UserRoleAsign from './UserRoleAsign';
-import UserSearch from './UserSearch';
+import ItemsSearch from './ItemsSearch';
+import ItemsSelect from './ItemsSelect';
+import UserRoleAssign from './UserRoleAssign';
+import UsersSearch from './UsersSearch';
 import UsersSelect from './UsersSelect';
 
 const limit = 50;
@@ -56,7 +55,7 @@ const AdminContent = (): ReactElement => {
   const [hospitalsSearch, setHospitalsSearch] = useState<GetHospitalsDto>(initHospitalSearchParams);
   const [pharmaciesSearch, setPharmaciesSearch] = useState<GetPharmaciesDto>(initPharmacySearchParams);
   const [selectedUser, setSelectedUser] = useState<UserProps | null>(null);
-  const [selectedHospitals, setSelectedHospitals] = useState<(HospitalProps | PharmacyProps)[]>([]);
+  const [selectedItems, setSelectedItems] = useState<(HospitalProps | PharmacyProps)[]>([]);
 
   // Queries for each type
   const { data: { users = [], total: totalUsers = 0 } = {}, refetch: refetchUsers } = useUsersQuery({
@@ -83,7 +82,7 @@ const AdminContent = (): ReactElement => {
     enabled: manageType === ManageCategoryType.Pharmacy,
   });
 
-  const { data: userData } = useUserQuery({
+  const { data: userData, refetch: refetchUser } = useUserQuery({
     _id: selectedUser?._id,
     enabled: !!selectedUser?._id,
   });
@@ -121,25 +120,22 @@ const AdminContent = (): ReactElement => {
   // Combine lists while removing duplicates
   const combinedList = useMemo((): (HospitalProps | PharmacyProps)[] => {
     const list = manageType === ManageCategoryType.Pharmacy ? pharmacies : hospitals;
-    return [...selectedHospitals, ...list].filter(
-      (item, index, self) => index === self.findIndex((t) => t._id === item._id)
-    );
-  }, [hospitals, pharmacies, selectedHospitals, manageType]);
+    return [...selectedItems, ...list].filter((item, index, self) => index === self.findIndex((t) => t._id === item._id));
+  }, [hospitals, pharmacies, selectedItems, manageType]);
 
   useEffect(() => {
     if (manageType === ManageCategoryType.Hospital) {
-      setSelectedHospitals(userData?.manage?.hospitals ?? []);
+      setSelectedItems(userData?.manage?.hospitals ?? []);
     } else if (manageType === ManageCategoryType.Clinic) {
-      setSelectedHospitals(userData?.manage?.clinics ?? []);
+      setSelectedItems(userData?.manage?.clinics ?? []);
     } else if (manageType === ManageCategoryType.Pharmacy) {
-      setSelectedHospitals(userData?.manage?.pharmacies ?? []);
+      setSelectedItems(userData?.manage?.pharmacies ?? []);
     }
   }, [manageType, userData?.manage?.clinics, userData?.manage?.hospitals, userData?.manage?.pharmacies]);
 
   return (
     <div className="p-4 flex flex-col justify-center gap-y-4 w-full">
       <div className="flex gap-x-4 items-center">
-        <h1 className="text-2xl font-bold">{PageType.ADMIN}</h1>
         {Object.values(ManageCategoryType).map((type) => (
           <Button
             key={type}
@@ -156,38 +152,40 @@ const AdminContent = (): ReactElement => {
       </div>
 
       <div className="flex gap-x-4">
-        <div className="flex flex-col flex-[1] gap-y-4">
+        <div className="flex flex-col min-w-[350px] gap-y-4">
           <Card>
             <div className="flex flex-col gap-y-2">
               <label>結果: {totalUsers}</label>
-              <UserSearch searchUsers={handleUserSearch} />
-              <UsersSelect users={users} selectedUser={selectedUser} userData={userData} onChange={setSelectedUser} />
+              <UsersSearch searchUsers={handleUserSearch} />
+              <UsersSelect
+                users={users}
+                selectedUser={selectedUser}
+                user={userData?.user}
+                setSelectedUser={setSelectedUser}
+              />
             </div>
           </Card>
         </div>
 
-        <Card className="flex flex-col flex-[4]">
+        <Card className="flex flex-col w-full">
           {!selectedUser ? (
             <label className="text-red-400">請先選擇帳號</label>
           ) : (
             <>
               <label>結果: {manageType === ManageCategoryType.Pharmacy ? totalPharmacies : totalHospitals}</label>
-              <HospitalSearch searchHospitals={(formData) => handleManageSearch(manageType, formData)} />
-              <HospitalsSelect
-                hospitals={combinedList}
-                selectedHospitals={selectedHospitals}
-                onChange={setSelectedHospitals}
-              />
+              <ItemsSearch searchItems={(formData) => handleManageSearch(manageType, formData)} />
+              <ItemsSelect hospitals={combinedList} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
             </>
           )}
         </Card>
       </div>
 
-      <UserRoleAsign
+      <UserRoleAssign
         manageType={manageType}
+        selectedItems={selectedItems}
         userId={selectedUser?._id}
         userName={`${selectedUser?.lastName}${selectedUser?.firstName}`}
-        selectedHospitals={selectedHospitals}
+        refetchUser={refetchUser}
       />
     </div>
   );

@@ -4,41 +4,41 @@ import { Button } from '@/app/global-components/buttons/Button';
 import { HospitalProps } from '@/domains/hospital';
 import { PharmacyProps } from '@/domains/pharmacy';
 
-interface HospitalsSelectProps {
+interface ItemsSelectProps {
   hospitals: (HospitalProps | PharmacyProps)[];
-  selectedHospitals: (HospitalProps | PharmacyProps)[];
-  onChange: (newTargetKeys: (HospitalProps | PharmacyProps)[]) => void;
+  selectedItems: (HospitalProps | PharmacyProps)[];
+  setSelectedItems: (newTargetKeys: (HospitalProps | PharmacyProps)[]) => void;
 }
 
-const HospitalsSelect = ({ hospitals, selectedHospitals, onChange }: HospitalsSelectProps): ReactElement => {
+const ItemsSelect = ({ hospitals, selectedItems, setSelectedItems }: ItemsSelectProps): ReactElement => {
   const [selectedSourceKeys, setSelectedSourceKeys] = useState<string[]>([]);
   const [selectedTargetKeys, setSelectedTargetKeys] = useState<string[]>([]);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [draggedFromSource, setDraggedFromSource] = useState<boolean>(false);
 
   const itemArray = useMemo(
-    () => hospitals.filter((item) => !selectedHospitals.some((selected) => selected.address === item.address)),
-    [hospitals, selectedHospitals]
+    () => hospitals.filter((item) => !selectedItems.some((selected) => selected.address === item.address)),
+    [hospitals, selectedItems]
   );
 
   const selectedArray = useMemo(
-    () => hospitals.filter((item) => selectedHospitals.some((selected) => selected.address === item.address)),
-    [hospitals, selectedHospitals]
+    () => hospitals.filter((item) => selectedItems.some((selected) => selected.address === item.address)),
+    [hospitals, selectedItems]
   );
 
   const handleTransferToTarget = () => {
     const newTargetKeys = [
-      ...selectedHospitals,
+      ...selectedItems,
       ...hospitals.filter((hospital) => selectedSourceKeys.includes(hospital.address)),
     ];
     setSelectedSourceKeys([]);
-    onChange(newTargetKeys);
+    setSelectedItems(newTargetKeys);
   };
 
   const handleTransferToSource = () => {
-    const newTargetKeys = selectedHospitals.filter((selected) => !selectedTargetKeys.includes(selected.address));
+    const newTargetKeys = selectedItems.filter((selected) => !selectedTargetKeys.includes(selected.address));
     setSelectedTargetKeys([]);
-    onChange(newTargetKeys);
+    setSelectedItems(newTargetKeys);
   };
 
   // Handle drag events
@@ -57,13 +57,13 @@ const HospitalsSelect = ({ hospitals, selectedHospitals, onChange }: HospitalsSe
       if (isTarget) {
         // Add dragged item to selected
         const draggedHospital = hospitals.find((hospital) => hospital.address === draggedItem);
-        if (draggedHospital && !selectedHospitals.includes(draggedHospital)) {
-          onChange([...selectedHospitals, draggedHospital]);
+        if (draggedHospital && !selectedItems.includes(draggedHospital)) {
+          setSelectedItems([...selectedItems, draggedHospital]);
         }
       } else {
         // Remove dragged item from selected
-        const newTargetKeys = selectedHospitals.filter((selected) => selected.address !== draggedItem);
-        onChange(newTargetKeys);
+        const newTargetKeys = selectedItems.filter((selected) => selected.address !== draggedItem);
+        setSelectedItems(newTargetKeys);
       }
       setDraggedItem(null);
       setDraggedFromSource(false);
@@ -147,4 +147,4 @@ const HospitalsSelect = ({ hospitals, selectedHospitals, onChange }: HospitalsSe
   );
 };
 
-export default HospitalsSelect;
+export default ItemsSelect;

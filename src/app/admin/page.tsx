@@ -16,6 +16,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 const Page = (): ReactElement => (
   <div className="container mx-auto p-6">
+    <h1 className="text-2xl font-bold">{PageType.ADMIN}</h1>
     <AdminContent />
   </div>
 );

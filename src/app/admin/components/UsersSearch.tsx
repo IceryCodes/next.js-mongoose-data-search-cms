@@ -5,11 +5,11 @@ import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/app/global-components/buttons/Button';
 import { GetUsersDto } from '@/domains/user';
 
-interface UserSearchProps {
+interface UsersSearchProps {
   searchUsers: (formData: GetUsersDto) => void;
 }
 
-const UserSearch = ({ searchUsers }: UserSearchProps) => {
+const UsersSearch = ({ searchUsers }: UsersSearchProps) => {
   const { control, handleSubmit, reset } = useForm<GetUsersDto>({
     defaultValues: {
       email: '',
@@ -40,4 +40,4 @@ const UserSearch = ({ searchUsers }: UserSearchProps) => {
   );
 };
 
-export default UserSearch;
+export default UsersSearch;

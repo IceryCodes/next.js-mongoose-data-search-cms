@@ -2,13 +2,12 @@ import { ReactElement, useCallback } from 'react';
 
 import { UserProps } from '@/domains/user';
 import { useEnum } from '@/hooks/utils/useEnum';
-import { GetUserReturnType } from '@/services/interfaces';
 
 interface UsersSelectProps {
   users: UserProps[];
   selectedUser: UserProps | null;
-  userData: GetUserReturnType | undefined;
-  onChange: (selectedUser: UserProps) => void;
+  user: UserProps | undefined;
+  setSelectedUser: (selectedUser: UserProps) => void;
 }
 
 interface InfoRowProps {
@@ -16,7 +15,7 @@ interface InfoRowProps {
   content: string;
 }
 
-const UsersSelect = ({ users, selectedUser, userData, onChange }: UsersSelectProps): ReactElement => {
+const UsersSelect = ({ users, selectedUser, user, setSelectedUser }: UsersSelectProps): ReactElement => {
   const { composeRole, composeGender } = useEnum();
 
   const infoRow = useCallback(
@@ -37,7 +36,7 @@ const UsersSelect = ({ users, selectedUser, userData, onChange }: UsersSelectPro
           {users.map((item: UserProps) => (
             <li
               key={item._id.toString()}
-              onClick={() => onChange(item)}
+              onClick={() => setSelectedUser(item)}
               className="flex flex-col cursor-pointer p-2 rounded bg-gray-100"
             >
               <span>{`${item.firstName}${item.lastName}`}</span>
@@ -46,13 +45,13 @@ const UsersSelect = ({ users, selectedUser, userData, onChange }: UsersSelectPro
           ))}
         </ul>
       )}
-      {userData?.user && (
+      {user && (
         <ul className="space-y-2 p-4">
-          {infoRow({ title: '姓氏', content: userData.user.lastName })}
-          {infoRow({ title: '名稱', content: userData.user.firstName })}
-          {infoRow({ title: '信箱', content: userData.user.email })}
-          {infoRow({ title: '性別', content: composeGender(userData.user.gender) })}
-          {infoRow({ title: '身份', content: composeRole(userData.user.role) })}
+          {infoRow({ title: '姓氏', content: user.lastName })}
+          {infoRow({ title: '名稱', content: user.firstName })}
+          {infoRow({ title: '信箱', content: user.email })}
+          {infoRow({ title: '性別', content: composeGender(user.gender) })}
+          {infoRow({ title: '身份', content: composeRole(user.role) })}
         </ul>
       )}
     </div>

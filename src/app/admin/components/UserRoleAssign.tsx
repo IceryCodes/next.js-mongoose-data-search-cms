@@ -13,14 +13,15 @@ import { ManageCategoryType } from '@/domains/manage';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { useUpdateManagesMutation } from '@/features/manages/hooks/useUpdateManagesMutation';
 
-interface UserRoleAsignProps {
+interface UserRoleAssignProps {
   manageType: ManageCategoryType;
+  selectedItems: (HospitalProps | PharmacyProps)[];
   userId?: ObjectId;
   userName?: string;
-  selectedHospitals: (HospitalProps | PharmacyProps)[];
+  refetchUser: () => void;
 }
 
-const UserRoleAsign = ({ manageType, userId, userName, selectedHospitals }: UserRoleAsignProps): ReactElement => {
+const UserRoleAssign = ({ manageType, selectedItems, userId, userName, refetchUser }: UserRoleAssignProps): ReactElement => {
   const { showToast } = useToast();
 
   const { isLoading, mutateAsync } = useUpdateManagesMutation();
@@ -32,38 +33,34 @@ const UserRoleAsign = ({ manageType, userId, userName, selectedHospitals }: User
       const result = await mutateAsync({
         user_id: userId?.toString(),
         entity_type: manageType,
-        entity_ids: selectedHospitals.map(({ _id }) => _id.toString()),
+        entity_ids: selectedItems.map(({ _id }) => _id.toString()),
       });
 
       const { message } = result;
+      refetchUser();
       showToast({ message });
     } catch (error) {
       console.error('Update error:', error);
       showToast({ message: '更新錯誤!', toastStyle: ToastStyleType.Warning });
     }
-  }, [manageType, mutateAsync, selectedHospitals, showToast, userId]);
+  }, [manageType, mutateAsync, refetchUser, selectedItems, showToast, userId]);
 
   return (
-    <div className="w-full">
-      {!userId && (
-        <Card>
-          <label className="text-center">請選擇帳號</label>
-        </Card>
-      )}
+    <>
       {userId && (
         <div className="flex gap-x-4">
-          <Card className="flex flex-col flex-[1]">
+          <Card className="flex flex-col min-w-[350px]">
             <>
               <label>{`${userName} 將擁有以下機構之管理權:`}</label>
               <Button text="確定" onClick={handleUpdate} disabled={!userId || isLoading} />
             </>
           </Card>
 
-          <Card className="flex flex-[4]">
+          <Card className="flex flex-col w-full">
             <>
-              {!selectedHospitals.length && <label>無任何機構</label>}
+              {!selectedItems.length && <label>無任何機構</label>}
               <ul className="flex flex-wrap gap-2">
-                {selectedHospitals.map(({ _id, title }) => (
+                {selectedItems.map(({ _id, title }) => (
                   <li key={_id.toString()} className="p-2 rounded bg-blue-500 text-white">
                     {title}
                   </li>
@@ -73,8 +70,8 @@ const UserRoleAsign = ({ manageType, userId, userName, selectedHospitals }: User
           </Card>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
-export default UserRoleAsign;
+export default UserRoleAssign;

@@ -6,11 +6,11 @@ import { Button } from '@/app/global-components/buttons/Button';
 import { DepartmentsType, GetHospitalsDto } from '@/domains/hospital';
 import { CountyType } from '@/domains/interfaces';
 
-interface HospitalSearchProps {
-  searchHospitals: (formData: GetHospitalsDto) => void;
+interface ItemsSearchProps {
+  searchItems: (formData: GetHospitalsDto) => void;
 }
 
-const HospitalSearch = ({ searchHospitals }: HospitalSearchProps) => {
+const ItemsSearch = ({ searchItems }: ItemsSearchProps) => {
   const { control, handleSubmit, reset } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
@@ -22,10 +22,10 @@ const HospitalSearch = ({ searchHospitals }: HospitalSearchProps) => {
 
   const onSubmit = useCallback(
     (formData: GetHospitalsDto) => {
-      searchHospitals(formData);
+      searchItems(formData);
       reset();
     },
-    [reset, searchHospitals]
+    [reset, searchItems]
   );
 
   return (
@@ -93,4 +93,4 @@ const HospitalSearch = ({ searchHospitals }: HospitalSearchProps) => {
   );
 };
 
-export default HospitalSearch;
+export default ItemsSearch;
