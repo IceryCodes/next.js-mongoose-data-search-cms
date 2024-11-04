@@ -28,6 +28,8 @@ const UserRoleAssign = ({ manageType, selectedItems, userId, userName, refetchUs
 
   const handleUpdate = useCallback(async () => {
     if (!userId) return;
+    const confirmed = window.confirm(`您確定要更新${userName}的機構管理權限嗎?`);
+    if (!confirmed) return;
 
     try {
       const result = await mutateAsync({
@@ -43,7 +45,7 @@ const UserRoleAssign = ({ manageType, selectedItems, userId, userName, refetchUs
       console.error('Update error:', error);
       showToast({ message: '更新錯誤!', toastStyle: ToastStyleType.Warning });
     }
-  }, [manageType, mutateAsync, refetchUser, selectedItems, showToast, userId]);
+  }, [manageType, mutateAsync, refetchUser, selectedItems, showToast, userId, userName]);
 
   return (
     <>
@@ -51,7 +53,7 @@ const UserRoleAssign = ({ manageType, selectedItems, userId, userName, refetchUs
         <div className="flex gap-x-4">
           <Card className="flex flex-col min-w-[350px]">
             <>
-              <label>{`${userName} 將擁有以下機構之管理權:`}</label>
+              <label>{`${userName} 將擁有以下機構之管理權限:`}</label>
               <Button text="確定" onClick={handleUpdate} disabled={!userId || isLoading} />
             </>
           </Card>

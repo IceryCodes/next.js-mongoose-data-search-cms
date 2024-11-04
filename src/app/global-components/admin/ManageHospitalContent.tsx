@@ -3,12 +3,13 @@
 import { ChangeEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button, defaultButtonStyle } from '@/app/global-components/buttons/Button';
 import { useToast } from '@/contexts/ToastContext';
 import { DepartmentsType, HospitalProps, UpdateHospitalProps } from '@/domains/hospital';
-import { CountyType, districtOptions, DistrictType, GenderType } from '@/domains/interfaces';
+import { CountyType, districtOptions, DistrictType, GenderType, getPageUrlByType, PageType } from '@/domains/interfaces';
 import { useUpdateHospitalMutation } from '@/features/hospitals/hooks/useUpdateHospitalMutation';
 import { useEnum } from '@/hooks/utils/useEnum';
 import { hospitalValidationSchema } from '@/lib/validation';
@@ -32,6 +33,7 @@ interface FormFieldProps {
 const inputStyle: string = 'w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400';
 
 const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps) => {
+  const router = useRouter();
   const { hospitalExtraFieldMap } = useEnum();
   const { isLoading, mutateAsync } = useUpdateHospitalMutation({ onSuccess: refetch });
   const { showToast } = useToast();
@@ -100,11 +102,16 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
         if (message) showToast({ message });
 
         reset(data);
+
+        if (hospital.title.includes('醫院') && !data.title.includes('醫院'))
+          router.push(`${getPageUrlByType(PageType.CLINICS)}/${hospital._id}`);
+        if (!hospital.title.includes('醫院') && data.title.includes('醫院'))
+          router.push(`${getPageUrlByType(PageType.HOSPITALS)}/${hospital._id}`);
       } catch (error) {
         console.error('Update error:', error);
       }
     },
-    [hospital._id, mutateAsync, reset, showToast]
+    [hospital._id, hospital.title, mutateAsync, reset, router, showToast]
   );
 
   const form = useMemo(

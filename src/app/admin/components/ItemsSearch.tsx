@@ -23,7 +23,7 @@ const ItemsSearch = ({ searchItems }: ItemsSearchProps) => {
   const onSubmit = useCallback(
     (formData: GetHospitalsDto) => {
       searchItems(formData);
-      reset();
+      reset(formData);
     },
     [reset, searchItems]
   );

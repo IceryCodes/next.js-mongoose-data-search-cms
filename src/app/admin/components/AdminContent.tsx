@@ -155,7 +155,7 @@ const AdminContent = (): ReactElement => {
         <div className="flex flex-col min-w-[350px] gap-y-4">
           <Card>
             <div className="flex flex-col gap-y-2">
-              <label>結果: {totalUsers}</label>
+              <label>{`符合結果: ${totalUsers.toLocaleString()}筆`}</label>
               <UsersSearch searchUsers={handleUserSearch} />
               <UsersSelect
                 users={users}
@@ -172,7 +172,9 @@ const AdminContent = (): ReactElement => {
             <label className="text-red-400">請先選擇帳號</label>
           ) : (
             <>
-              <label>結果: {manageType === ManageCategoryType.Pharmacy ? totalPharmacies : totalHospitals}</label>
+              <label>
+                {`符合結果: ${(manageType === ManageCategoryType.Pharmacy ? totalPharmacies : totalHospitals).toLocaleString()}筆`}
+              </label>
               <ItemsSearch searchItems={(formData) => handleManageSearch(manageType, formData)} />
               <ItemsSelect hospitals={combinedList} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
             </>
