@@ -13,11 +13,15 @@ export interface GetHospitalsReturnType {
   message: string;
 }
 
-export interface UpdateHospitalReturnType {
+export interface HospitalUpdateReturnType {
   message: string;
 }
 
-export interface UpdatePharmacyReturnType {
+export interface PharmacyUpdateReturnType {
+  message: string;
+}
+
+export interface ManageUpdateReturnType {
   message: string;
 }
 
@@ -32,8 +36,21 @@ export interface GetPharmaciesReturnType {
   message: string;
 }
 
+export interface ManageProps {
+  hospitals: HospitalProps[];
+  clinics: HospitalProps[];
+  pharmacies: PharmacyProps[];
+}
+
 export interface GetUserReturnType {
-  user?: UserProps | null;
+  user?: UserProps;
+  manage?: ManageProps;
+  message: string;
+}
+
+export interface GetUsersReturnType {
+  users?: UserProps[];
+  total?: number;
   message: string;
 }
 
@@ -53,5 +70,9 @@ export interface UserVerifyReturnType {
 }
 
 export interface UserResendVerificationReturnType {
+  message: string;
+}
+
+export interface UserUpdateReturnType {
   message: string;
 }

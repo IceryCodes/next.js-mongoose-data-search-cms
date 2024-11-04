@@ -5,17 +5,17 @@ import { ReactElement, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
-import { Button, defaultButtonStyle } from '@/app/components/buttons/Button';
-import FieldErrorlabel from '@/app/components/FieldErrorlabel';
-import { ToastStyleType } from '@/app/components/Toast';
+import { Button, defaultButtonStyle } from '@/app/global-components/buttons/Button';
+import FieldErrorlabel from '@/app/global-components/FieldErrorlabel';
+import { ToastStyleType } from '@/app/global-components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { GenderType } from '@/domains/interfaces';
 import { UserRegisterDto } from '@/domains/user';
-import { useRegisterMutation } from '@/features/user/useAuthMutation';
+import { useUserRegisterMutation } from '@/features/user/hooks/useAuthMutation';
 import { registerValidationSchema } from '@/lib/validation';
 
-const Register = (): ReactElement => {
+const RegisterContent = (): ReactElement => {
   const { login, logout } = useAuth();
   const { showToast } = useToast();
 
@@ -29,7 +29,7 @@ const Register = (): ReactElement => {
       gender: GenderType.None,
     },
   });
-  const { isLoading, mutateAsync } = useRegisterMutation();
+  const { isLoading, mutateAsync } = useUserRegisterMutation();
 
   const handleRegister = async (data: UserRegisterDto) => {
     try {
@@ -38,7 +38,7 @@ const Register = (): ReactElement => {
 
       const { token, user, message } = result;
       if (token && user) {
-        login(token, user);
+        login({ token, user });
         showToast({ message });
       } else {
         logout();
@@ -161,4 +161,4 @@ const Register = (): ReactElement => {
   );
 };
 
-export default Register;
+export default RegisterContent;

@@ -90,6 +90,7 @@ export interface HospitalProps {
   content?: string;
   keywords?: string[];
   featuredImg?: string;
+  managers?: string[];
   [HospitalExtraFieldType.SpeechTherapist]: number;
   [HospitalExtraFieldType.DentalTechnician]: number;
   [HospitalExtraFieldType.Audiologist]: number;

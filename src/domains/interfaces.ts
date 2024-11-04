@@ -1,10 +1,13 @@
 export enum PageType {
+  HOME = '首頁',
   HOSPITALS = '醫院搜尋',
   CLINICS = '診所搜尋',
   PHARMACIES = '藥局搜尋',
   REGISTER = '註冊',
   LOGIN = '登入',
   VERIFY = '帳號驗證',
+  PROFILE = '個人帳號',
+  ADMIN = '後台管理',
 }
 
 export const PageTypeMap: { [key: string]: string } = Object.fromEntries(
@@ -21,6 +24,7 @@ export const getPageUrlByType = (value: PageType): string => {
 export enum UserRoleType {
   None = 0,
   Admin = 1,
+  Manager = 2,
 }
 
 export enum GenderType {

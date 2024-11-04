@@ -5,21 +5,21 @@ import { ReactElement, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
-import { Button } from '@/app/components/buttons/Button';
-import FieldErrorlabel from '@/app/components/FieldErrorlabel';
-import { ToastStyleType } from '@/app/components/Toast';
+import { Button } from '@/app/global-components/buttons/Button';
+import FieldErrorlabel from '@/app/global-components/FieldErrorlabel';
+import { ToastStyleType } from '@/app/global-components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { UserLoginDto } from '@/domains/user';
-import { useLoginMutation } from '@/features/user/useAuthMutation';
+import { useUserLoginMutation } from '@/features/user/hooks/useAuthMutation';
 import { loginValidationSchema } from '@/lib/validation';
 
-const Login = (): ReactElement => {
+const LoginContent = (): ReactElement => {
   const { control, handleSubmit, reset } = useForm<UserLoginDto>({
     resolver: yupResolver(loginValidationSchema),
     defaultValues: { email: '', password: '' },
   });
-  const { isLoading, mutateAsync } = useLoginMutation();
+  const { isLoading, mutateAsync } = useUserLoginMutation();
   const { login, logout } = useAuth();
   const { showToast } = useToast();
 
@@ -30,7 +30,7 @@ const Login = (): ReactElement => {
 
       const { token, user, message } = result;
       if (token && user) {
-        login(token, user);
+        login({ token, user });
       } else {
         logout();
         if (message) showToast({ message, toastStyle: ToastStyleType.Warning });
@@ -38,7 +38,7 @@ const Login = (): ReactElement => {
 
       reset();
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('LoginContent error:', error);
     }
   };
 
@@ -91,4 +91,4 @@ const Login = (): ReactElement => {
   );
 };
 
-export default Login;
+export default LoginContent;

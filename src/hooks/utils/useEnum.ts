@@ -1,9 +1,14 @@
 import { useCallback, useMemo } from 'react';
 
 import { HospitalExtraFieldType } from '@/domains/hospital';
-import { GenderType } from '@/domains/interfaces';
+import { GenderType, UserRoleType } from '@/domains/interfaces';
+import { ManageCategoryType } from '@/domains/manage';
 
 interface UsePatientSelectionTicketEnumReturnType {
+  roleMap: Record<UserRoleType, string>;
+  composeRole: (genderToTrans: UserRoleType) => string;
+  manageMap: Record<ManageCategoryType, string>;
+  composeManage: (genderToTrans: ManageCategoryType) => string;
   genderMap: Record<GenderType, string>;
   composeGender: (genderToTrans: GenderType) => string;
   hospitalExtraFieldMap: Record<HospitalExtraFieldType, string>;
@@ -11,6 +16,36 @@ interface UsePatientSelectionTicketEnumReturnType {
 }
 
 export const useEnum = (): UsePatientSelectionTicketEnumReturnType => {
+  const roleMap = useMemo<Record<UserRoleType, string>>(() => {
+    return {
+      [UserRoleType.None]: '一般用戶',
+      [UserRoleType.Admin]: '網站管理員',
+      [UserRoleType.Manager]: '管理人員',
+    };
+  }, []);
+
+  const composeRole = useCallback(
+    (roleToTrans: UserRoleType): string => {
+      return roleMap[roleToTrans] ?? 'Unknown';
+    },
+    [roleMap]
+  );
+
+  const manageMap = useMemo<Record<ManageCategoryType, string>>(() => {
+    return {
+      [ManageCategoryType.Hospital]: '管理醫院',
+      [ManageCategoryType.Clinic]: '管理診所',
+      [ManageCategoryType.Pharmacy]: '管理藥局',
+    };
+  }, []);
+
+  const composeManage = useCallback(
+    (manageToTrans: ManageCategoryType): string => {
+      return manageMap[manageToTrans] ?? 'Unknown';
+    },
+    [manageMap]
+  );
+
   const genderMap = useMemo<Record<GenderType, string>>(() => {
     return {
       [GenderType.None]: '',
@@ -66,6 +101,24 @@ export const useEnum = (): UsePatientSelectionTicketEnumReturnType => {
   );
 
   return useMemo<UsePatientSelectionTicketEnumReturnType>(() => {
-    return { genderMap, composeGender, hospitalExtraFieldMap, composeHospitalExtraField };
-  }, [composeGender, genderMap, hospitalExtraFieldMap, composeHospitalExtraField]);
+    return {
+      roleMap,
+      composeRole,
+      manageMap,
+      composeManage,
+      genderMap,
+      composeGender,
+      hospitalExtraFieldMap,
+      composeHospitalExtraField,
+    };
+  }, [
+    roleMap,
+    composeRole,
+    manageMap,
+    composeManage,
+    genderMap,
+    composeGender,
+    hospitalExtraFieldMap,
+    composeHospitalExtraField,
+  ]);
 };

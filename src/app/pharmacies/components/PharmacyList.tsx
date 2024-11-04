@@ -3,10 +3,10 @@ import { ReactElement, useCallback, useState } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
 
-import CreatePharmacyContent from '@/app/components/admin/CreatePharmacyContent';
-import { Button } from '@/app/components/buttons/Button';
-import GoogleMapComponent from '@/app/components/GoogleMapComponent';
-import Pagination from '@/app/components/Pagination';
+import CreatePharmacyContent from '@/app/global-components/admin/CreatePharmacyContent';
+import { Button } from '@/app/global-components/buttons/Button';
+import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
+import Pagination from '@/app/global-components/Pagination';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';

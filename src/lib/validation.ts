@@ -15,7 +15,14 @@ import {
 } from 'yup';
 
 import { DepartmentsType, HospitalExtraFieldType } from '@/domains/hospital';
-import { CountyType, districtOptions, DistrictOptionsProps, DistrictType, GenderType } from '@/domains/interfaces';
+import {
+  CountyType,
+  districtOptions,
+  DistrictOptionsProps,
+  DistrictType,
+  GenderType,
+  UserRoleType,
+} from '@/domains/interfaces';
 
 interface RulesProps {
   //user
@@ -24,6 +31,8 @@ interface RulesProps {
   email: StringSchema<string, AnyObject, undefined, ''>;
   password: StringSchema<string, AnyObject, undefined, ''>;
   gender: MixedSchema<NonNullable<GenderType>, AnyObject, undefined, ''>;
+  role: MixedSchema<NonNullable<UserRoleType>, AnyObject, undefined, ''>;
+  manages: ArraySchema<string[] | undefined, AnyObject, '', ''>;
 
   // hospital
   partner: BooleanSchema<boolean, AnyObject>;
@@ -92,6 +101,17 @@ const rules: RulesProps = {
     .min(8, '密碼至少需要8個字')
     .matches(/(?=.*[0-9])(?=.*[A-Z])/, '密碼必須包含至少一個數字和一個大寫字母'),
   gender: mixed<GenderType>().oneOf([GenderType.Male, GenderType.Female], '性別必須為有效選項').required('性別是必填項目'),
+  role: mixed<UserRoleType>()
+    .oneOf([UserRoleType.None, UserRoleType.Admin, UserRoleType.Manager], '身份必須為有效選項')
+    .required('身份是必填項目'),
+  manages: array()
+    .of(
+      string()
+        .min(2, '醫院ID至少需要2個字')
+        .matches(/^[^#!@*()\\";/%^=_$`,.?:+]+$/, '不能包含特殊字符')
+        .required('醫院ID是必填項目')
+    )
+    .required('醫院ID是必填項目'),
 
   // hospital
   partner: boolean().required('必須選擇是否為合作夥伴'),
@@ -189,6 +209,12 @@ export const loginValidationSchema = object({
   password: rules.password,
 });
 
+export const profileValidationSchema = object({
+  firstName: rules.firstName,
+  lastName: rules.lastName,
+  gender: rules.gender,
+});
+
 export const hospitalValidationSchema = object({
   partner: rules.partner,
   orgCode: rules.orgCode,
@@ -254,4 +280,9 @@ export const pharmacyValidationSchema = object({
   keywords: rules.keywords,
   featuredImg: rules.featuredImg,
   healthInsuranceAuthorized: rules.healthInsuranceAuthorized,
+});
+
+export const adminValidationSchema = object({
+  role: rules.role,
+  manages: rules.manages,
 });

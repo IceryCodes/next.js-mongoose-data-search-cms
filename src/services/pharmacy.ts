@@ -7,7 +7,7 @@ import {
 } from '@/domains/pharmacy';
 import { apiOrigin, logApiError } from '@/utils/api';
 
-import { GetPharmaciesReturnType, GetPharmacyReturnType, UpdatePharmacyReturnType } from './interfaces';
+import { GetPharmaciesReturnType, GetPharmacyReturnType, PharmacyUpdateReturnType } from './interfaces';
 
 export const pharmacyQueryKeys = {
   getPharmacy: 'getPharmacy',
@@ -60,7 +60,7 @@ export const getPharmacies = async ({
   }
 };
 
-export const updatePharmacy = async (pharmacy: UpdatePharmacyDto): Promise<UpdatePharmacyReturnType> => {
+export const updatePharmacy = async (pharmacy: UpdatePharmacyDto): Promise<PharmacyUpdateReturnType> => {
   try {
     const { data } = await apiOrigin.patch(`/update-pharmacy`, pharmacy);
 
@@ -77,7 +77,7 @@ export const updatePharmacy = async (pharmacy: UpdatePharmacyDto): Promise<Updat
   }
 };
 
-export const createPharmacy = async (hospital: CreatePharmacyDto): Promise<UpdatePharmacyReturnType> => {
+export const createPharmacy = async (hospital: CreatePharmacyDto): Promise<PharmacyUpdateReturnType> => {
   try {
     const { data } = await apiOrigin.post(`/create-pharmacy`, hospital);
 
@@ -94,7 +94,7 @@ export const createPharmacy = async (hospital: CreatePharmacyDto): Promise<Updat
   }
 };
 
-export const deletePharmacy = async ({ _id }: DeletePharmacyDto): Promise<UpdatePharmacyReturnType> => {
+export const deletePharmacy = async ({ _id }: DeletePharmacyDto): Promise<PharmacyUpdateReturnType> => {
   try {
     const { data } = await apiOrigin.delete(`/delete-pharmacy`, {
       data: { _id },

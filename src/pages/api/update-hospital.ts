@@ -2,18 +2,18 @@ import { Collection, ObjectId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { HospitalProps } from '@/domains/hospital';
-import { getHospitalsCollection } from '@/lib/mongodb';
-import { UpdateHospitalReturnType } from '@/services/interfaces';
+import { getClinicManagesCollection, getHospitalManagesCollection, getHospitalsCollection } from '@/lib/mongodb';
+import { HospitalUpdateReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
 import { isAdminToken, isExpiredToken } from '@/utils/token';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalReturnType>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateReturnType>) => {
   if (req.method !== 'PATCH') {
     res.setHeader('Allow', ['PATCH']);
     return res.status(HttpStatus.MethodNotAllowed).json({ message: `Method ${req.method} not allowed` });
   }
 
-  // renew token
+  // Renew token
   if (req.headers.authorization) {
     try {
       const isExpired = await isExpiredToken(req.headers.authorization);
@@ -55,6 +55,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalR
       updatedAt: new Date(),
     };
 
+    // Fetch the current hospital data to check title
+    const currentHospital = await hospitalsCollection.findOne({ _id: hospitalId });
+
+    if (!currentHospital) {
+      return res.status(HttpStatus.NotFound).json({ message: '醫院不存在!' });
+    }
+
+    const currentTitleIncludesHospital = currentHospital.title.includes('醫院');
+    const newTitleIncludesHospital = updateData.title?.includes('醫院');
+
+    // Update the hospital information
     const result = await hospitalsCollection.updateOne(
       { _id: hospitalId, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] },
       {
@@ -63,6 +74,46 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UpdateHospitalR
     );
 
     if (result.modifiedCount === 0) return res.status(HttpStatus.NotFound).json({ message: '醫院不存在!' });
+
+    if (updateData.title) {
+      // Manage records transfer based on title changes
+      const hospitalManagesCollection = await getHospitalManagesCollection();
+      const clinicManagesCollection = await getClinicManagesCollection();
+
+      if (currentTitleIncludesHospital && !newTitleIncludesHospital) {
+        // Move from hospital_manages to clinic_manages
+        const managesToMove = await hospitalManagesCollection.find({ hospital_id: hospitalId }).toArray();
+
+        if (managesToMove.length > 0) {
+          const clinicManagesToInsert = managesToMove.map((manage) => ({
+            _id: new ObjectId(),
+            user_id: manage.user_id,
+            clinic_id: hospitalId,
+            createdAt: manage.createdAt,
+            updatedAt: new Date(),
+          }));
+
+          await clinicManagesCollection.insertMany(clinicManagesToInsert);
+          await hospitalManagesCollection.deleteMany({ hospital_id: hospitalId });
+        }
+      } else if (!currentTitleIncludesHospital && newTitleIncludesHospital) {
+        // Move from clinic_manages to hospital_manages
+        const managesToMove = await clinicManagesCollection.find({ clinic_id: hospitalId }).toArray();
+
+        if (managesToMove.length > 0) {
+          const hospitalManagesToInsert = managesToMove.map((manage) => ({
+            _id: new ObjectId(),
+            user_id: manage.user_id,
+            hospital_id: hospitalId,
+            createdAt: manage.createdAt,
+            updatedAt: new Date(),
+          }));
+
+          await hospitalManagesCollection.insertMany(hospitalManagesToInsert);
+          await clinicManagesCollection.deleteMany({ clinic_id: hospitalId });
+        }
+      }
+    }
 
     res.status(HttpStatus.Ok).json({ message: `已更新${updateData.title}!` });
   } catch (error) {

@@ -4,15 +4,16 @@ import { ReactElement, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
-import DeleteHospitalContent from '@/app/components/admin/DeleteHospitalContent';
-import ManageHospitalContent from '@/app/components/admin/ManageHospitalContent';
-import Breadcrumb from '@/app/components/Breadcrumb';
-import Card from '@/app/components/Card';
-import GoogleMapComponent from '@/app/components/GoogleMapComponent';
-import Tag from '@/app/components/tags/Tag';
+import DeleteHospitalContent from '@/app/global-components/admin/DeleteHospitalContent';
+import ManageHospitalContent from '@/app/global-components/admin/ManageHospitalContent';
+import Breadcrumb from '@/app/global-components/Breadcrumb';
+import Card from '@/app/global-components/Card';
+import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
+import Tag from '@/app/global-components/tags/Tag';
 import SidebarLayout from '@/app/hospitals/[id]/components/SidebarLayout';
 import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { defaultHospitalExcerpt } from '@/domains/metadatas';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
@@ -79,9 +80,7 @@ const HospitalContent = (): ReactElement => {
     featuredImg,
   } = hospital;
 
-  const usedExcerpt: string = excerpt
-    ? excerpt
-    : `${title}是一間提供${departments.join(', ')}的醫院! 位於${county}${district}${address}，電話是${phone}!`;
+  const usedExcerpt: string = excerpt ? excerpt : defaultHospitalExcerpt(hospital);
 
   return (
     <div className="container mx-auto p-6">

@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 
 import { notFound, useRouter, useSearchParams } from 'next/navigation';
 
-import { ToastStyleType } from '@/app/components/Toast';
+import { ToastStyleType } from '@/app/global-components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
-import { useUserVerifyQuery } from '@/features/user/useUserVerifyQuery';
+import { useUserVerifyQuery } from '@/features/user/hooks/useUserVerifyQuery';
 
 const VerifyContent = () => {
   const searchParams = useSearchParams();

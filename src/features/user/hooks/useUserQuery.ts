@@ -2,28 +2,36 @@ import { useMemo } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { useAuth } from '@/contexts/AuthContext';
+import { GetUserDto } from '@/domains/user';
 import { useQueryCallback } from '@/hooks/utils/useQueryCallback';
 import { GetUserReturnType } from '@/services/interfaces';
 import { getUser, userQueryKeys } from '@/services/user';
 import { QueryBaseProps, QueryBaseReturnType } from '@/utils/reactQuery';
 
-export type UsePatientMeQueryProps = QueryBaseProps<GetUserReturnType>;
+interface UseUserQueryProps extends QueryBaseProps<GetUserReturnType>, GetUserDto {}
 
 export const useUserQuery = ({
   onSuccess,
   onError,
   enabled,
   queryPrefixKey = [],
-}: UsePatientMeQueryProps = {}): QueryBaseReturnType<GetUserReturnType> => {
-  const { token } = useAuth();
-
+  _id,
+}: UseUserQueryProps): QueryBaseReturnType<GetUserReturnType> => {
   const queryResult = useQuery({
-    queryKey: [...queryPrefixKey, userQueryKeys.getUser],
-    queryFn: () => (token ? getUser(token) : { user: null, message: '' }),
-    enabled,
+    queryKey: [...queryPrefixKey, userQueryKeys.getUser, _id],
+    queryFn: () => getUser({ _id }),
+    enabled: enabled && !!_id,
   });
-  const { isFetching, isError, error, data, refetch } = queryResult;
+
+  const {
+    isFetching,
+    isError,
+    error,
+    data = {
+      message: '',
+    },
+    refetch,
+  } = queryResult;
   useQueryCallback({ ...queryResult, onSuccess, onError });
 
   return useMemo(() => {

@@ -5,12 +5,18 @@ import { useRouter } from 'next/navigation';
 import { UserProps } from '@/domains/user';
 import { renewToken, TokenProps, verifyToken } from '@/utils/token';
 
+interface LoginProps {
+  token: string;
+  user: UserProps;
+}
+
 interface AuthContextProps {
   isAuthenticated: boolean;
   token: string | null;
   user: UserProps | null;
-  login: (token: string, user: UserProps) => void;
+  login: ({ token, user }: LoginProps) => void;
   logout: () => void;
+  setUser: (user: UserProps) => void;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -30,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactElement }): ReactEle
   }, []);
 
   const login = useCallback(
-    (token: string, user: UserProps) => {
+    ({ token, user }: LoginProps) => {
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('user', JSON.stringify(user)); // Store user data in session storage
       setIsAuthenticated(true);
@@ -81,7 +87,9 @@ export const AuthProvider = ({ children }: { children: ReactElement }): ReactEle
     init();
   }, [logout]);
 
-  return <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, setUser }}>{children}</AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

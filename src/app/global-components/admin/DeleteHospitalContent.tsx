@@ -4,25 +4,28 @@ import { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { ObjectId } from 'mongodb';
 
+import { Button } from '@/app/global-components/buttons/Button';
 import { useToast } from '@/contexts/ToastContext';
-import { useDeletePharmacyMutation } from '@/features/pharmacies/hooks/useDeletePharmacyMutation';
+import { useDeleteHospitalMutation } from '@/features/hospitals/hooks/useDeleteHospitalMutation';
 
-import { Button } from '../buttons/Button';
 import Popup from '../Popup';
 
-interface DeletePharmacyContentProps {
+interface DeleteHospitalContentProps {
   _id: ObjectId;
   title: string;
   afterDelete: () => void;
 }
 
-const DeletePharmacyContent = ({ _id, title, afterDelete }: DeletePharmacyContentProps) => {
-  const { isLoading, mutateAsync } = useDeletePharmacyMutation();
+const DeleteHospitalContent = ({ _id, title, afterDelete }: DeleteHospitalContentProps) => {
+  const { isLoading, mutateAsync } = useDeleteHospitalMutation();
   const { showToast } = useToast();
 
   const [display, setDisplay] = useState<boolean>(false);
 
   const onSubmit = useCallback(async () => {
+    const confirmed = window.confirm(`您確定要刪除${title}嗎?`);
+    if (!confirmed) return;
+
     try {
       const result = await mutateAsync({ _id });
       if (typeof result === 'string') throw new Error(result);
@@ -35,11 +38,11 @@ const DeletePharmacyContent = ({ _id, title, afterDelete }: DeletePharmacyConten
     } catch (error) {
       console.error('Delete error:', error);
     }
-  }, [_id, afterDelete, mutateAsync, showToast]);
+  }, [_id, afterDelete, mutateAsync, showToast, title]);
 
   const form = useMemo(
     (): ReactElement => (
-      <Popup title="刪除藥局" display={display} onClose={() => setDisplay(false)}>
+      <Popup title="刪除醫院或診所" display={display} onClose={() => setDisplay(false)}>
         <div className="flex flex-col w-[500px]">
           {isLoading && <label>刪除中...</label>}
 
@@ -75,4 +78,4 @@ const DeletePharmacyContent = ({ _id, title, afterDelete }: DeletePharmacyConten
   );
 };
 
-export default DeletePharmacyContent;
+export default DeleteHospitalContent;

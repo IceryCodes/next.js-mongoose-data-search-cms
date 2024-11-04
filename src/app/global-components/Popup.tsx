@@ -2,7 +2,7 @@
 
 import { ReactElement } from 'react';
 
-import { Button } from './buttons/Button';
+import { Button } from '@/app/global-components/buttons/Button';
 
 export enum PopupStyleType {
   Normal = 'bg-blue-400',
