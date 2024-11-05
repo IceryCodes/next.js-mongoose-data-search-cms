@@ -3,6 +3,7 @@
 import { ReactElement, useEffect } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button } from '@/app/global-components/buttons/Button';
@@ -15,6 +16,7 @@ import { useUserLoginMutation } from '@/features/user/hooks/useAuthMutation';
 import { loginValidationSchema } from '@/lib/validation';
 
 const LoginContent = (): ReactElement => {
+  const router = useRouter();
   const { control, handleSubmit, reset } = useForm<UserLoginDto>({
     resolver: yupResolver(loginValidationSchema),
     defaultValues: { email: '', password: '' },
@@ -28,9 +30,10 @@ const LoginContent = (): ReactElement => {
       const result = await mutateAsync(data);
       if (typeof result === 'string') throw new Error(result);
 
-      const { token, user, message } = result;
-      if (token && user) {
-        login({ token, user });
+      const { token, message } = result;
+      if (token) {
+        login({ token });
+        router.push(process.env.NEXT_PUBLIC_BASE_URL);
       } else {
         logout();
         if (message) showToast({ message, toastStyle: ToastStyleType.Warning });

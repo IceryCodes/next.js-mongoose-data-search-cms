@@ -23,23 +23,6 @@ const HomeContent = (): ReactElement => {
           <p className="mb-4 text-gray-700 text-lg">整合全台所有醫院、診所和藥局，讓您輕鬆搜尋和比較不同的醫療服務。</p>
           <p className="mb-6 text-gray-500">如果您是醫療機構的管理者，可以註冊編輯您的機構資訊，讓更多人了解您的服務。</p>
           <div className="flex flex-col gap-y-4">
-            <div className="flex justify-center gap-x-4">
-              <Button
-                text="搜尋醫院"
-                onClick={() => router.push(getPageUrlByType(PageType.HOSPITALS))}
-                className="scale-100 hover:scale-105"
-              />
-              <Button
-                text="搜尋診所"
-                onClick={() => router.push(getPageUrlByType(PageType.CLINICS))}
-                className="scale-100 hover:scale-105"
-              />
-              <Button
-                text="搜尋藥局"
-                onClick={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
-                className="scale-100 hover:scale-105"
-              />
-            </div>
             <div>
               <Button
                 text="管理機構資訊"
@@ -52,16 +35,37 @@ const HomeContent = (): ReactElement => {
 
         <div className="py-8 border-y border-gray-300 grid grid-cols-3 gap-x-4">
           <div className="text-left col-span-1 flex flex-col gap-y-2">
-            <h6 className="text-lg font-semibold text-gray-700 dark:text-white">🏥 醫院</h6>
-            <p className="text-gray-500">我們的醫院資訊將幫助您找到急診、住院或專科醫療服務。</p>
+            <div className="flex items-center gap-x-4">
+              <h6 className="text-lg font-semibold text-gray-700">🏥 醫院</h6>
+              <Button
+                text="搜尋醫院"
+                onClick={() => router.push(getPageUrlByType(PageType.HOSPITALS))}
+                className="scale-100 hover:scale-105"
+              />
+            </div>
+            <p className="text-gray-500">我們的醫院資訊將幫助您找到各地的專科醫療服務。</p>
+          </div>
+          <div className="text-left col-span-1 flex flex-col gap-y-2 ">
+            <div className="flex items-center gap-x-4">
+              <h6 className="text-lg font-semibold text-gray-700">🩺 診所</h6>
+              <Button
+                text="搜尋診所"
+                onClick={() => router.push(getPageUrlByType(PageType.CLINICS))}
+                className="scale-100 hover:scale-105"
+              />
+            </div>
+            <p className="text-gray-500">您可以在這裡找到各類型的診所，提供從普通門診到專科診療的服務。</p>
           </div>
           <div className="text-left col-span-1 flex flex-col gap-y-2">
-            <h6 className="text-lg font-semibold text-gray-700 dark:text-white">🩺 診所</h6>
-            <p className="text-gray-500">在這裡，您可以找到各類型的診所，提供從普通門診到專科診療的服務。</p>
-          </div>
-          <div className="text-left col-span-1 flex flex-col gap-y-2">
-            <h6 className="text-lg font-semibold text-gray-700 dark:text-white">💊 藥局</h6>
-            <p className="text-gray-500">我們整合了全台各地的藥局，方便您隨時找到需要的藥品和健康產品。</p>
+            <div className="flex items-center gap-x-4">
+              <h6 className="text-lg font-semibold text-gray-700">💊 藥局</h6>
+              <Button
+                text="搜尋藥局"
+                onClick={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
+                className="scale-100 hover:scale-105"
+              />
+            </div>
+            <p className="text-gray-500">我們整合了全台各地的藥局，方便您隨時找到附近有健保特約的藥局。</p>
           </div>
         </div>
 

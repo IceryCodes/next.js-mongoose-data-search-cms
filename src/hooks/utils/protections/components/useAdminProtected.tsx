@@ -19,9 +19,9 @@ const AdminProtected = ({ children }: AdminProtectedProps): ReactElement => {
 
         if (token) {
           try {
-            const decode: TokenProps = await verifyToken(token);
+            const { user }: TokenProps = await verifyToken(token);
 
-            if (isAuthenticated && typeof decode._id === 'string' && decode.role === UserRoleType.Admin) {
+            if (isAuthenticated && typeof user._id === 'string' && user.role === UserRoleType.Admin) {
               setHasAccess(true);
             }
           } catch (error) {

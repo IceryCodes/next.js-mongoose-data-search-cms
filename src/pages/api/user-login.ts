@@ -1,11 +1,14 @@
 import bcrypt from 'bcrypt';
+import { Collection } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ValidationError } from 'yup';
 
+import { UserWithPasswordProps } from '@/domains/user';
 import { getUsersCollection } from '@/lib/mongodb';
 import { loginValidationSchema } from '@/lib/validation';
-import { UserLoginReturnType } from '@/services/interfaces';
+import { ManageProps, UserLoginReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import getManageRecordsByUserId from '@/utils/apiFunctions';
 import { generateToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturnType>) => {
@@ -18,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
   try {
     await loginValidationSchema.validate(req.body, { abortEarly: false });
 
-    const usersCollection = await getUsersCollection();
+    const usersCollection: Collection<Omit<UserWithPasswordProps, '_id'>> = await getUsersCollection();
 
     const user = await usersCollection.findOne({ email, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] });
 
@@ -32,20 +35,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid email or password' });
     }
 
-    const token = await generateToken({ _id: user._id.toString(), role: user.role }); // Use _id and role in the token
+    const manage: ManageProps = await getManageRecordsByUserId(user._id);
+
+    const token = await generateToken({ user, manage });
+
     res.status(HttpStatus.Ok).json({
       token,
-      user: {
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        gender: user.gender,
-        email: user.email,
-        role: user.role,
-        isVerified: user.isVerified,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
       message: 'Success',
     });
   } catch (error) {

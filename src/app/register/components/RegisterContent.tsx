@@ -3,6 +3,7 @@
 import { ReactElement, useEffect } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button, defaultButtonStyle } from '@/app/global-components/buttons/Button';
@@ -16,6 +17,7 @@ import { useUserRegisterMutation } from '@/features/user/hooks/useAuthMutation';
 import { registerValidationSchema } from '@/lib/validation';
 
 const RegisterContent = (): ReactElement => {
+  const router = useRouter();
   const { login, logout } = useAuth();
   const { showToast } = useToast();
 
@@ -36,9 +38,10 @@ const RegisterContent = (): ReactElement => {
       const result = await mutateAsync(data);
       if (typeof result === 'string') throw new Error(result);
 
-      const { token, user, message } = result;
-      if (token && user) {
-        login({ token, user });
+      const { token, message } = result;
+      if (token) {
+        login({ token });
+        router.push(process.env.NEXT_PUBLIC_BASE_URL);
         showToast({ message });
       } else {
         logout();

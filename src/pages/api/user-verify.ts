@@ -25,11 +25,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserVerifyRetur
   if (typeof token !== 'string') return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
 
   try {
-    const { _id }: TokenProps = await verifyToken(token);
+    const { user }: TokenProps = await verifyToken(token);
 
     const usersCollection = await getUsersCollection();
     const result: UpdateResult<Omit<UserWithPasswordProps, '_id'>> = await usersCollection.updateOne(
-      { _id: new ObjectId(_id) },
+      { _id: new ObjectId(user._id) },
       { $set: { isVerified: true } }
     );
 

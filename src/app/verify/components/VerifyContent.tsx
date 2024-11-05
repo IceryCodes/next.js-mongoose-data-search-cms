@@ -33,7 +33,7 @@ const VerifyContent = () => {
 
     // Start countdown and redirect after 5 seconds
     const intervalId: NodeJS.Timeout = setInterval(() => {
-      setCountdown((prev) => prev - 1);
+      setCountdown((prev) => (prev > 0 ? prev - 1 : prev));
     }, 1000);
 
     const timeoutId: NodeJS.Timeout = setTimeout(() => {
