@@ -13,9 +13,10 @@ import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
 import Tag from '@/app/global-components/tags/Tag';
 import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
+import { ManageCategoryType } from '@/domains/manage';
 import { defaultClicnicExcerpt } from '@/domains/metadatas';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
-import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
+import ManagerProtected from '@/hooks/utils/protections/components/useManagerProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
 
@@ -98,7 +99,7 @@ const ClinicContent = (): ReactElement => {
             <Breadcrumb pageName={title} />
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-              <AdminProtected>
+              <ManagerProtected pageId={_id.toString()} type={ManageCategoryType.Clinic}>
                 <>
                   <ManageHospitalContent hospital={hospital} refetch={refetch} />
                   <DeleteHospitalContent
@@ -107,7 +108,7 @@ const ClinicContent = (): ReactElement => {
                     afterDelete={() => router.push(getPageUrlByType(PageType.CLINICS))}
                   />
                 </>
-              </AdminProtected>
+              </ManagerProtected>
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}
             </div>
