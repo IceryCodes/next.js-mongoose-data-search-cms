@@ -11,57 +11,67 @@ import { ToastStyleType } from '@/app/global-components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { GenderType } from '@/domains/interfaces';
-import { UserProps, UserUpdateProps } from '@/domains/user';
+import { UserUpdateProps } from '@/domains/user';
 import { useUserUpdateMutation } from '@/features/user/hooks/useAuthMutation';
 import { useDeleteUserMutation } from '@/features/user/hooks/useDeleteUserMutation';
+import { useUserQuery } from '@/features/user/hooks/useUserQuery';
 import useLoginProtected from '@/hooks/utils/protections/routes/useLoginProtected';
 import { profileValidationSchema } from '@/lib/validation';
-import { TokenProps, verifyToken } from '@/utils/token';
+import { generateToken } from '@/utils/token';
 
 const ProfileContent = (): ReactElement => {
   useLoginProtected();
-  const { user, token, setUser, logout } = useAuth();
+  const { user: userStorage, token, logout, login } = useAuth();
   const { showToast } = useToast();
   const { mutateAsync: userDelete } = useDeleteUserMutation();
 
+  const {
+    data: { user, manage } = {},
+    isLoading: isFetching,
+    refetch,
+  } = useUserQuery({
+    _id: userStorage?._id,
+    enabled: !!userStorage?._id,
+  });
+
   const { control, handleSubmit, reset } = useForm<UserUpdateProps>({
     resolver: yupResolver(profileValidationSchema),
-    defaultValues: {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      gender: user?.gender,
-    },
+    defaultValues: user
+      ? {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          gender: user.gender,
+        }
+      : undefined, // Default values are set only if `user` data exists
   });
 
   const { isLoading, mutateAsync: userUpdate } = useUserUpdateMutation();
 
   const handleUpdate = useCallback(
-    async (data: UserUpdateProps) => {
-      if (!token) return;
+    async (updateData: UserUpdateProps) => {
+      if (!token || !user || !manage) return;
 
       const confirmed = window.confirm(`您確定要更新帳號嗎?`);
       if (!confirmed) return;
 
       try {
-        const { _id }: TokenProps = await verifyToken(token);
-        const result = await userUpdate({ ...data, _id });
+        const result = await userUpdate({ ...updateData, _id: user._id.toString() });
         if (typeof result === 'string') throw new Error(result);
 
-        const updatedUser: UserProps = { ...user, ...data } as UserProps;
-
-        sessionStorage.setItem('user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
+        const newToken: string = await generateToken({ user: { ...user, ...updateData }, manage });
+        login({ token: newToken });
+        refetch();
 
         const { message } = result;
         showToast({ message });
 
-        reset(data);
+        reset(updateData);
       } catch (error) {
         console.error('Update error:', error);
         showToast({ message: '請重新登入再更新!', toastStyle: ToastStyleType.Warning });
       }
     },
-    [reset, setUser, showToast, token, user, userUpdate]
+    [login, manage, refetch, reset, showToast, token, user, userUpdate]
   );
 
   const deleteUser = useCallback(async () => {
@@ -81,6 +91,10 @@ const ProfileContent = (): ReactElement => {
       console.error('Delete error:', error);
     }
   }, [showToast, user?._id, userDelete, logout]);
+
+  if (isFetching) return <label className="mx-auto">讀取中...</label>;
+
+  if (!user) return <label className="mx-auto">找不到帳號</label>;
 
   return (
     <div className="max-w-md min-w-96 mx-auto p-4 flex flex-col items-center gap-y-4 bg-white rounded-lg shadow-md">

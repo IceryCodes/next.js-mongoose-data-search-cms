@@ -125,13 +125,19 @@ const AdminContent = (): ReactElement => {
 
   useEffect(() => {
     if (manageType === ManageCategoryType.Hospital) {
-      setSelectedItems(userData?.manage?.hospitals ?? []);
+      setSelectedItems(userData?.manage?.[ManageCategoryType.Hospital] ?? []);
     } else if (manageType === ManageCategoryType.Clinic) {
-      setSelectedItems(userData?.manage?.clinics ?? []);
+      setSelectedItems(userData?.manage?.[ManageCategoryType.Clinic] ?? []);
     } else if (manageType === ManageCategoryType.Pharmacy) {
-      setSelectedItems(userData?.manage?.pharmacies ?? []);
+      setSelectedItems(userData?.manage?.[ManageCategoryType.Pharmacy] ?? []);
     }
-  }, [manageType, userData?.manage?.clinics, userData?.manage?.hospitals, userData?.manage?.pharmacies]);
+  }, [
+    manageType,
+    userData?.manage,
+    userData?.manage?.[ManageCategoryType.Hospital],
+    userData?.manage?.[ManageCategoryType.Clinic],
+    userData?.manage?.[ManageCategoryType.Pharmacy],
+  ]);
 
   return (
     <div className="p-4 flex flex-col justify-center gap-y-4 w-full">

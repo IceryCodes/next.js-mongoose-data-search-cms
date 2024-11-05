@@ -2,8 +2,9 @@ import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { getUsersCollection } from '@/lib/mongodb';
-import { UserResendVerificationReturnType } from '@/services/interfaces';
+import { ManageProps, UserResendVerificationReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import getManageRecordsByUserId from '@/utils/apiFunctions';
 import sendEmail from '@/utils/sendEmail';
 import { generateToken, isExpiredToken } from '@/utils/token';
 import verificationEmailTemplate from '@/utils/verificationEmailTemplate';
@@ -36,7 +37,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserResendVerif
 
     if (user.isVerified) return res.status(HttpStatus.BadRequest).json({ message: '已通過驗證!' });
 
-    const verificationToken: string = await generateToken({ _id, role: user.role });
+    const manage: ManageProps = await getManageRecordsByUserId(user._id);
+
+    const verificationToken: string = await generateToken({ user, manage });
     const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}`;
 
     await sendEmail({

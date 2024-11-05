@@ -4,7 +4,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { ValidationError } from 'yup';
 
 import { UserRoleType } from '@/domains/interfaces';
-import { UserProps, UserWithPasswordProps } from '@/domains/user';
+import { ManageCategoryType } from '@/domains/manage';
+import { UserWithPasswordProps } from '@/domains/user';
 import { getUsersCollection } from '@/lib/mongodb';
 import { registerValidationSchema } from '@/lib/validation';
 import { UserLoginReturnType } from '@/services/interfaces';
@@ -49,7 +50,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
     const result: InsertOneResult<Omit<UserWithPasswordProps, '_id'>> = await usersCollection.insertOne(newUser);
     const userId: ObjectId = result.insertedId; // Get the generated ObjectId
 
-    const verificationToken: string = await generateToken({ _id: userId.toString(), role: UserRoleType.None });
+    const verificationToken: string = await generateToken({
+      user: { _id: userId, ...newUser },
+      manage: {
+        [ManageCategoryType.Hospital]: [],
+        [ManageCategoryType.Clinic]: [],
+        [ManageCategoryType.Pharmacy]: [],
+      },
+    });
     const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}`;
     await sendEmail({
       to: email,
@@ -57,19 +65,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturn
       html: verificationEmailTemplate({ userName: `${lastName} ${firstName}`, verificationLink }),
     });
 
-    const user: UserProps = {
-      _id: userId,
-      firstName,
-      lastName,
-      gender,
-      email,
-      role: UserRoleType.None,
-      isVerified: false,
-      createdAt: timeStamp,
-      updatedAt: timeStamp,
-    };
-
-    res.status(HttpStatus.Created).json({ user, message: '請至註冊信箱進行驗證' });
+    res.status(HttpStatus.Created).json({ message: '請至註冊信箱進行驗證' });
   } catch (error) {
     if (error instanceof ValidationError)
       return res.status(HttpStatus.BadRequest).json({ message: error.errors.join(', ') });

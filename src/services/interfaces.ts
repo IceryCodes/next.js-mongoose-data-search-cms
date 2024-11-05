@@ -1,4 +1,5 @@
 import { HospitalProps } from '@/domains/hospital';
+import { ManageCategoryType } from '@/domains/manage';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { UserProps } from '@/domains/user';
 
@@ -37,9 +38,9 @@ export interface GetPharmaciesReturnType {
 }
 
 export interface ManageProps {
-  hospitals: HospitalProps[];
-  clinics: HospitalProps[];
-  pharmacies: PharmacyProps[];
+  [ManageCategoryType.Hospital]: HospitalProps[];
+  [ManageCategoryType.Clinic]: HospitalProps[];
+  [ManageCategoryType.Pharmacy]: PharmacyProps[];
 }
 
 export interface GetUserReturnType {
@@ -61,7 +62,6 @@ export interface UserRegisterReturnType {
 
 export interface UserLoginReturnType {
   token?: string;
-  user?: UserProps;
   message: string;
 }
 

@@ -1,8 +1,11 @@
 import { decodeJwt } from 'jose';
+import { ObjectId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { UserRoleType } from '@/domains/interfaces';
+import { UserProps } from '@/domains/user';
+import { ManageProps } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import getManageRecordsByUserId from '@/utils/apiFunctions';
 import { generateToken } from '@/utils/token';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -15,11 +18,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Check if the token contains valid data
       if (decodedToken && typeof decodedToken === 'object' && decodedToken._id && decodedToken.role) {
-        const _id = decodedToken._id as string; // Cast to string if necessary
-        const role = decodedToken.role as UserRoleType; // Role should be of type UserRoleType
+        const user = decodedToken.user as UserProps;
+        const manage: ManageProps = await getManageRecordsByUserId(new ObjectId(user._id));
 
         // Generate a new token
-        const newToken: string = await generateToken({ _id, role });
+        const newToken: string = await generateToken({ user, manage });
         return res.status(HttpStatus.Ok).json({ token: newToken });
       }
     }

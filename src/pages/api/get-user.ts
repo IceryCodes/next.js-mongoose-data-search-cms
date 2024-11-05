@@ -1,21 +1,12 @@
 import { Collection, ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { HospitalProps } from '@/domains/hospital';
-import { ClinicManageProps, HospitalManageProps, PharmacyManageProps } from '@/domains/manage';
-import { PharmacyProps } from '@/domains/pharmacy';
 import { UserWithPasswordProps } from '@/domains/user';
-import {
-  getClinicManagesCollection,
-  getHospitalManagesCollection,
-  getHospitalsCollection,
-  getPharmaciesCollection,
-  getPharmacyManagesCollection,
-  getUsersCollection,
-} from '@/lib/mongodb';
+import { getUsersCollection } from '@/lib/mongodb';
 import { GetUserReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import { isAdminToken, isExpiredToken } from '@/utils/token';
+import getManageRecordsByUserId from '@/utils/apiFunctions';
+import { isExpiredToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnType>) => {
   if (req.method !== 'GET') return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
@@ -36,14 +27,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
     return res.status(HttpStatus.Unauthorized).json({ message: 'Unauthorized' });
   }
 
-  try {
-    const isAdmin = await isAdminToken(req.headers.authorization);
-    if (!isAdmin) return res.status(HttpStatus.Forbidden).json({ message: 'Insufficient permissions' });
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
-  }
-
   const { _id } = req.query;
 
   if (typeof _id !== 'string') {
@@ -52,11 +35,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
 
   try {
     const usersCollection: Collection<Omit<UserWithPasswordProps, '_id'>> = await getUsersCollection();
-    const hospitalManageCollection: Collection<HospitalManageProps> = await getHospitalManagesCollection();
-    const pharmacyManageCollection: Collection<PharmacyManageProps> = await getPharmacyManagesCollection();
-    const clinicManageCollection: Collection<ClinicManageProps> = await getClinicManagesCollection();
-    const hospitalsCollection: Collection<HospitalProps> = await getHospitalsCollection();
-    const pharmaciesCollection: Collection<PharmacyProps> = await getPharmaciesCollection();
 
     // Find the user by _id
     const user = await usersCollection.findOne({
@@ -69,26 +47,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
       return res.status(HttpStatus.NotFound).json({ message: '帳號不存在!' });
     }
 
-    // Fetch hospital manages and get hospital IDs
-    const hospitalManageRecords = await hospitalManageCollection.find({ user_id: new ObjectId(_id) }).toArray();
-    const hospitalIds = hospitalManageRecords.map((record) => record.hospital_id);
-
-    // Fetch hospital manages and get hospital IDs
-    const clinicManageRecords = await clinicManageCollection.find({ user_id: new ObjectId(_id) }).toArray();
-    const clinicIds = clinicManageRecords.map((record) => record.clinic_id);
-
-    // Fetch pharmacy manages and get pharmacy IDs
-    const pharmacyManageRecords = await pharmacyManageCollection.find({ user_id: new ObjectId(_id) }).toArray();
-    const pharmacyIds = pharmacyManageRecords.map((record) => record.pharmacy_id);
-
-    // Fetch hospital details
-    const managedHospitals = await hospitalsCollection.find({ _id: { $in: hospitalIds } }).toArray();
-
-    // Fetch clinic details
-    const managedCclinics = await hospitalsCollection.find({ _id: { $in: clinicIds } }).toArray();
-
-    // Fetch pharmacy details
-    const managedPharmacies = await pharmaciesCollection.find({ _id: { $in: pharmacyIds } }).toArray();
+    const manage = await getManageRecordsByUserId(new ObjectId(_id));
 
     // Return user details with managed hospitals and pharmacies
     res.status(HttpStatus.Ok).json({
@@ -103,11 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
-      manage: {
-        hospitals: managedHospitals,
-        clinics: managedCclinics,
-        pharmacies: managedPharmacies,
-      },
+      manage,
       message: 'Success',
     });
   } catch (error) {
