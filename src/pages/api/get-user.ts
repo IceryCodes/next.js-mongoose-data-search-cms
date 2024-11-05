@@ -6,7 +6,7 @@ import { getUsersCollection } from '@/lib/mongodb';
 import { GetUserReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
 import getManageRecordsByUserId from '@/utils/apiFunctions';
-import { isAdminToken, isExpiredToken } from '@/utils/token';
+import { isExpiredToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnType>) => {
   if (req.method !== 'GET') return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
@@ -25,14 +25,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
   if (!token) {
     console.error('Unauthorized');
     return res.status(HttpStatus.Unauthorized).json({ message: 'Unauthorized' });
-  }
-
-  try {
-    const isAdmin = await isAdminToken(req.headers.authorization);
-    if (!isAdmin) return res.status(HttpStatus.Forbidden).json({ message: 'Insufficient permissions' });
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
   }
 
   const { _id } = req.query;

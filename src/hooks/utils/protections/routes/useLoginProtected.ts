@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { useRouter } from 'next/navigation';
 
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,7 +9,9 @@ const useLoginProtected = () => {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
 
-  if (!isAuthenticated) router.push(getPageUrlByType(PageType.LOGIN));
+  useEffect(() => {
+    if (!isAuthenticated) router.push(getPageUrlByType(PageType.LOGIN));
+  }, [isAuthenticated, router]);
 };
 
 export default useLoginProtected;

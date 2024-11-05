@@ -25,18 +25,24 @@ const ProfileContent = (): ReactElement => {
   const { showToast } = useToast();
   const { mutateAsync: userDelete } = useDeleteUserMutation();
 
-  const { data: { user, manage } = {}, refetch } = useUserQuery({
+  const {
+    data: { user, manage } = {},
+    isLoading: isFetching,
+    refetch,
+  } = useUserQuery({
     _id: userStorage?._id,
     enabled: !!userStorage?._id,
   });
 
   const { control, handleSubmit, reset } = useForm<UserUpdateProps>({
     resolver: yupResolver(profileValidationSchema),
-    defaultValues: {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      gender: user?.gender,
-    },
+    defaultValues: user
+      ? {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          gender: user.gender,
+        }
+      : undefined, // Default values are set only if `user` data exists
   });
 
   const { isLoading, mutateAsync: userUpdate } = useUserUpdateMutation();
@@ -85,6 +91,10 @@ const ProfileContent = (): ReactElement => {
       console.error('Delete error:', error);
     }
   }, [showToast, user?._id, userDelete, logout]);
+
+  if (isFetching) return <label className="mx-auto">讀取中...</label>;
+
+  if (!user) return <label className="mx-auto">找不到帳號</label>;
 
   return (
     <div className="max-w-md min-w-96 mx-auto p-4 flex flex-col items-center gap-y-4 bg-white rounded-lg shadow-md">
