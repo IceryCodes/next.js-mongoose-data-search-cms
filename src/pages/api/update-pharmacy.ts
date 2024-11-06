@@ -1,13 +1,14 @@
 import { Collection, ObjectId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { ManageCategoryType } from '@/domains/manage';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { getPharmaciesCollection } from '@/lib/mongodb';
-import { HospitalUpdateReturnType } from '@/services/interfaces';
+import { PharmacyUpdateReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import { isAdminToken, isExpiredToken } from '@/utils/token';
+import { isExpiredToken, isManagerToken } from '@/utils/token';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateReturnType>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<PharmacyUpdateReturnType>) => {
   if (req.method !== 'PATCH') {
     res.setHeader('Allow', ['PATCH']);
     return res.status(HttpStatus.MethodNotAllowed).json({ message: `Method ${req.method} not allowed` });
@@ -22,13 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateR
       console.error('Token verification failed:', error);
       return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
     }
-  }
-
-  try {
-    const isAdmin = await isAdminToken(req.headers.authorization);
-    if (!isAdmin) return res.status(HttpStatus.Forbidden).json({ message: 'Insufficient permissions' });
-  } catch (error) {
-    console.error('Token verification failed:', error);
+  } else {
     return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
   }
 
@@ -54,6 +49,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateR
       createdAt: new Date(req.body.createdAt),
       updatedAt: new Date(),
     };
+
+    const isManager = await isManagerToken({
+      authHeader: req.headers.authorization,
+      pageId: pharmacyId.toString(),
+      type: ManageCategoryType.Pharmacy,
+    });
+    if (!isManager) return res.status(HttpStatus.Forbidden).json({ message: '沒有管理權限!' });
 
     const result = await pharmaciesCollection.updateOne(
       { _id: pharmacyId, $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }] },

@@ -7,6 +7,7 @@ export enum LinkType {
   Email = 1,
   Address = 2,
   Website = 3,
+  Line = 4,
 }
 
 interface ConvertLinkProps {
@@ -19,6 +20,7 @@ const ConvertLink = ({ type, text }: ConvertLinkProps): ReactElement | null => {
   if (type === LinkType.Phone) link = `tel:${text}`;
   if (type === LinkType.Email) link = `mailto:${text}`;
   if (type === LinkType.Address) link = `https://www.google.com.tw/maps/place/${text}`;
+  if (type === LinkType.Line) link = `https://line.me/R/ti/p/${text}`;
 
   if (!text) return null;
 

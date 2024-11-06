@@ -6,10 +6,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button, defaultButtonStyle } from '@/app/global-components/buttons/Button';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { CountyType, districtOptions, DistrictType, GenderType } from '@/domains/interfaces';
 import { PharmacyProps, UpdatePharmacyProps } from '@/domains/pharmacy';
 import { useUpdatePharmacyMutation } from '@/features/pharmacies/hooks/useUpdatePharmacyMutation';
+import { useGetMeMutation } from '@/features/user/hooks/useGetMeMutation';
 import { pharmacyValidationSchema } from '@/lib/validation';
 
 import FieldErrorlabel from '../FieldErrorlabel';
@@ -31,7 +33,9 @@ interface FormFieldProps {
 const inputStyle: string = 'w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400';
 
 const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps) => {
-  const { isLoading, mutateAsync } = useUpdatePharmacyMutation({ onSuccess: refetch });
+  const { user, login } = useAuth();
+  const { isLoading, mutateAsync: updatePharmacy } = useUpdatePharmacyMutation({ onSuccess: refetch });
+  const { mutateAsync: getMe } = useGetMeMutation();
   const { showToast } = useToast();
 
   const [display, setDisplay] = useState<boolean>(false);
@@ -83,10 +87,10 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
   const onSubmit = useCallback(
     async (data: UpdatePharmacyProps) => {
       const confirmed = window.confirm(`您確定要更新${data.title}嗎?`);
-      if (!confirmed) return;
+      if (!confirmed || !user) return;
 
       try {
-        const result = await mutateAsync({
+        const result = await updatePharmacy({
           _id: pharmacy._id,
           ...data,
           address: data.address.replaceAll(data.county, '').replaceAll(data.district, ''),
@@ -97,11 +101,14 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
         if (message) showToast({ message });
 
         reset(data);
+
+        const { token } = await getMe({ _id: user._id });
+        if (token) login({ token });
       } catch (error) {
         console.error('Update error:', error);
       }
     },
-    [pharmacy._id, mutateAsync, reset, showToast]
+    [user, updatePharmacy, pharmacy._id, showToast, reset, getMe, login]
   );
 
   const form = useMemo(

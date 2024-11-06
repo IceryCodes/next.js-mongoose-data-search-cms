@@ -2,6 +2,7 @@
 import { ReactElement, useCallback, useEffect } from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import DeleteHospitalContent from '@/app/global-components/admin/DeleteHospitalContent';
@@ -16,6 +17,7 @@ import { getPageUrlByType, PageType } from '@/domains/interfaces';
 import { ManageCategoryType } from '@/domains/manage';
 import { defaultHospitalExcerpt } from '@/domains/metadatas';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
+import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import ManagerProtected from '@/hooks/utils/protections/components/useManagerProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
@@ -79,6 +81,7 @@ const HospitalContent = (): ReactElement => {
     content,
     websiteUrl,
     featuredImg,
+    lineId,
   } = hospital;
 
   const usedExcerpt: string = excerpt ? excerpt : defaultHospitalExcerpt(hospital);
@@ -100,15 +103,15 @@ const HospitalContent = (): ReactElement => {
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <ManagerProtected pageId={_id.toString()} type={ManageCategoryType.Hospital}>
-                <>
-                  <ManageHospitalContent hospital={hospital} refetch={refetch} />
-                  <DeleteHospitalContent
-                    _id={_id}
-                    title={title}
-                    afterDelete={() => router.push(getPageUrlByType(PageType.HOSPITALS))}
-                  />
-                </>
+                <ManageHospitalContent hospital={hospital} refetch={refetch} />
               </ManagerProtected>
+              <AdminProtected>
+                <DeleteHospitalContent
+                  _id={_id}
+                  title={title}
+                  afterDelete={() => router.push(getPageUrlByType(PageType.HOSPITALS))}
+                />
+              </AdminProtected>
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}
             </div>
@@ -116,6 +119,11 @@ const HospitalContent = (): ReactElement => {
             <Card>
               <>
                 <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
+                {lineId && (
+                  <Link href={`https://line.me/R/ti/p/${lineId}`} target="_blank">
+                    <h3 className="bg-[#00C338] py-1 px-2 text-white text-center w-[150px] rounded">加入Line</h3>
+                  </Link>
+                )}
                 <ul className="list-disc ml-5">
                   {owner &&
                     mainInfoRender({ label: '負責人', value: <span>{owner + (gender && composeGender(gender))}</span> })}

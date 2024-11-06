@@ -1,14 +1,17 @@
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { ValidationError } from 'yup';
 
 import { UserProps } from '@/domains/user';
-import { GetUserReturnType, ManageProps } from '@/services/interfaces';
+import { ManageProps, UserLoginReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
 import { getManageRecordsByUserId, getUserByUserId } from '@/utils/apiFunctions';
-import { isExpiredToken } from '@/utils/token';
+import { generateToken, isExpiredToken } from '@/utils/token';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnType>) => {
-  if (req.method !== 'GET') return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
+const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturnType>) => {
+  if (req.method !== 'GET') {
+    return res.status(HttpStatus.MethodNotAllowed).json({ message: 'Method not allowed' });
+  }
 
   if (req.headers.authorization) {
     try {
@@ -28,39 +31,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetUserReturnTy
 
   const { _id } = req.query;
 
-  if (typeof _id !== 'string') {
-    return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
-  }
+  if (typeof _id !== 'string' || !ObjectId.isValid(_id))
+    return res.status(HttpStatus.BadRequest).json({ message: '取得帳號失敗!' });
 
   try {
-    // Find the user by _id
     const user: UserProps | null = await getUserByUserId(new ObjectId(_id));
-
-    if (!user) {
-      console.error('User not found');
-      return res.status(HttpStatus.NotFound).json({ message: '帳號不存在!' });
-    }
-
     const manage: ManageProps = await getManageRecordsByUserId(new ObjectId(_id));
 
-    // Return user details with managed hospitals and pharmacies
+    if (!user) return res.status(HttpStatus.BadRequest).json({ message: '取得帳號失敗!' });
+    const token = await generateToken({ user, manage });
+
     res.status(HttpStatus.Ok).json({
-      user: {
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        gender: user.gender,
-        email: user.email,
-        role: user.role,
-        isVerified: user.isVerified,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
-      manage,
+      token,
       message: 'Success',
     });
   } catch (error) {
-    console.error('Error fetching user details:', error);
+    if (error instanceof ValidationError)
+      return res.status(HttpStatus.BadRequest).json({ message: error.errors.join(', ') });
+    console.error('Error logging in:', error);
     res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });
   }
 };

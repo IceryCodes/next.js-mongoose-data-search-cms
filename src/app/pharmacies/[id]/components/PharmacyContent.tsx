@@ -2,6 +2,7 @@
 import { ReactElement, useCallback, useEffect } from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import DeletePharmacyContent from '@/app/global-components/admin/DeletePharmacyContent';
@@ -15,6 +16,7 @@ import { ManageCategoryType } from '@/domains/manage';
 import { defaultPharmacyExcerpt } from '@/domains/metadatas';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { usePharmacyQuery } from '@/features/pharmacies/hooks/usePharmacyQuery';
+import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import ManagerProtected from '@/hooks/utils/protections/components/useManagerProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
@@ -82,6 +84,7 @@ const PharmacyContent = (): ReactElement => {
     websiteUrl,
     featuredImg,
     healthInsuranceAuthorized,
+    lineId,
   } = pharmacy;
   const usedExcerpt: string = excerpt ? excerpt : defaultPharmacyExcerpt(pharmacy);
 
@@ -102,15 +105,15 @@ const PharmacyContent = (): ReactElement => {
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <ManagerProtected pageId={_id.toString()} type={ManageCategoryType.Pharmacy}>
-                <>
-                  <ManagePharmacyContent pharmacy={pharmacy} refetch={refetch} />
-                  <DeletePharmacyContent
-                    _id={_id}
-                    title={title}
-                    afterDelete={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
-                  />
-                </>
+                <ManagePharmacyContent pharmacy={pharmacy} refetch={refetch} />
               </ManagerProtected>
+              <AdminProtected>
+                <DeletePharmacyContent
+                  _id={_id}
+                  title={title}
+                  afterDelete={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
+                />
+              </AdminProtected>
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}
               {healthInsuranceAuthorized && <Tag text="健保特約藥局" />}
@@ -119,6 +122,11 @@ const PharmacyContent = (): ReactElement => {
             <Card>
               <>
                 <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
+                {lineId && (
+                  <Link href={`https://line.me/R/ti/p/${lineId}`} target="_blank">
+                    <h3 className="bg-[#00C338] py-1 px-2 text-white text-center w-[150px] rounded">加入Line</h3>
+                  </Link>
+                )}
                 <ul className="list-disc ml-5">
                   {owner &&
                     mainInfoRender({ label: '負責人', value: <span>{owner + (gender && composeGender(gender))}</span> })}
