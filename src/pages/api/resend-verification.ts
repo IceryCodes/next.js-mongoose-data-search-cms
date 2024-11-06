@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getUsersCollection } from '@/lib/mongodb';
 import { ManageProps, UserResendVerificationReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import getManageRecordsByUserId from '@/utils/apiFunctions';
+import { getManageRecordsByUserId } from '@/utils/apiFunctions';
 import sendEmail from '@/utils/sendEmail';
 import { generateToken, isExpiredToken } from '@/utils/token';
 import verificationEmailTemplate from '@/utils/verificationEmailTemplate';

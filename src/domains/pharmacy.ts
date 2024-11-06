@@ -35,6 +35,7 @@ export interface PharmacyProps {
   featuredImg?: string;
   healthInsuranceAuthorized: boolean;
   managers?: string[];
+  lineId?: string;
   createdAt: Date;
   updatedAt: Date;
 }

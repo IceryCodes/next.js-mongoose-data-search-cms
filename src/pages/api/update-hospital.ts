@@ -23,6 +23,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateR
       console.error('Token verification failed:', error);
       return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
     }
+  } else {
+    return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
   }
 
   // Create an array of keys from HospitalProps
@@ -60,7 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateR
 
     const isManager = await isManagerToken({
       authHeader: req.headers.authorization,
-      pageId: req.body._id,
+      pageId: hospitalId.toString(),
       type: currentTitleIncludesHospital ? ManageCategoryType.Hospital : ManageCategoryType.Clinic,
     });
     if (!isManager) return res.status(HttpStatus.Forbidden).json({ message: '沒有管理權限!' });

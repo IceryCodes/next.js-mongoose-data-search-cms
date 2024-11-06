@@ -5,7 +5,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { UserProps } from '@/domains/user';
 import { ManageProps } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import getManageRecordsByUserId from '@/utils/apiFunctions';
+import { getManageRecordsByUserId } from '@/utils/apiFunctions';
 import { generateToken } from '@/utils/token';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

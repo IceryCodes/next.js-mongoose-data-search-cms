@@ -1,5 +1,11 @@
 import { DeleteUserDto, GetUserDto, GetUsersDto, UserVerifyDto } from '@/domains/user';
-import { GetUserReturnType, GetUsersReturnType, UserUpdateReturnType, UserVerifyReturnType } from '@/services/interfaces';
+import {
+  GetUserReturnType,
+  GetUsersReturnType,
+  UserLoginReturnType,
+  UserUpdateReturnType,
+  UserVerifyReturnType,
+} from '@/services/interfaces';
 import { apiOrigin, logApiError } from '@/utils/api';
 
 export const userQueryKeys = {
@@ -70,6 +76,22 @@ export const deleteUser = async ({ _id }: DeleteUserDto): Promise<UserUpdateRetu
     };
   } catch (error) {
     const message: string = '刪除帳號失敗!';
+    logApiError({ error, message });
+
+    return {
+      message,
+    };
+  }
+};
+
+export const getMe = async ({ _id }: GetUserDto): Promise<UserLoginReturnType> => {
+  try {
+    const { data } = await apiOrigin.get('/get-me', {
+      params: { _id },
+    });
+    return data;
+  } catch (error) {
+    const message: string = '找不到帳號!';
     logApiError({ error, message });
 
     return {

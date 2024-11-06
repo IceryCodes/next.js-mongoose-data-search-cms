@@ -7,10 +7,12 @@ import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button, defaultButtonStyle } from '@/app/global-components/buttons/Button';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { DepartmentsType, HospitalProps, UpdateHospitalProps } from '@/domains/hospital';
 import { CountyType, districtOptions, DistrictType, GenderType, getPageUrlByType, PageType } from '@/domains/interfaces';
 import { useUpdateHospitalMutation } from '@/features/hospitals/hooks/useUpdateHospitalMutation';
+import { useGetMeMutation } from '@/features/user/hooks/useGetMeMutation';
 import { useEnum } from '@/hooks/utils/useEnum';
 import { hospitalValidationSchema } from '@/lib/validation';
 
@@ -35,7 +37,9 @@ const inputStyle: string = 'w-full p-2 border rounded-md focus:outline-none focu
 const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps) => {
   const router = useRouter();
   const { hospitalExtraFieldMap } = useEnum();
-  const { isLoading, mutateAsync } = useUpdateHospitalMutation({ onSuccess: refetch });
+  const { user, login } = useAuth();
+  const { isLoading, mutateAsync: updateHospital } = useUpdateHospitalMutation({ onSuccess: refetch });
+  const { mutateAsync: getMe } = useGetMeMutation();
   const { showToast } = useToast();
 
   const [display, setDisplay] = useState<boolean>(false);
@@ -88,10 +92,10 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
   const onSubmit = useCallback(
     async (data: UpdateHospitalProps) => {
       const confirmed = window.confirm(`您確定要更新${data.title}嗎?`);
-      if (!confirmed) return;
+      if (!confirmed || !user) return;
 
       try {
-        const result = await mutateAsync({
+        const result = await updateHospital({
           _id: hospital._id,
           ...data,
           address: data.address.replaceAll(data.county, '').replaceAll(data.district, ''),
@@ -103,15 +107,19 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
 
         reset(data);
 
-        if (hospital.title.includes('醫院') && !data.title.includes('醫院'))
-          router.push(`${getPageUrlByType(PageType.CLINICS)}/${hospital._id}`);
-        if (!hospital.title.includes('醫院') && data.title.includes('醫院'))
-          router.push(`${getPageUrlByType(PageType.HOSPITALS)}/${hospital._id}`);
+        const becomeClinic: boolean = hospital.title.includes('醫院') && !data.title.includes('醫院');
+        const becomeHospital: boolean = !hospital.title.includes('醫院') && data.title.includes('醫院');
+
+        if (becomeClinic) router.push(`${getPageUrlByType(PageType.CLINICS)}/${hospital._id}`);
+        if (becomeHospital) router.push(`${getPageUrlByType(PageType.HOSPITALS)}/${hospital._id}`);
+
+        const { token } = await getMe({ _id: user._id });
+        if (token) login({ token });
       } catch (error) {
         console.error('Update error:', error);
       }
     },
-    [hospital._id, hospital.title, mutateAsync, reset, router, showToast]
+    [getMe, hospital._id, hospital.title, login, reset, router, showToast, updateHospital, user]
   );
 
   const form = useMemo(
@@ -212,6 +220,13 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
           })}
 
           {formField({
+            titleText: 'Line ID',
+            fieldName: 'lineId',
+            placeholder: '官方或私人Line ID均可',
+            col: 3,
+          })}
+
+          {formField({
             titleText: '電話',
             fieldName: 'phone',
             placeholder: '聯絡電話',
@@ -226,28 +241,6 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
             col: 3,
             type: 'email',
           })}
-
-          <div className="flex flex-col col-span-3">
-            <label>關鍵字</label>
-            <Controller
-              name="keywords"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <input
-                    className={inputStyle}
-                    type="text"
-                    {...field}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      field.onChange(event.target.value ? event.target.value.split(',') : [])
-                    }
-                    placeholder="關鍵字 (多個用半形逗號分隔)"
-                  />
-                  <FieldErrorlabel error={error} />
-                </>
-              )}
-            />
-          </div>
 
           {formField({
             titleText: '負責人',
@@ -296,6 +289,28 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
             col: 3,
             type: 'url',
           })}
+
+          <div className="flex flex-col col-span-6">
+            <label>關鍵字</label>
+            <Controller
+              name="keywords"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <input
+                    className={inputStyle}
+                    type="text"
+                    {...field}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      field.onChange(event.target.value ? event.target.value.split(',') : [])
+                    }
+                    placeholder="關鍵字 (多個用半形逗號分隔)"
+                  />
+                  <FieldErrorlabel error={error} />
+                </>
+              )}
+            />
+          </div>
 
           <div className="flex flex-col col-span-6">
             <label>科別</label>

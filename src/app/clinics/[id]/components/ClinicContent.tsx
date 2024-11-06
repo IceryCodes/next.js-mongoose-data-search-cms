@@ -2,6 +2,7 @@
 import { ReactElement, useCallback, useEffect } from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 import SidebarLayout from '@/app/clinics/[id]/components/SidebarLayout';
@@ -80,6 +81,7 @@ const ClinicContent = (): ReactElement => {
     content,
     websiteUrl,
     featuredImg,
+    lineId,
   } = hospital;
 
   const usedExcerpt: string = excerpt ? excerpt : defaultClicnicExcerpt(hospital);
@@ -117,6 +119,11 @@ const ClinicContent = (): ReactElement => {
             <Card>
               <>
                 <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
+                {lineId && (
+                  <Link href={`https://line.me/R/ti/p/${lineId}`} target="_blank">
+                    <h3 className="bg-[#00C338] py-1 px-2 text-white text-center w-[150px] rounded">加入Line</h3>
+                  </Link>
+                )}
                 <ul className="list-disc ml-5">
                   {owner &&
                     mainInfoRender({ label: '負責人', value: <span>{owner + (gender && composeGender(gender))}</span> })}

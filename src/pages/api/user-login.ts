@@ -8,7 +8,7 @@ import { getUsersCollection } from '@/lib/mongodb';
 import { loginValidationSchema } from '@/lib/validation';
 import { ManageProps, UserLoginReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import getManageRecordsByUserId from '@/utils/apiFunctions';
+import { getManageRecordsByUserId } from '@/utils/apiFunctions';
 import { generateToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<UserLoginReturnType>) => {

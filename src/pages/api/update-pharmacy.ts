@@ -4,11 +4,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { ManageCategoryType } from '@/domains/manage';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { getPharmaciesCollection } from '@/lib/mongodb';
-import { HospitalUpdateReturnType } from '@/services/interfaces';
+import { PharmacyUpdateReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
 import { isExpiredToken, isManagerToken } from '@/utils/token';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateReturnType>) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<PharmacyUpdateReturnType>) => {
   if (req.method !== 'PATCH') {
     res.setHeader('Allow', ['PATCH']);
     return res.status(HttpStatus.MethodNotAllowed).json({ message: `Method ${req.method} not allowed` });
@@ -23,6 +23,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateR
       console.error('Token verification failed:', error);
       return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
     }
+  } else {
+    return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
   }
 
   // Create an array of keys from PharmacyProps
@@ -50,7 +52,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateR
 
     const isManager = await isManagerToken({
       authHeader: req.headers.authorization,
-      pageId: req.body._id,
+      pageId: pharmacyId.toString(),
       type: ManageCategoryType.Pharmacy,
     });
     if (!isManager) return res.status(HttpStatus.Forbidden).json({ message: '沒有管理權限!' });
