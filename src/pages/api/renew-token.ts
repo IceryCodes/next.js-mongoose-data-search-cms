@@ -2,34 +2,38 @@ import { decodeJwt } from 'jose';
 import { ObjectId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { UserProps } from '@/domains/user';
 import { ManageProps } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import { getManageRecordsByUserId } from '@/utils/apiFunctions';
-import { generateToken } from '@/utils/token';
+import { getManageRecordsByUserId, getUserByUserId } from '@/utils/apiFunctions';
+import { generateToken, TokenProps } from '@/utils/token';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const token = req.headers.authorization?.split(' ')[1]; // Get token from headers
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (token) {
-      // Decode the token without verification
-      const decodedToken = decodeJwt(token);
+      const {
+        user: { _id },
+      }: TokenProps = decodeJwt(token);
 
       // Check if the token contains valid data
-      if (decodedToken && typeof decodedToken === 'object' && decodedToken._id && decodedToken.role) {
-        const user = decodedToken.user as UserProps;
-        const manage: ManageProps = await getManageRecordsByUserId(new ObjectId(user._id));
+      if (_id) {
+        const user = await getUserByUserId(new ObjectId(_id));
+        const manage: ManageProps = await getManageRecordsByUserId(new ObjectId(_id));
 
+        if (!user) return res.status(HttpStatus.Unauthorized).json({ message: 'Unauthorized' });
         // Generate a new token
         const newToken: string = await generateToken({ user, manage });
+
         return res.status(HttpStatus.Ok).json({ token: newToken });
+      } else {
+        return res.status(HttpStatus.Unauthorized).json({ message: 'Unauthorized' });
       }
     }
 
-    res.status(HttpStatus.Unauthorized).json({ message: 'Unauthorized' });
+    return res.status(HttpStatus.Unauthorized).json({ message: 'Unauthorized' });
   } catch (error) {
     console.error('Renew token error:', error);
-    res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });
+    return res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });
   }
 }
