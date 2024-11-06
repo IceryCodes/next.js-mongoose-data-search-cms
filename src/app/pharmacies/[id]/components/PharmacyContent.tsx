@@ -15,6 +15,7 @@ import { ManageCategoryType } from '@/domains/manage';
 import { defaultPharmacyExcerpt } from '@/domains/metadatas';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { usePharmacyQuery } from '@/features/pharmacies/hooks/usePharmacyQuery';
+import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import ManagerProtected from '@/hooks/utils/protections/components/useManagerProtected';
 import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
@@ -102,15 +103,15 @@ const PharmacyContent = (): ReactElement => {
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <ManagerProtected pageId={_id.toString()} type={ManageCategoryType.Pharmacy}>
-                <>
-                  <ManagePharmacyContent pharmacy={pharmacy} refetch={refetch} />
-                  <DeletePharmacyContent
-                    _id={_id}
-                    title={title}
-                    afterDelete={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
-                  />
-                </>
+                <ManagePharmacyContent pharmacy={pharmacy} refetch={refetch} />
               </ManagerProtected>
+              <AdminProtected>
+                <DeletePharmacyContent
+                  _id={_id}
+                  title={title}
+                  afterDelete={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
+                />
+              </AdminProtected>
               <h1 className="text-4xl font-bold">{title}</h1>
               {partner && <Tag text="先豐科技合作夥伴" />}
               {healthInsuranceAuthorized && <Tag text="健保特約藥局" />}

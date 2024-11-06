@@ -2,10 +2,11 @@ import { Collection, ObjectId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { HospitalProps } from '@/domains/hospital';
+import { ManageCategoryType } from '@/domains/manage';
 import { getClinicManagesCollection, getHospitalManagesCollection, getHospitalsCollection } from '@/lib/mongodb';
 import { HospitalUpdateReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
-import { isAdminToken, isExpiredToken } from '@/utils/token';
+import { isExpiredToken, isManagerToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateReturnType>) => {
   if (req.method !== 'PATCH') {
@@ -22,14 +23,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateR
       console.error('Token verification failed:', error);
       return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
     }
-  }
-
-  try {
-    const isAdmin = await isAdminToken(req.headers.authorization);
-    if (!isAdmin) return res.status(HttpStatus.Forbidden).json({ message: 'Insufficient permissions' });
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(HttpStatus.Unauthorized).json({ message: 'Invalid token' });
   }
 
   // Create an array of keys from HospitalProps
@@ -62,8 +55,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HospitalUpdateR
       return res.status(HttpStatus.NotFound).json({ message: '醫院不存在!' });
     }
 
-    const currentTitleIncludesHospital = currentHospital.title.includes('醫院');
-    const newTitleIncludesHospital = updateData.title?.includes('醫院');
+    const currentTitleIncludesHospital: boolean = currentHospital.title.includes('醫院');
+    const newTitleIncludesHospital: boolean | undefined = updateData.title?.includes('醫院');
+
+    const isManager = await isManagerToken({
+      authHeader: req.headers.authorization,
+      pageId: req.body._id,
+      type: currentTitleIncludesHospital ? ManageCategoryType.Hospital : ManageCategoryType.Clinic,
+    });
+    if (!isManager) return res.status(HttpStatus.Forbidden).json({ message: '沒有管理權限!' });
 
     // Update the hospital information
     const result = await hospitalsCollection.updateOne(

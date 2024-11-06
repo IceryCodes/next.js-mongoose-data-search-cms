@@ -2,8 +2,10 @@ import axios from 'axios';
 import { SignJWT, jwtVerify } from 'jose';
 import { JWTExpired } from 'jose/errors';
 
+import { HospitalProps } from '@/domains/hospital';
 import { UserRoleType } from '@/domains/interfaces';
 import { ManageCategoryType } from '@/domains/manage';
+import { PharmacyProps } from '@/domains/pharmacy';
 import { UserProps } from '@/domains/user';
 import { ManageProps } from '@/services/interfaces';
 
@@ -12,6 +14,12 @@ const JWT_SECRET = process.env.NEXT_PRIVATE_JWT_SECRET;
 export interface TokenProps {
   user: UserProps;
   manage: ManageProps;
+}
+
+interface IsManagerTokenProps {
+  authHeader: string | undefined;
+  pageId: string;
+  type: ManageCategoryType;
 }
 
 export const generateToken = async ({ user, manage }: TokenProps): Promise<string> => {
@@ -79,6 +87,31 @@ export const isAdminToken = async (authHeader: string | undefined): Promise<bool
     const { user } = await verifyToken(token);
 
     return user.role === UserRoleType.Admin;
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return false;
+  }
+};
+
+export const isManagerToken = async ({ authHeader, pageId, type }: IsManagerTokenProps): Promise<boolean> => {
+  if (!JWT_SECRET) throw new Error('JWT secret is missing');
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return false;
+
+  const token = authHeader.split(' ')[1]; // Extract the token from the header
+
+  const isMatch = (items: (HospitalProps | PharmacyProps)[]): boolean => items.some((obj) => obj._id.toString() === pageId);
+  try {
+    const {
+      user,
+      manage: { hospital, clinic, pharmacy },
+    } = await verifyToken(token);
+    if (typeof user._id === 'string' && user.role === UserRoleType.Admin) return true;
+
+    const usedItems: (HospitalProps | PharmacyProps)[] =
+      type === ManageCategoryType.Hospital ? hospital : type === ManageCategoryType.Clinic ? clinic : pharmacy;
+
+    return isMatch(usedItems);
   } catch (error) {
     console.error('Token verification failed:', error);
     return false;
