@@ -40,7 +40,7 @@ const RootLayout = ({ children }: { children: ReactElement }) => {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <ToastProvider>
-              <LoadScript googleMapsApiKey={process.env.NEXT_PRIVATE_GOOGLE_API_KEY}>
+              <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
                 <Header>{children}</Header>
               </LoadScript>
             </ToastProvider>
