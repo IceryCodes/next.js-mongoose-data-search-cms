@@ -1,5 +1,5 @@
 'use client';
-import { ReactElement, useCallback, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,15 +11,20 @@ import ManageHospitalContent from '@/app/global-components/admin/ManageHospitalC
 import Breadcrumb from '@/app/global-components/Breadcrumb';
 import Card from '@/app/global-components/Card';
 import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
+import GoogleOpening from '@/app/global-components/GoogleOpeningHours';
+import GooglePhotoCarousel from '@/app/global-components/GooglePhotoCarousel';
+import GoogleReviews from '@/app/global-components/GoogleReviews';
+import Tab from '@/app/global-components/tabs/Tab';
 import Tag from '@/app/global-components/tags/Tag';
-import { DepartmentsType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
+import BasicInfos from '@/app/hospitals/[id]/components/BasicInfos';
+import { DepartmentsType, HospitalExtraFieldType } from '@/domains/hospital';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
 import { ManageCategoryType } from '@/domains/manage';
 import { defaultClicnicExcerpt } from '@/domains/metadatas';
+import { useGoogleInfosMutation } from '@/features/google/hooks/useGoogleInfosMutation';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import ManagerProtected from '@/hooks/utils/protections/components/useManagerProtected';
-import { useEnum } from '@/hooks/utils/useEnum';
 import ConvertLink, { LinkType } from '@/utils/links';
 
 const ClinicContent = (): ReactElement => {
@@ -27,24 +32,31 @@ const ClinicContent = (): ReactElement => {
   const paramsId: string = params?.id as string;
   const router = useRouter();
 
-  const { composeGender } = useEnum();
-  const { data, isLoading, isError, refetch } = useHospitalQuery({ _id: paramsId });
-  const hospital: HospitalProps | null | undefined = data?.hospital;
+  const { data: { hospital } = {}, isLoading, isError, refetch } = useHospitalQuery({ _id: paramsId });
 
-  const mainInfoRender = useCallback(
-    ({ label, value }: { label: string; value: ReactElement | null }): ReactElement => (
-      <>
-        {!!value && (
-          <li>
-            <h3>
-              {label}: {value}
-            </h3>
-          </li>
-        )}
-      </>
-    ),
-    []
-  );
+  const { data: googleInfo, mutateAsync: fetchGoogleInfo } = useGoogleInfosMutation();
+
+  const [isAddressChecked, setIsAddressChecked] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAndFetchGoogleData = async () => {
+      if (isLoading || isError || !hospital) return;
+
+      const googleTitle = hospital.title;
+      const googleAddress = `${hospital.county}${hospital.district}${hospital.address}`;
+
+      const fetchBasedOn = (query: string) => fetchGoogleInfo({ title: query });
+
+      if (!isAddressChecked && googleTitle) {
+        const { formatted_address } = await fetchBasedOn(googleTitle);
+
+        if (!formatted_address?.includes('號')) await fetchBasedOn(googleAddress);
+        setIsAddressChecked(true);
+      }
+    };
+
+    checkAndFetchGoogleData();
+  }, [isLoading, isError, hospital, isAddressChecked, fetchGoogleInfo]);
 
   useEffect(() => {
     if (!isLoading && !hospital && !isError) notFound();
@@ -73,10 +85,8 @@ const ClinicContent = (): ReactElement => {
     email,
     phone,
     county,
-    district,
     doctors,
     departments,
-    address,
     excerpt,
     content,
     websiteUrl,
@@ -84,12 +94,28 @@ const ClinicContent = (): ReactElement => {
     lineId,
   } = hospital;
 
+  const {
+    business_status,
+    formatted_address,
+    formatted_phone_number,
+    international_phone_number,
+    opening_hours,
+    website,
+    rating,
+    user_ratings_total,
+    icon,
+    icon_background_color,
+    name,
+    reviews,
+    photos,
+  } = googleInfo || {};
+
   const usedExcerpt: string = excerpt ? excerpt : defaultClicnicExcerpt(hospital);
 
   return (
     <div className="container mx-auto p-6">
       <div className="relative w-full">
-        <SidebarLayout county={county}>
+        <SidebarLayout pageId={_id} county={county}>
           <div className="flex flex-col gap-y-6">
             <Image
               src={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
@@ -112,48 +138,70 @@ const ClinicContent = (): ReactElement => {
                   afterDelete={() => router.push(getPageUrlByType(PageType.CLINICS))}
                 />
               </AdminProtected>
-              <h1 className="text-4xl font-bold">{title}</h1>
+              <div className="flex items-center">
+                {icon && (
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
+                    style={{ backgroundColor: icon_background_color }}
+                  >
+                    <Image src={icon} alt={`${name}圖標`} width={40} height={40} />
+                  </div>
+                )}
+                <div>
+                  <h1 className="text-4xl font-bold">{title}</h1>
+                  {name && (
+                    <span className="text-sm text-gray-600">
+                      Google資料來源: {ConvertLink({ text: name, type: LinkType.GoogleMapSearch })}
+                    </span>
+                  )}
+                </div>
+              </div>
               {partner && <Tag text="先豐科技合作夥伴" />}
+              {lineId && (
+                <Link href={`https://line.me/R/ti/p/${lineId}`} target="_blank">
+                  <h3 className="bg-[#00C338] text-sm px-2 py-1 text-white text-center w-[120px] rounded">加入Line</h3>
+                </Link>
+              )}
             </div>
 
             <Card>
-              <>
-                <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
-                {lineId && (
-                  <Link href={`https://line.me/R/ti/p/${lineId}`} target="_blank">
-                    <h3 className="bg-[#00C338] py-1 px-2 text-white text-center w-[150px] rounded">加入Line</h3>
-                  </Link>
-                )}
-                <ul className="list-disc ml-5">
-                  {owner &&
-                    mainInfoRender({ label: '負責人', value: <span>{owner + (gender && composeGender(gender))}</span> })}
-                  {mainInfoRender({ label: '機構代碼', value: <span>{orgCode}</span> })}
-                  {phone &&
-                    mainInfoRender({
-                      label: '聯絡電話',
-                      value: ConvertLink({ text: phone, type: LinkType.Phone }),
-                    })}
-                  {email &&
-                    mainInfoRender({
-                      label: '聯絡信箱',
-                      value: ConvertLink({ text: email, type: LinkType.Email }),
-                    })}
-                  {mainInfoRender({
-                    label: '診所地址',
-                    value: ConvertLink({ text: `${county}${district}${address}`, type: LinkType.Address }),
-                  })}
-                  {websiteUrl &&
-                    mainInfoRender({
-                      label: '診所網站',
-                      value: ConvertLink({ text: websiteUrl, type: LinkType.Website }),
-                    })}
-                </ul>
-              </>
+              <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
             </Card>
+
+            <Tab
+              tabs={[
+                {
+                  title: '基本資料',
+                  content: (
+                    <BasicInfos
+                      rating={rating}
+                      user_ratings_total={user_ratings_total}
+                      business_status={business_status}
+                      owner={owner}
+                      gender={gender}
+                      orgCode={orgCode}
+                      formatted_address={formatted_address}
+                      websiteUrl={websiteUrl}
+                      website={website}
+                      email={email}
+                      phone={phone}
+                      international_phone_number={international_phone_number}
+                      formatted_phone_number={formatted_phone_number}
+                    />
+                  ),
+                },
+                !opening_hours
+                  ? undefined
+                  : {
+                      title: '營業時間',
+                      content: <GoogleOpening opening_hours={opening_hours} />,
+                    },
+              ]}
+            />
 
             <Card>
               <>
-                <h2 className="text-2xl font-bold">關於{title}</h2>
+                <h2 className="text-xl font-bold">關於{title}</h2>
                 <p>{content ? content : `尚無關於${title}的相關資訊，歡迎診所提供補充!`}</p>
               </>
             </Card>
@@ -188,6 +236,10 @@ const ClinicContent = (): ReactElement => {
             <Card>
               <GoogleMapComponent locationData={[hospital]} />
             </Card>
+
+            {photos && <GooglePhotoCarousel title={title} photos={photos} />}
+
+            {reviews && <GoogleReviews reviews={reviews} />}
           </div>
         </SidebarLayout>
       </div>

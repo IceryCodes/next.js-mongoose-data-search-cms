@@ -1,5 +1,6 @@
 import { ReactElement, useCallback } from 'react';
 
+import { ObjectId } from 'mongodb';
 import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -11,13 +12,14 @@ import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';
 
 interface SidebarLayoutProps {
+  pageId: ObjectId;
   county: string;
   children: ReactElement;
 }
 
-const limit: number = 5;
+const limit: number = 6;
 
-const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
+const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
   const router = useRouter();
   const { control, handleSubmit, getValues, reset } = useForm<GetPharmaciesDto>({
     defaultValues: {
@@ -137,30 +139,32 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
           {/* Pharmacy list */}
           <div className="grid grid-cols-1 gap-4 p-4">
             {!pharmacies.length && <label>附近沒有符合藥局</label>}
-            {pharmacies.map(
-              ({
-                _id,
-                title,
-                partner,
-                county,
-                district,
-                address,
-                healthInsuranceAuthorized,
-                featuredImg,
-              }: PharmacyProps) => (
-                <PharmacyListItemCard
-                  key={_id.toString()}
-                  _id={_id}
-                  image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
-                  title={title}
-                  county={county}
-                  district={district}
-                  address={address}
-                  healthInsuranceAuthorized={healthInsuranceAuthorized}
-                  partner={partner}
-                />
-              )
-            )}
+            {pharmacies
+              .filter(({ _id }: PharmacyProps) => _id !== pageId)
+              .map(
+                ({
+                  _id,
+                  title,
+                  partner,
+                  county,
+                  district,
+                  address,
+                  healthInsuranceAuthorized,
+                  featuredImg,
+                }: PharmacyProps) => (
+                  <PharmacyListItemCard
+                    key={_id.toString()}
+                    _id={_id}
+                    image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
+                    title={title}
+                    county={county}
+                    district={district}
+                    address={address}
+                    healthInsuranceAuthorized={healthInsuranceAuthorized}
+                    partner={partner}
+                  />
+                )
+              )}
           </div>
         </div>
       </div>
