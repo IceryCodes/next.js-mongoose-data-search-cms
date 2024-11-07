@@ -1,3 +1,12 @@
+import {
+  GoogleAddressComponent,
+  GoogleBusinessStatus,
+  GoogleGeometry,
+  GoogleOpeningHours,
+  GooglePhoto,
+  GooglePlusCode,
+  GoogleReview,
+} from '@/domains/google';
 import { HospitalProps } from '@/domains/hospital';
 import { ManageCategoryType } from '@/domains/manage';
 import { PharmacyProps } from '@/domains/pharmacy';
@@ -75,4 +84,41 @@ export interface UserResendVerificationReturnType {
 
 export interface UserUpdateReturnType {
   message: string;
+}
+
+export interface GetGoogleInfosReturnType {
+  address_components: GoogleAddressComponent[];
+  adr_address: string;
+  business_status: GoogleBusinessStatus;
+  formatted_address: string;
+  formatted_phone_number?: string;
+  geometry: GoogleGeometry | null;
+  icon: string;
+  icon_background_color: string;
+  icon_mask_base_uri: string;
+  international_phone_number?: string;
+  name: string;
+  opening_hours?: GoogleOpeningHours | null;
+  photos: GooglePhoto[];
+  place_id: string;
+  plus_code?: GooglePlusCode | null;
+  types: string[];
+  url: string;
+  utc_offset: number;
+  vicinity: string;
+  website: string;
+  price_level: number | null;
+  rating: number;
+  reviews: GoogleReview[];
+  user_ratings_total: number;
+  scope: string;
+  permanently_closed: boolean;
+  reservable: boolean;
+  serves_beer: boolean;
+  serves_breakfast: boolean;
+  serves_brunch: boolean;
+  serves_dinner: boolean;
+  serves_lunch: boolean;
+  serves_vegetarian_food: boolean;
+  takeout: boolean;
 }

@@ -1,5 +1,6 @@
 import { ReactElement, useCallback } from 'react';
 
+import { ObjectId } from 'mongodb';
 import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -11,13 +12,14 @@ import { CountyType, getPageUrlByType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 
 interface SidebarLayoutProps {
+  pageId: ObjectId;
   county: string;
   children: ReactElement;
 }
 
-const limit: number = 5;
+const limit: number = 6;
 
-const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
+const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
   const router = useRouter();
   const { control, handleSubmit, getValues, reset } = useForm<GetHospitalsDto>({
     defaultValues: {
@@ -138,19 +140,21 @@ const SidebarLayout = ({ county, children }: SidebarLayoutProps) => {
           {/* Hospital list */}
           <div className="grid grid-cols-1 gap-4 p-4">
             {!hospitals.length && <label>附近沒有符合醫院</label>}
-            {hospitals.map(({ _id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
-              <HospitalListItemCard
-                key={_id.toString()}
-                _id={_id}
-                image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
-                title={title}
-                county={county}
-                district={district}
-                address={address}
-                departments={departments}
-                partner={partner}
-              />
-            ))}
+            {hospitals
+              .filter(({ _id }: HospitalProps) => _id !== pageId)
+              .map(({ _id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
+                <HospitalListItemCard
+                  key={_id.toString()}
+                  _id={_id}
+                  image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
+                  title={title}
+                  county={county}
+                  district={district}
+                  address={address}
+                  departments={departments}
+                  partner={partner}
+                />
+              ))}
           </div>
         </div>
       </div>
