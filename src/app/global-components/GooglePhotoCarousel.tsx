@@ -53,7 +53,7 @@ const GooglePhotoCarousel = ({ title, photos }: GooglePhotoCarouselProps): React
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 key={photo.photo_reference}
-                src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference=${photo.photo_reference}&key=${process.env.NEXT_PRIVATE_GOOGLE_API_KEY}`}
+                src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=900&photoreference=${photo.photo_reference}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`}
                 alt={`${photos[currentIndex].html_attributions[0].match(/<a href="(.*?)">(.*?)<\/a>/)?.[2]}提供之${title}照片`}
                 className={`w-full h-full object-cover object-center transition-opacity duration-500 ease-in-out ${
                   index === currentIndex ? 'opacity-100' : 'opacity-0'

@@ -19,7 +19,7 @@ export default async function handler(
     const placeIdRes = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
       params: {
         address: title,
-        key: process.env.NEXT_PRIVATE_GOOGLE_API_KEY,
+        key: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
       },
     });
 
@@ -30,7 +30,7 @@ export default async function handler(
     const detailsRes = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
       params: {
         place_id: placeId,
-        key: process.env.NEXT_PRIVATE_GOOGLE_API_KEY,
+        key: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
         fields:
           'address_component,adr_address,business_status,formatted_address,geometry,icon,icon_background_color,icon_mask_base_uri,name,photo,place_id,plus_code,type,url,utc_offset,vicinity,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,reviews,user_ratings_total,scope,permanently_closed,reservable,serves_beer,serves_breakfast,serves_brunch,serves_dinner,serves_lunch,serves_vegetarian_food,takeout',
         language: 'zh-TW',

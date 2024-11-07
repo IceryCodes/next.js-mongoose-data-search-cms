@@ -34,13 +34,13 @@ const nextConfig = {
         NEXT_PRIVATE_EMAIL_USER: process.env.EMAIL_USER,
         NEXT_PRIVATE_EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
         NEXT_PRIVATE_ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-        NEXT_PRIVATE_GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
         NEXT_PRIVATE_REQUESTS_LIMIT: process.env.REQUESTS_LIMIT,
 
         NEXT_PUBLIC_BASE_URL: usedUrl,
         NEXT_PUBLIC_API_BASE_URL: `${usedUrl}/api`,
         NEXT_PUBLIC_SITE_NAME: process.env.SITE_NAME,
         NEXT_PUBLIC_FEATURED_IMAGE: "/assets/featured_image.jpg",
+        NEXT_PUBLIC_GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
     }
 };
 
