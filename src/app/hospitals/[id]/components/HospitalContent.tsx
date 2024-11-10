@@ -86,6 +86,8 @@ const HospitalContent = (): ReactElement => {
     email,
     phone,
     county,
+    district,
+    address,
     doctors,
     departments,
     excerpt,
@@ -150,7 +152,7 @@ const HospitalContent = (): ReactElement => {
                 )}
                 <div>
                   <h1 className="text-4xl font-bold">{title}</h1>
-                  {name && (
+                  {!!user_ratings_total && name && (
                     <span className="text-sm text-gray-600">
                       Google資料來源: {ConvertLink({ text: name, type: LinkType.GoogleMapSearch })}
                     </span>
@@ -181,6 +183,7 @@ const HospitalContent = (): ReactElement => {
                       owner={owner}
                       gender={gender}
                       orgCode={orgCode}
+                      fullAddress={`${county}${district}${address}`}
                       formatted_address={formatted_address}
                       websiteUrl={websiteUrl}
                       website={website}
