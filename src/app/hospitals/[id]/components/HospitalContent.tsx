@@ -7,6 +7,7 @@ import { notFound, useParams, useRouter } from 'next/navigation';
 
 import DeleteHospitalContent from '@/app/global-components/admin/DeleteHospitalContent';
 import ManageHospitalContent from '@/app/global-components/admin/ManageHospitalContent';
+import ManageRegisterButton from '@/app/global-components/admin/ManageRegisterButton';
 import Breadcrumb from '@/app/global-components/Breadcrumb';
 import Card from '@/app/global-components/Card';
 import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
@@ -33,7 +34,7 @@ const HospitalContent = (): ReactElement => {
   const paramsId: string = params?.id as string;
   const router = useRouter();
 
-  const { data: { hospital } = {}, isLoading, isError, refetch } = useHospitalQuery({ _id: paramsId });
+  const { data: { hospital, manage } = {}, isLoading, isError, refetch } = useHospitalQuery({ _id: paramsId });
 
   const { data: googleInfo, mutateAsync: fetchGoogleInfo } = useGoogleInfosMutation();
 
@@ -143,10 +144,7 @@ const HospitalContent = (): ReactElement => {
               </AdminProtected>
               <div className="flex items-center">
                 {icon && (
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
-                    style={{ backgroundColor: icon_background_color }}
-                  >
+                  <div className="flex items-center justify-center mr-4" style={{ backgroundColor: icon_background_color }}>
                     <Image src={icon} alt={`${name}圖標`} width={40} height={40} />
                   </div>
                 )}
@@ -168,7 +166,20 @@ const HospitalContent = (): ReactElement => {
             </div>
 
             <Card>
-              <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
+              <>
+                <blockquote className="border-l-4 pl-4 italic text-gray-600">{usedExcerpt}</blockquote>
+
+                <AdminProtected>
+                  <>
+                    {!manage && _id && title && (
+                      <span>
+                        點擊圖示申請管理權限
+                        <ManageRegisterButton _id={_id} title={title} />
+                      </span>
+                    )}
+                  </>
+                </AdminProtected>
+              </>
             </Card>
 
             <Tab

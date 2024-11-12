@@ -14,6 +14,7 @@ import { UserProps } from '@/domains/user';
 
 export interface GetHospitalReturnType {
   hospital?: HospitalProps | null;
+  manage?: boolean;
   message: string;
 }
 
@@ -37,6 +38,7 @@ export interface ManageUpdateReturnType {
 
 export interface GetPharmacyReturnType {
   pharmacy?: PharmacyProps | null;
+  manage?: boolean;
   message: string;
 }
 
