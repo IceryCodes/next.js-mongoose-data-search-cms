@@ -20,7 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
     }
   }
 
-  const { query, county, departments, partner, category, page = '1', limit = '10' } = req.query;
+  const { query, county, departments, keywords, partner, category, page = '1', limit = '10' } = req.query;
 
   // Parse page and limit as integers
   const currentPage: number = Number(page);
@@ -69,6 +69,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
 
     if (departments && typeof departments === 'string') {
       mongoQuery.departments = { $in: [departments as DepartmentsType] };
+    }
+
+    if (keywords && typeof keywords === 'string') {
+      const keywordsArray = keywords
+        .toLowerCase()
+        .split(',')
+        .map((k) => k.trim())
+        .filter(Boolean);
+
+      mongoQuery.keywords = {
+        $all: keywordsArray.map((kw) => new RegExp(kw, 'i')), // Ensure all keywords match (case-insensitive)
+      };
     }
 
     if (process.env.NODE_ENV === 'production') {

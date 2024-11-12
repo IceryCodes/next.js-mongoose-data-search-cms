@@ -18,6 +18,7 @@ export const useHospitalsQuery = ({
   query,
   county,
   departments,
+  keywords,
   partner,
   category,
   page,
@@ -30,12 +31,13 @@ export const useHospitalsQuery = ({
       query,
       county,
       departments,
+      keywords,
       partner,
       category,
       page,
       limit,
     ],
-    queryFn: () => getHospitals({ query, county, departments, partner, category, page, limit }),
+    queryFn: () => getHospitals({ query, county, departments, keywords, partner, category, page, limit }),
     enabled,
   });
 

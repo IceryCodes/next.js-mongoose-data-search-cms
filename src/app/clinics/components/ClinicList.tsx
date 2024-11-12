@@ -6,8 +6,9 @@ import { Controller, useForm } from 'react-hook-form';
 import CreateHospitalContent from '@/app/global-components/admin/CreateHospitalContent';
 import { Button } from '@/app/global-components/buttons/Button';
 import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
+import KeywordSearch from '@/app/global-components/KeywordSearch';
 import Pagination from '@/app/global-components/Pagination';
-import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
+import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps, keywordOptions } from '@/domains/hospital';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
@@ -22,6 +23,7 @@ const ClinicList = (): ReactElement => {
       query: '',
       county: '',
       departments: '' as DepartmentsType,
+      keywords: '',
       partner: false,
     },
   });
@@ -37,6 +39,7 @@ const ClinicList = (): ReactElement => {
     query: getValues('query'),
     county: getValues('county'),
     departments: getValues('departments') as DepartmentsType,
+    keywords: getValues('keywords'),
     partner: getValues('partner'),
     category: HospitalCategoryType.Clinic,
     page: currentPage,
@@ -66,7 +69,7 @@ const ClinicList = (): ReactElement => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex gap-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-4/5">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-4/5">
           <Controller
             name="query"
             control={control}
@@ -103,6 +106,12 @@ const ClinicList = (): ReactElement => {
                 ))}
               </select>
             )}
+          />
+
+          <Controller
+            name="keywords"
+            control={control}
+            render={({ field }) => <KeywordSearch options={keywordOptions} value={field.value} onChange={field.onChange} />}
           />
 
           <Controller
