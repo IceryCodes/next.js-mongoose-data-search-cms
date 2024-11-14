@@ -39,6 +39,7 @@ const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
     query: getValues('query'),
     county: getValues('county'),
     departments: getValues('departments') as DepartmentsType,
+    keywords: '',
     partner: getValues('partner'),
     category: HospitalCategoryType.Clinic,
     limit,
