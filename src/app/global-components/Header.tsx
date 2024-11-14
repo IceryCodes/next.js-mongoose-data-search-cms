@@ -61,7 +61,7 @@ const Header = ({ children }: { children: ReactElement }) => {
           {/* Navigation with Transition */}
           <nav
             className={`absolute md:static top-[65px] left-0 w-full md:w-auto bg-[#00A7D4] md:bg-transparent
-            ${menuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'} 
+            ${menuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-80'} 
             md:opacity-100 md:translate-y-0 md:flex transition-all duration-300 ease-in-out`}
           >
             <ul className="flex flex-col md:flex-row gap-4 p-4 md:p-0">

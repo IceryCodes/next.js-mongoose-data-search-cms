@@ -79,12 +79,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
         .filter(Boolean);
 
       mongoQuery.keywords = {
-        $all: keywordsArray.map((kw) => new RegExp(kw, 'i')), // Ensure all keywords match (case-insensitive)
+        $in: keywordsArray.map((kw) => new RegExp(kw, 'i')), // Ensure all keywords match (case-insensitive)
       };
     }
 
     if (process.env.NODE_ENV === 'production') {
-      mongoQuery.keywords = { $not: { $all: ['Sample'] } };
+      mongoQuery.keywords = { $not: { $in: ['Sample'] } };
     }
 
     const total: number = await hospitalsCollection.countDocuments(mongoQuery);
