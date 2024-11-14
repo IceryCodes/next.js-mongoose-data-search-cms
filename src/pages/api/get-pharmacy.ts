@@ -1,10 +1,12 @@
 import { Collection, ObjectId, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { ManageCategoryType } from '@/domains/manage';
 import { PharmacyProps } from '@/domains/pharmacy';
 import { getPharmaciesCollection } from '@/lib/mongodb';
 import { GetPharmacyReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import { getManageRecordsByCategoryId } from '@/utils/apiFunctions';
 import { isExpiredToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<GetPharmacyReturnType>) => {
@@ -34,7 +36,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetPharmacyRetu
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     });
 
-    res.status(HttpStatus.Ok).json({ pharmacy: pharmacy || null, message: 'Success' });
+    const manage: boolean = !!(
+      pharmacy &&
+      (await getManageRecordsByCategoryId({
+        id: new ObjectId(_id),
+        type: ManageCategoryType.Pharmacy,
+      }))
+    );
+
+    res.status(HttpStatus.Ok).json({ pharmacy: pharmacy || null, manage, message: 'Success' });
   } catch (error) {
     console.error('Error fetching pharmacy by ID:', error);
     res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });

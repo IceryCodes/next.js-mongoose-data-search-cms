@@ -2,9 +2,11 @@ import { Collection, ObjectId, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { HospitalProps } from '@/domains/hospital';
+import { ManageCategoryType } from '@/domains/manage';
 import { getHospitalsCollection } from '@/lib/mongodb';
 import { GetHospitalReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
+import { getManageRecordsByCategoryId } from '@/utils/apiFunctions';
 import { isExpiredToken } from '@/utils/token';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalReturnType>) => {
@@ -34,7 +36,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalRetu
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     });
 
-    res.status(HttpStatus.Ok).json({ hospital: hospital || null, message: 'Success' });
+    const manage: boolean = !!(
+      hospital &&
+      (await getManageRecordsByCategoryId({
+        id: new ObjectId(_id),
+        type: hospital?.title.includes('醫院') ? ManageCategoryType.Hospital : ManageCategoryType.Clinic,
+      }))
+    );
+
+    res.status(HttpStatus.Ok).json({ hospital: hospital || null, manage, message: 'Success' });
   } catch (error) {
     console.error('Error fetching hospital by ID:', error);
     res.status(HttpStatus.InternalServerError).json({ message: `Server error: ${error}` });

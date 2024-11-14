@@ -14,6 +14,11 @@ import {
 } from '@/lib/mongodb';
 import { ManageProps } from '@/services/interfaces';
 
+interface GetManageRecordsByCategoryIdProps {
+  id: ObjectId;
+  type: ManageCategoryType;
+}
+
 export const getUserByUserId = async (userId: ObjectId): Promise<UserProps | null> => {
   const usersCollection: Collection<Omit<UserWithPasswordProps, '_id'>> = await getUsersCollection();
 
@@ -56,4 +61,32 @@ export const getManageRecordsByUserId = async (userId: ObjectId): Promise<Manage
   };
 
   return manage;
+};
+
+export const getManageRecordsByCategoryId = async ({ id, type }: GetManageRecordsByCategoryIdProps): Promise<boolean> => {
+  const getCollectionAndQuery = async () => {
+    switch (type) {
+      case ManageCategoryType.Hospital:
+        return {
+          collection: await getHospitalManagesCollection(),
+          query: { hospital_id: id },
+        };
+      case ManageCategoryType.Clinic:
+        return {
+          collection: await getClinicManagesCollection(),
+          query: { clinic_id: id },
+        };
+      case ManageCategoryType.Pharmacy:
+        return {
+          collection: await getPharmacyManagesCollection(),
+          query: { pharmacy_id: id },
+        };
+      default:
+        throw new Error('Invalid category type');
+    }
+  };
+
+  const { collection, query } = await getCollectionAndQuery();
+  const hasManager = (await collection.countDocuments(query)) > 0;
+  return hasManager;
 };

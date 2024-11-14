@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/app/global-components/buttons/Button';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
 
+import ManageRegisterInfoButton from './ManageRegisterInfoButton';
+
 const HomeContent = (): ReactElement => {
   const router = useRouter();
 
@@ -22,15 +24,7 @@ const HomeContent = (): ReactElement => {
           <h2 className="text-4xl font-bold mb-4">探索全台醫療資源</h2>
           <p className="mb-4 text-gray-700 text-lg">整合全台所有醫院、診所和藥局，讓您輕鬆搜尋和比較不同的醫療服務。</p>
           <p className="mb-6 text-gray-500">如果您是醫療機構的管理者，可以註冊編輯您的機構資訊，讓更多人了解您的服務。</p>
-          <div className="flex flex-col gap-y-4">
-            <div>
-              <Button
-                text="管理機構資訊"
-                onClick={() => router.push(getPageUrlByType(PageType.REGISTER))}
-                className="bg-pink-500 hover:bg-pink-600 scale-100 hover:scale-105"
-              />
-            </div>
-          </div>
+          <ManageRegisterInfoButton />
         </div>
 
         <div className="py-8 border-y border-gray-300 grid grid-cols-3 gap-x-4">

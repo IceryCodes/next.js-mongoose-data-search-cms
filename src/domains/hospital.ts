@@ -131,6 +131,7 @@ export interface GetHospitalsDto {
   query: string;
   county: string;
   departments: DepartmentsType;
+  keywords: string;
   partner: boolean;
   category: HospitalCategoryType;
   page?: number;
@@ -141,3 +142,20 @@ export type UpdateHospitalProps = Omit<HospitalProps, '_id' | 'createdAt' | 'upd
 export interface UpdateHospitalDto extends UpdateHospitalProps, Pick<HospitalProps, '_id'> {}
 export type CreateHospitalDto = UpdateHospitalProps;
 export type DeleteHospitalDto = Pick<HospitalProps, '_id'>;
+
+export const keywordOptions: string[] = [
+  '失眠',
+  '自律神經失調',
+  '睡眠呼吸中止症',
+  '睡眠檢測',
+  '減重',
+  '止鼾牙套',
+  '阻塞性呼吸中止症',
+  '認知行為療法',
+  '藥物治療',
+  '不寧腿症候群',
+  '嗜睡症',
+  '居家睡眠檢測',
+  '呼吸器',
+  '陽壓呼吸器',
+];
