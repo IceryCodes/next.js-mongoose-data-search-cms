@@ -39,7 +39,17 @@ interface RulesProps {
   orgCode: StringSchema<string, AnyObject>;
   owner: StringSchema<string | undefined, AnyObject>;
   genderOptional: MixedSchema<GenderType | undefined, AnyObject, undefined, ''>;
-  doctors: ArraySchema<string[] | undefined, AnyObject, '', ''>;
+  doctors: ArraySchema<
+    {
+      name: string;
+      gender: NonNullable<GenderType>;
+      departments: DepartmentsType[];
+      educationalQualifications: string[];
+    }[],
+    AnyObject,
+    never[],
+    'd'
+  >;
   departments: ArraySchema<DepartmentsType[], AnyObject, '', ''>;
   websiteUrl: StringSchema<string | undefined, AnyObject, undefined, ''>;
   phone: StringSchema<string | undefined, AnyObject>;
@@ -122,13 +132,18 @@ const rules: RulesProps = {
   genderOptional: mixed<GenderType>().oneOf([GenderType.None, GenderType.Male, GenderType.Female], '性別必須為有效選項'),
   doctors: array()
     .of(
-      string()
-        .min(2, '醫生姓名至少需要2個字')
-        .matches(/^[^#!@*()\\";/%^=_$`,.?:+]+$/, '不能包含特殊字符')
-        .required('醫生姓名是必填項目')
+      object({
+        name: string().required('醫生姓名為必填'),
+        gender: mixed<GenderType>()
+          .oneOf([GenderType.Male, GenderType.Female], '醫生性別必須為有效選項')
+          .required('醫生性別是必填項目'),
+        departments: array().of(mixed<DepartmentsType>().defined()).min(1, '醫生至少選擇一個科別').defined(),
+        educationalQualifications: array().of(string().defined()).min(1, '醫生至少填寫一個學歷').defined(),
+      })
     )
-    .required('醫生姓名是必填項目'),
-  departments: array().of(mixed<DepartmentsType>().required()).required('科別是必填項目'),
+    .default([])
+    .defined(),
+  departments: array().of(mixed<DepartmentsType>().defined()).defined(),
   websiteUrl: string().url('無效的網址格式'),
   phone: string()
     .matches(/^(?!.*#.*#)(?!.*#$)[0-9#]{1,15}$/, '請輸入有效的電話號碼')

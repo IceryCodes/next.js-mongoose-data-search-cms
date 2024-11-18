@@ -71,13 +71,20 @@ export enum HospitalExtraFieldType {
   Dietitian = '營養師',
 }
 
+export interface DoctorProps {
+  name: string;
+  gender: GenderType;
+  departments: DepartmentsType[];
+  educationalQualifications: string[];
+}
+
 export interface HospitalProps {
   _id: ObjectId;
   partner: boolean;
   orgCode: string;
   owner?: string;
   gender?: GenderType;
-  doctors?: string[];
+  doctors?: DoctorProps[];
   departments: DepartmentsType[];
   websiteUrl?: string;
   email?: string;
