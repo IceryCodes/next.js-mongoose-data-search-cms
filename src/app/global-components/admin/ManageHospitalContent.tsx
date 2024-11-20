@@ -19,6 +19,8 @@ import { hospitalValidationSchema } from '@/lib/validation';
 import FieldErrorlabel from '../FieldErrorlabel';
 import Popup from '../Popup';
 
+import { DoctorForm } from './DoctorForm';
+
 interface ManageHospitalContentProps {
   hospital: HospitalProps;
   refetch: () => void;
@@ -343,25 +345,7 @@ const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps
           </div>
 
           <div className="flex flex-col col-span-6">
-            <label>醫院醫生</label>
-            <Controller
-              name="doctors"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <input
-                    className={inputStyle}
-                    type="text"
-                    {...field}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      field.onChange(event.target.value ? event.target.value.split(',') : [])
-                    }
-                    placeholder="醫院醫生 (多個用半形逗號分隔)"
-                  />
-                  <FieldErrorlabel error={error} />
-                </>
-              )}
-            />
+            <DoctorForm control={control} />
           </div>
 
           {formField({

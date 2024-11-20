@@ -16,6 +16,8 @@ import { hospitalValidationSchema } from '@/lib/validation';
 import FieldErrorlabel from '../FieldErrorlabel';
 import Popup from '../Popup';
 
+import { DoctorForm } from './DoctorForm';
+
 interface FormFieldProps {
   titleText: string;
   fieldName: keyof UpdateHospitalProps;
@@ -140,7 +142,8 @@ const CreateHospitalContent = () => {
         const { message } = result;
         if (message) showToast({ message });
 
-        reset(data);
+        reset();
+        setDisplay(false);
       } catch (error) {
         console.error('Update error:', error);
       }
@@ -158,6 +161,23 @@ const CreateHospitalContent = () => {
                 <label key={index} className="text-red-500 text-[12px]">
                   {message}
                 </label>
+              ))}
+
+            {errors?.doctors &&
+              Array.isArray(errors.doctors) &&
+              errors.doctors.map((err, index) => (
+                <div key={index} className="flex flex-col">
+                  {Object.entries(err || {}).map(([key, value]) => {
+                    const errorValue = value as { message?: string };
+                    return (
+                      errorValue?.message && (
+                        <label key={key} className="text-red-500 text-[12px]">
+                          {errorValue.message}
+                        </label>
+                      )
+                    );
+                  })}
+                </div>
               ))}
             {isLoading && <label>更新中...</label>}
           </div>
@@ -362,25 +382,7 @@ const CreateHospitalContent = () => {
           </div>
 
           <div className="flex flex-col col-span-6">
-            <label>醫院醫生</label>
-            <Controller
-              name="doctors"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <input
-                    className={inputStyle}
-                    type="text"
-                    {...field}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      field.onChange(event.target.value ? event.target.value.split(',') : [])
-                    }
-                    placeholder="醫院醫生 (多個用半形逗號分隔)"
-                  />
-                  <FieldErrorlabel error={error} />
-                </>
-              )}
-            />
+            <DoctorForm control={control} />
           </div>
 
           {formField({
@@ -456,6 +458,7 @@ const CreateHospitalContent = () => {
       control,
       expand,
       hospitalExtraFieldMap,
+      errors,
       county,
     ]
   );

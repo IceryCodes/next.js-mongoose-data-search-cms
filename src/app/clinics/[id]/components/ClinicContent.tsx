@@ -18,7 +18,8 @@ import GoogleReviews from '@/app/global-components/GoogleReviews';
 import Tab from '@/app/global-components/tabs/Tab';
 import Tag from '@/app/global-components/tags/Tag';
 import BasicInfos from '@/app/hospitals/[id]/components/BasicInfos';
-import { DepartmentsType, HospitalExtraFieldType } from '@/domains/hospital';
+import DoctorButton from '@/app/hospitals/[id]/components/DoctorButton';
+import { DepartmentsType, DoctorProps, HospitalExtraFieldType } from '@/domains/hospital';
 import { getPageUrlByType, PageType } from '@/domains/interfaces';
 import { ManageCategoryType } from '@/domains/manage';
 import { defaultClicnicExcerpt } from '@/domains/metadatas';
@@ -227,7 +228,16 @@ const ClinicContent = (): ReactElement => {
                     <Tag key={department} text={department} />
                   ))}
                 </div>
-                {doctors && <h3 className="text-xl font-bold">本院醫生: {doctors.join(', ')}</h3>}
+
+                {doctors && (
+                  <div>
+                    <h3 className="text-xl font-bold">本院醫生:</h3>
+                    {doctors.map((doctor: DoctorProps) => (
+                      <DoctorButton key={doctor.name} doctor={doctor} />
+                    ))}
+                  </div>
+                )}
+
                 <ul className="list-disc ml-5 grid grid-cols-1 md:grid-cols-3">
                   {Object.keys(HospitalExtraFieldType).map((key) => {
                     const label = HospitalExtraFieldType[key as keyof typeof HospitalExtraFieldType]; // Get the label from the enum

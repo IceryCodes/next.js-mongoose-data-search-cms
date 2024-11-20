@@ -1,9 +1,9 @@
 import { ButtonHTMLAttributes, MouseEventHandler, ReactElement, useMemo } from 'react';
 
 export enum ButtonStyleType {
-  Blue = 0,
-  Gray = 1,
-  Red = 2,
+  Active = 0,
+  Disabled = 1,
+  Warning = 2,
 }
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -25,17 +25,17 @@ export const Button = ({
   className = '',
   onClick,
   disabled = false,
-  buttonStyle = disabled ? ButtonStyleType.Gray : ButtonStyleType.Blue,
+  buttonStyle = disabled ? ButtonStyleType.Disabled : ButtonStyleType.Active,
   ...restProps
 }: ButtonProps) => {
   const buttonClassName = useMemo((): string => {
     switch (buttonStyle) {
-      case ButtonStyleType.Blue:
-        return 'bg-blue-500 hover:bg-blue-600 text-white';
-      case ButtonStyleType.Gray:
-        return 'bg-gray-500 hover:bg-gray-600 text-white';
-      case ButtonStyleType.Red:
-        return 'bg-red-500 hover:bg-red-600 text-white';
+      case ButtonStyleType.Active:
+        return 'bg-blue-500 text-background';
+      case ButtonStyleType.Disabled:
+        return 'bg-gray-500 text-white';
+      case ButtonStyleType.Warning:
+        return 'bg-red-500 text-white';
       default:
         return '';
     }

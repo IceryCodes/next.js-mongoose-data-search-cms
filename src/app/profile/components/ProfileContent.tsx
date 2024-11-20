@@ -1,27 +1,28 @@
 'use client';
 
-import { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback, useEffect } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button, ButtonStyleType, defaultButtonStyle } from '@/app/global-components/buttons/Button';
 import FieldErrorlabel from '@/app/global-components/FieldErrorlabel';
+import { AutoCompleteType, Input } from '@/app/global-components/inputs/Input';
 import { ToastStyleType } from '@/app/global-components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { GenderType } from '@/domains/interfaces';
+import { GenderType, getPageUrlByType, PageType } from '@/domains/interfaces';
 import { UserUpdateProps } from '@/domains/user';
 import { useUserUpdateMutation } from '@/features/user/hooks/useAuthMutation';
 import { useDeleteUserMutation } from '@/features/user/hooks/useDeleteUserMutation';
 import { useUserQuery } from '@/features/user/hooks/useUserQuery';
-import useLoginProtected from '@/hooks/utils/protections/routes/useLoginProtected';
 import { profileValidationSchema } from '@/lib/validation';
 import { generateToken } from '@/utils/token';
 
 const ProfileContent = (): ReactElement => {
-  useLoginProtected();
-  const { user: userStorage, token, logout, login } = useAuth();
+  const router = useRouter();
+  const { isAuthenticated, user: userStorage, token, logout, login } = useAuth();
   const { showToast } = useToast();
   const { mutateAsync: userDelete } = useDeleteUserMutation();
 
@@ -34,22 +35,20 @@ const ProfileContent = (): ReactElement => {
     enabled: !!userStorage?._id,
   });
 
-  const { control, handleSubmit, reset } = useForm<UserUpdateProps>({
+  const { control, handleSubmit, setValue, reset } = useForm<UserUpdateProps>({
     resolver: yupResolver(profileValidationSchema),
-    defaultValues: user
-      ? {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          gender: user.gender,
-        }
-      : undefined, // Default values are set only if `user` data exists
+    defaultValues: {
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      gender: user?.gender || GenderType.None,
+    },
   });
 
   const { isLoading, mutateAsync: userUpdate } = useUserUpdateMutation();
 
   const handleUpdate = useCallback(
     async (updateData: UserUpdateProps) => {
-      if (!token || !user || !manage) return;
+      if (!token || !user?._id || !manage) return;
 
       const confirmed = window.confirm(`您確定要更新帳號嗎?`);
       if (!confirmed) return;
@@ -92,14 +91,25 @@ const ProfileContent = (): ReactElement => {
     }
   }, [showToast, user?._id, userDelete, logout]);
 
+  useEffect(() => {
+    if (user) {
+      setValue('firstName', user.firstName || '');
+      setValue('lastName', user.lastName || '');
+      setValue('gender', user.gender || GenderType.None);
+    }
+  }, [user, setValue]);
+
   if (isFetching) return <label className="mx-auto">讀取中...</label>;
 
-  if (!user) return <label className="mx-auto">找不到帳號</label>;
+  if (!isAuthenticated) {
+    router.push(getPageUrlByType(PageType.LOGIN));
+    return <label className="mx-auto">找不到帳號</label>;
+  }
 
   return (
-    <div className="max-w-md min-w-96 mx-auto p-4 flex flex-col items-center gap-y-4 bg-white rounded-lg shadow-md">
+    <div className="max-w-md min-w-96 mx-auto p-4 flex flex-col items-center gap-y-4 bg-background rounded-lg shadow-md">
       <form
-        className="max-w-md min-w-96 mx-auto p-12 flex flex-col gap-y-4 bg-white rounded-lg shadow-md z-10"
+        className="max-w-md min-w-96 mx-auto p-12 flex flex-col gap-y-4 bg-background rounded-lg shadow-md z-10"
         onSubmit={handleSubmit(handleUpdate)}
       >
         <h2 className="text-2xl font-bold text-center">更新帳號</h2>
@@ -110,14 +120,7 @@ const ProfileContent = (): ReactElement => {
             control={control}
             render={({ field, fieldState: { error } }) => (
               <div>
-                <input
-                  type="text"
-                  {...field}
-                  placeholder="名字"
-                  autoComplete="given-name"
-                  required
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
+                <Input {...field} placeholder="名字" autoComplete={AutoCompleteType.GivenName} required />
                 <FieldErrorlabel error={error} />
               </div>
             )}
@@ -128,14 +131,7 @@ const ProfileContent = (): ReactElement => {
             control={control}
             render={({ field, fieldState: { error } }) => (
               <div>
-                <input
-                  type="text"
-                  {...field}
-                  placeholder="姓氏"
-                  autoComplete="family-name"
-                  required
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
+                <Input {...field} placeholder="姓氏" autoComplete={AutoCompleteType.FamilyName} required />
                 <FieldErrorlabel error={error} />
               </div>
             )}
@@ -149,14 +145,14 @@ const ProfileContent = (): ReactElement => {
             <div>
               <div className="flex justify-around gap-x-2">
                 <Button
-                  element={<span>男</span>}
+                  element={<>男</>}
                   onClick={() => field.onChange(GenderType.Male)}
-                  className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Male ? 'bg-blue-400 text-white' : 'bg-white text-gray-700'}`}
+                  className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Male ? 'bg-blue-500 text-background' : 'bg-background'}`}
                 />
                 <Button
-                  element={<span>女</span>}
+                  element={<>女</>}
                   onClick={() => field.onChange(GenderType.Female)}
-                  className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Female ? 'bg-blue-400 text-white' : 'bg-white text-gray-700'}`}
+                  className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Female ? 'bg-blue-500 text-background' : 'bg-background'}`}
                 />
               </div>
               <FieldErrorlabel error={error} />
@@ -169,7 +165,7 @@ const ProfileContent = (): ReactElement => {
       <Button
         text="刪除"
         onClick={deleteUser}
-        buttonStyle={ButtonStyleType.Red}
+        buttonStyle={ButtonStyleType.Warning}
         className="transition-all z-0 w-36 -mt-8 hover:mt-0"
       />
     </div>
