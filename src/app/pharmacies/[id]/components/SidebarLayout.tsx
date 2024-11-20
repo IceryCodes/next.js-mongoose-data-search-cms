@@ -6,6 +6,8 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button, ButtonStyleType } from '@/app/global-components/buttons/Button';
 import Card from '@/app/global-components/Card';
+import { Input, InputStyleType } from '@/app/global-components/inputs/Input';
+import { Select } from '@/app/global-components/selects/Select';
 import PharmacyListItemCard from '@/app/pharmacies/components/PharmacyListItemCard';
 import { CountyType, getPageUrlByType, PageType } from '@/domains/interfaces';
 import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
@@ -63,7 +65,7 @@ const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
               <div className="flex gap-x-2">
                 <Button
                   text="返回列表"
-                  buttonStyle={ButtonStyleType.Gray}
+                  buttonStyle={ButtonStyleType.Disabled}
                   onClick={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
                   className="rounded w-2/3"
                 />
@@ -75,13 +77,8 @@ const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={value}
-                      onChange={(e) => onChange(e.target.checked)}
-                      className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    />
-                    <label className="text-sm">先豐科技合作夥伴</label>
+                    <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
+                    <label className="text-sm">{`${process.env.NEXT_PUBLIC_SITE_NAME}合作夥伴`}</label>
                   </div>
                 )}
               />
@@ -91,12 +88,7 @@ const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={value}
-                      onChange={(e) => onChange(e.target.checked)}
-                      className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    />
+                    <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
                     <label className="text-sm">健保特約藥局</label>
                   </div>
                 )}
@@ -105,24 +97,13 @@ const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
               <Controller
                 name="query"
                 control={control}
-                render={({ field }) => (
-                  <input type="text" placeholder="藥局名稱" {...field} className="border rounded px-4 py-2 w-full" />
-                )}
+                render={({ field }) => <Input placeholder="藥局名稱" {...field} />}
               />
 
               <Controller
                 name="county"
                 control={control}
-                render={({ field }) => (
-                  <select {...field} className="border rounded px-4 py-2 w-full">
-                    <option value="">所有地區</option>
-                    {Object.values(CountyType).map((county: string) => (
-                      <option key={county} value={county}>
-                        {county}
-                      </option>
-                    ))}
-                  </select>
-                )}
+                render={({ field }) => <Select {...field} defaultValue="所有縣市" options={Object.values(CountyType)} />}
               />
             </form>
           </>

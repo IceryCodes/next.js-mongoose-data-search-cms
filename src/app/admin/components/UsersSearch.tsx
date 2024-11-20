@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button } from '@/app/global-components/buttons/Button';
+import { Input, InputStyleType } from '@/app/global-components/inputs/Input';
 import { GetUsersDto } from '@/domains/user';
 
 interface UsersSearchProps {
@@ -30,9 +31,7 @@ const UsersSearch = ({ searchUsers }: UsersSearchProps) => {
         <Controller
           name="email"
           control={control}
-          render={({ field }) => (
-            <input type="email" placeholder="帳號信箱" {...field} className="border rounded px-4 py-2 flex-grow" />
-          )}
+          render={({ field }) => <Input type={InputStyleType.Email} placeholder="帳號信箱" {...field} />}
         />
         <Button text="搜尋" type="submit" className="whitespace-nowrap" />
       </form>

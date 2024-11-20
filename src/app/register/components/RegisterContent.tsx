@@ -8,6 +8,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button, defaultButtonStyle } from '@/app/global-components/buttons/Button';
 import FieldErrorlabel from '@/app/global-components/FieldErrorlabel';
+import { AutoCompleteType, Input, InputStyleType } from '@/app/global-components/inputs/Input';
 import { ToastStyleType } from '@/app/global-components/Toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -34,6 +35,9 @@ const RegisterContent = (): ReactElement => {
   const { isLoading, mutateAsync } = useUserRegisterMutation();
 
   const handleRegister = async (data: UserRegisterDto) => {
+    const confirmed = window.confirm(`您確定要註冊帳號嗎?`);
+    if (!confirmed) return;
+
     try {
       const result = await mutateAsync(data);
       if (typeof result === 'string') throw new Error(result);
@@ -59,7 +63,7 @@ const RegisterContent = (): ReactElement => {
   return (
     <form
       onSubmit={handleSubmit(handleRegister)}
-      className="max-w-md min-w-96 mx-auto p-4 flex flex-col gap-y-4 bg-white rounded-lg shadow-md"
+      className="max-w-md min-w-96 mx-auto p-4 flex flex-col gap-y-4 bg-background rounded-lg shadow-md"
     >
       <h2 className="text-2xl font-bold text-center">註冊</h2>
 
@@ -69,14 +73,7 @@ const RegisterContent = (): ReactElement => {
           control={control}
           render={({ field, fieldState: { error } }) => (
             <div>
-              <input
-                type="text"
-                {...field}
-                placeholder="名字"
-                autoComplete="given-name"
-                required
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              <Input {...field} placeholder="名字" autoComplete={AutoCompleteType.GivenName} required />
               <FieldErrorlabel error={error} />
             </div>
           )}
@@ -87,14 +84,7 @@ const RegisterContent = (): ReactElement => {
           control={control}
           render={({ field, fieldState: { error } }) => (
             <div>
-              <input
-                type="text"
-                {...field}
-                placeholder="姓氏"
-                autoComplete="family-name"
-                required
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              <Input {...field} placeholder="姓氏" autoComplete={AutoCompleteType.FamilyName} required />
               <FieldErrorlabel error={error} />
             </div>
           )}
@@ -108,14 +98,14 @@ const RegisterContent = (): ReactElement => {
           <div>
             <div className="flex justify-around gap-x-2">
               <Button
-                element={<span>男</span>}
+                element={<>男</>}
                 onClick={() => field.onChange(GenderType.Male)}
-                className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Male ? 'bg-blue-400 text-white' : 'bg-white text-gray-700'}`}
+                className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Male ? 'bg-blue-500 text-background' : 'bg-background'}`}
               />
               <Button
-                element={<span>女</span>}
+                element={<>女</>}
                 onClick={() => field.onChange(GenderType.Female)}
-                className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Female ? 'bg-blue-400 text-white' : 'bg-white text-gray-700'}`}
+                className={`${defaultButtonStyle} w-full p-2 border rounded-md ${field.value === GenderType.Female ? 'bg-blue-500 text-background' : 'bg-background'}`}
               />
             </div>
             <FieldErrorlabel error={error} />
@@ -128,13 +118,12 @@ const RegisterContent = (): ReactElement => {
         control={control}
         render={({ field, fieldState: { error } }) => (
           <div>
-            <input
-              type="email"
+            <Input
+              type={InputStyleType.Email}
               {...field}
               placeholder="信箱"
-              autoComplete="email"
+              autoComplete={AutoCompleteType.Email}
               required
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <FieldErrorlabel error={error} />
           </div>
@@ -146,13 +135,12 @@ const RegisterContent = (): ReactElement => {
         control={control}
         render={({ field, fieldState: { error } }) => (
           <div>
-            <input
-              type="password"
+            <Input
+              type={InputStyleType.Password}
               {...field}
               placeholder="密碼"
-              autoComplete="current-password"
+              autoComplete={AutoCompleteType.CurrentPassword}
               required
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <FieldErrorlabel error={error} />
           </div>

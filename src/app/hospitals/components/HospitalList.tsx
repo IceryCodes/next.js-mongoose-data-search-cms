@@ -1,15 +1,16 @@
 'use client';
-import { ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm, UseFormSetValue } from 'react-hook-form';
 
 import CreateHospitalContent from '@/app/global-components/admin/CreateHospitalContent';
 import { Button } from '@/app/global-components/buttons/Button';
 import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
-import KeywordSearch from '@/app/global-components/KeywordSearch';
+import { Input, InputStyleType } from '@/app/global-components/inputs/Input';
 import Pagination from '@/app/global-components/Pagination';
-import Tag from '@/app/global-components/tags/Tag';
-import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps, keywordOptions } from '@/domains/hospital';
+import { Select } from '@/app/global-components/selects/Select';
+import { TagGroup } from '@/app/global-components/tags/TagGroup';
+import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
@@ -19,17 +20,15 @@ import HospitalListItemCard from './HospitalListItemCard';
 const limit: number = 12;
 
 const HospitalList = (): ReactElement => {
-  const { control, handleSubmit, getValues, reset, watch, setValue } = useForm<GetHospitalsDto>({
+  const { control, handleSubmit, getValues, reset, setValue } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
       county: '',
       departments: '' as DepartmentsType,
-      keywords: '',
+      keywords: [],
       partner: false,
     },
   });
-
-  const keywords = watch('keywords');
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -73,80 +72,49 @@ const HospitalList = (): ReactElement => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex gap-6">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-4/5">
-          <Controller
-            name="query"
-            control={control}
-            render={({ field }) => (
-              <input type="text" placeholder="醫院名稱" {...field} className="border rounded px-4 py-2 w-full" />
-            )}
-          />
+          <Controller name="query" control={control} render={({ field }) => <Input placeholder="醫院名稱" {...field} />} />
 
           <Controller
             name="county"
             control={control}
-            render={({ field }) => (
-              <select {...field} className="border rounded px-4 py-2 w-full">
-                <option value="">所有地區</option>
-                {Object.values(CountyType).map((county: string) => (
-                  <option key={county} value={county}>
-                    {county}
-                  </option>
-                ))}
-              </select>
-            )}
+            render={({ field }) => <Select {...field} defaultValue="所有縣市" options={Object.values(CountyType)} />}
           />
 
           <Controller
             name="departments"
             control={control}
-            render={({ field }) => (
-              <select {...field} className="border rounded px-4 py-2 w-full">
-                <option value="">所有科別</option>
-                {Object.values(DepartmentsType).map((department: string) => (
-                  <option key={department} value={department}>
-                    {department}
-                  </option>
-                ))}
-              </select>
-            )}
+            render={({ field }) => <Select {...field} defaultValue="所有科別" options={Object.values(DepartmentsType)} />}
           />
 
           <Controller
             name="keywords"
             control={control}
-            render={({ field }) => <KeywordSearch options={keywordOptions} value={field.value} onChange={field.onChange} />}
+            render={({ field }) => (
+              <>
+                <Input
+                  {...field}
+                  value={Array.isArray(field.value) ? field.value.join(',') : ''}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                    field.onChange(event.target.value ? event.target.value.split(',') : [])
+                  }
+                  placeholder="關鍵字 (多個用半形逗號分隔)"
+                />
+                <TagGroup
+                  tags={field.value}
+                  fieldName="keywords"
+                  setValue={setValue as unknown as UseFormSetValue<FieldValues>}
+                />
+              </>
+            )}
           />
-
-          <div
-            className="flex items-center gap-x-2 overflow-x-auto whitespace-nowrap cursor-pointer scrollbar-thin"
-            style={{ maxWidth: '100%', scrollbarWidth: 'thin' }}
-          >
-            {keywords
-              .split(',')
-              .map(
-                (keyword: string) =>
-                  keyword && (
-                    <Tag
-                      key={keyword}
-                      text={keyword}
-                      onClick={() => setValue('keywords', keywords.replace(keyword, '').replace(',,', ','))}
-                    />
-                  )
-              )}
-          </div>
 
           <Controller
             name="partner"
             control={control}
             render={({ field: { onChange, value } }) => (
               <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={value}
-                  onChange={(e) => onChange(e.target.checked)}
-                  className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                />
-                <label className="text-sm">先豐科技合作夥伴</label>
+                <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
+                <label className="text-sm">{`${process.env.NEXT_PUBLIC_SITE_NAME}合作夥伴`}</label>
               </div>
             )}
           />

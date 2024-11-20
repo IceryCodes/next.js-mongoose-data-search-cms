@@ -138,7 +138,7 @@ export interface GetHospitalsDto {
   query: string;
   county: string;
   departments: DepartmentsType;
-  keywords: string;
+  keywords: string[];
   partner: boolean;
   category: HospitalCategoryType;
   page?: number;
