@@ -79,13 +79,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
         .filter(Boolean);
 
       if (process.env.NODE_ENV === 'production') {
-        mongoQuery.keywords = {
-          $and: [{ $in: keywordsArray.map((kw) => new RegExp(kw, 'i')) }, { $not: { $in: [/Sample/i] } }],
-        };
+        mongoQuery.$and = [
+          ...((mongoQuery.$and as Array<Record<string, unknown>>) ?? []),
+          { keywords: { $in: keywordsArray.map((kw) => new RegExp(kw, 'i')) } },
+          { keywords: { $not: { $in: [/Sample/i] } } },
+        ];
       } else {
-        mongoQuery.keywords = {
-          $in: keywordsArray.map((kw) => new RegExp(kw, 'i')),
-        };
+        mongoQuery.keywords = { $in: keywordsArray.map((kw) => new RegExp(kw, 'i')) };
       }
     }
 
