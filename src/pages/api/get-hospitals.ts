@@ -78,13 +78,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
         .map((k) => k.trim())
         .filter(Boolean);
 
-      mongoQuery.keywords = {
-        $in: keywordsArray.map((kw) => new RegExp(kw, 'i')), // Ensure all keywords match (case-insensitive)
-      };
-    }
-
-    if (process.env.NODE_ENV === 'production') {
-      mongoQuery.keywords = { $not: { $in: ['Sample'] } };
+      if (process.env.NODE_ENV === 'production') {
+        mongoQuery.keywords = {
+          $and: [{ $in: keywordsArray.map((kw) => new RegExp(kw, 'i')) }, { $not: { $in: [/Sample/i] } }],
+        };
+      } else {
+        mongoQuery.keywords = {
+          $in: keywordsArray.map((kw) => new RegExp(kw, 'i')),
+        };
+      }
     }
 
     const total: number = await hospitalsCollection.countDocuments(mongoQuery);
