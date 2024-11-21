@@ -57,7 +57,7 @@ const ClinicList = (): ReactElement => {
     (formData: GetHospitalsDto) => {
       setSearchParams({
         ...formData,
-        category: HospitalCategoryType.Hospital,
+        category: HospitalCategoryType.Clinic,
         page: 1,
         limit,
       });
