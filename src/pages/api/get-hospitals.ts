@@ -81,11 +81,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
       if (process.env.NODE_ENV === 'production') {
         mongoQuery.$and = [
           ...((mongoQuery.$and as Array<Record<string, unknown>>) ?? []),
-          { keywords: { $in: keywordsArray.map((kw) => new RegExp(kw, 'i')) } },
+          { keywords: { $all: keywordsArray.map((kw) => new RegExp(kw, 'i')) } },
           { keywords: { $not: { $in: [/Sample/i] } } },
         ];
       } else {
-        mongoQuery.keywords = { $in: keywordsArray.map((kw) => new RegExp(kw, 'i')) };
+        mongoQuery.keywords = { $all: keywordsArray.map((kw) => new RegExp(kw, 'i')) };
       }
     }
 
