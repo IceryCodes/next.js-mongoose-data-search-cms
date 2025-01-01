@@ -1,26 +1,26 @@
 'use client';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 
-import { Controller, ControllerRenderProps, FieldValues, useForm, UseFormSetValue } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import CreateHospitalContent from '@/app/global-components/admin/CreateHospitalContent';
 import { Button } from '@/app/global-components/buttons/Button';
 import GoogleMapComponent from '@/app/global-components/GoogleMapComponent';
-import { Input, InputStyleType } from '@/app/global-components/inputs/Input';
+import { Input } from '@/app/global-components/inputs/Input';
+import KeywordSelector from '@/app/global-components/keywords/KeywordSelector';
 import Pagination from '@/app/global-components/Pagination';
 import { Select } from '@/app/global-components/selects/Select';
-import { TagGroup } from '@/app/global-components/tags/TagGroup';
 import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps, keywordOptions } from '@/domains/hospital';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 
-import HospitalListItemCard from './HospitalListItemCard';
+import HospitalListItemCardHorizontal from './HospitalListItemCardHorizontal';
 
 const limit: number = 12;
 
 const HospitalList = (): ReactElement => {
-  const { control, handleSubmit, reset, setValue } = useForm<GetHospitalsDto>({
+  const { control, handleSubmit, reset } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
       county: '',
@@ -31,8 +31,6 @@ const HospitalList = (): ReactElement => {
   });
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredOptions, setFilteredOptions] = useState<string[]>([]);
   const [searchParams, setSearchParams] = useState({
     query: '',
     county: '',
@@ -67,35 +65,6 @@ const HospitalList = (): ReactElement => {
     [reset]
   );
 
-  const handleKeywordInput = (
-    event: ChangeEvent<HTMLInputElement>,
-    field: ControllerRenderProps<GetHospitalsDto, 'keywords'>
-  ) => {
-    const value = event.target.value;
-    field.onChange(value ? value.split(',') : []);
-
-    // 只處理建議選項的顯示,不進行搜尋
-    if (value) {
-      const lastKeyword = value.split(',').pop()?.trim() || '';
-      const filtered = keywordOptions.filter((option) => option.toLowerCase().includes(lastKeyword.toLowerCase()));
-      setFilteredOptions(filtered);
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
-  };
-
-  const selectKeyword = (option: string, field: ControllerRenderProps<GetHospitalsDto, 'keywords'>) => {
-    const currentValues = field.value || [];
-    const newValues = [...currentValues];
-    if (currentValues.length > 0) {
-      newValues.pop();
-    }
-    newValues.push(option);
-    field.onChange(newValues);
-    setShowSuggestions(false);
-  };
-
   return (
     <div className="container mx-auto flex flex-col gap-y-4">
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
@@ -105,8 +74,8 @@ const HospitalList = (): ReactElement => {
         </AdminProtected>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex gap-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-4/5">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col md:flex-row gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-grow">
           <Controller name="query" control={control} render={({ field }) => <Input placeholder="醫院名稱" {...field} />} />
 
           <Controller
@@ -125,62 +94,23 @@ const HospitalList = (): ReactElement => {
             name="keywords"
             control={control}
             render={({ field }) => (
-              <>
-                <div className="relative">
-                  <Input
-                    {...field}
-                    value={Array.isArray(field.value) ? field.value.join(',') : ''}
-                    onChange={(event) => handleKeywordInput(event, field)}
-                    placeholder="關鍵字 (多個用半形逗號分隔)"
-                    onBlur={() => {
-                      setTimeout(() => setShowSuggestions(false), 200);
-                    }}
-                  />
-
-                  {showSuggestions && filteredOptions.length > 0 && (
-                    <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-md mt-1 max-h-48 overflow-y-auto">
-                      {filteredOptions.map((option) => (
-                        <div
-                          key={option}
-                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => selectKeyword(option, field)}
-                        >
-                          {option}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <TagGroup
-                  tags={field.value}
-                  fieldName="keywords"
-                  setValue={setValue as unknown as UseFormSetValue<FieldValues>}
-                />
-              </>
-            )}
-          />
-
-          <Controller
-            name="partner"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <div className="flex items-center">
-                <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
-                <label className="text-sm">{`${process.env.NEXT_PUBLIC_SITE_NAME}合作夥伴`}</label>
-              </div>
+              <KeywordSelector
+                keywords={keywordOptions}
+                selectedKeywords={field.value}
+                onKeywordsChange={field.onChange}
+                className="col-span-2 md:col-span-3"
+              />
             )}
           />
         </div>
 
-        <div className="w-1/5">
+        <div className="w-full md:w-1/6">
           <Button text="搜尋" type="submit" className="w-full" />
         </div>
       </form>
 
       <GoogleMapComponent locationData={hospitals} />
 
-      {/* Loading overlay */}
       <div className="relative w-full min-h-[400px]">
         {isLoading && (
           <div className="absolute inset-0 flex justify-center items-center bg-white bg-opacity-70">
@@ -189,11 +119,10 @@ const HospitalList = (): ReactElement => {
         )}
         {isError && <span>搜尋時發生錯誤</span>}
 
-        {/* Hospital list */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!hospitals.length && <label>沒有符合醫院</label>}
           {hospitals.map(({ _id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
-            <HospitalListItemCard
+            <HospitalListItemCardHorizontal
               key={_id.toString()}
               _id={_id}
               image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
@@ -207,7 +136,6 @@ const HospitalList = (): ReactElement => {
           ))}
         </section>
 
-        {/* Pagination */}
         <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
       </div>
     </div>
