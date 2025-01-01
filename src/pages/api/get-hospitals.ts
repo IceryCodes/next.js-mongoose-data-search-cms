@@ -40,18 +40,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
     if (partner === 'true') mongoQuery.partner = true;
 
     // Filter by title with HospitalCategoryType
-    // 1. First, apply the category filter (Hospital or Clinic) using HospitalCategoryType
     if (category && typeof category === 'string') {
       if (category === HospitalCategoryType.Hospital) {
-        mongoQuery.title = { $regex: '醫院', $options: 'i' }; // Case-insensitive search for "醫院"
+        mongoQuery.title = { $regex: '醫院', $options: 'i' };
       } else if (category === HospitalCategoryType.Clinic) {
-        mongoQuery.title = { $not: { $regex: '醫院', $options: 'i' } }; // Exclude "醫院"
+        mongoQuery.title = { $not: { $regex: '醫院', $options: 'i' } };
       } else {
-        return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' }); // Invalid category value
+        return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
       }
     }
 
-    // 2. After applying category, apply the query-based filtering (title search)
     if (query && typeof query === 'string') {
       const queryWords = query.toLowerCase().split(' ').filter(Boolean);
 
@@ -78,15 +76,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
         .map((k) => k.trim())
         .filter(Boolean);
 
-      if (process.env.NODE_ENV === 'production') {
-        mongoQuery.$and = [
-          ...((mongoQuery.$and as Array<Record<string, unknown>>) ?? []),
-          { keywords: { $all: keywordsArray.map((kw) => new RegExp(kw, 'i')) } },
-          { keywords: { $not: { $in: [/Sample/i] } } },
-        ];
-      } else {
-        mongoQuery.keywords = { $all: keywordsArray.map((kw) => new RegExp(kw, 'i')) };
-      }
+      mongoQuery.keywords = { $all: keywordsArray };
     }
 
     const total: number = await hospitalsCollection.countDocuments(mongoQuery);
