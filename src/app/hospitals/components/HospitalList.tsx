@@ -76,7 +76,7 @@ const HospitalList = (): ReactElement => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col md:flex-row gap-4">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-grow">
-          <Controller name="query" control={control} render={({ field }) => <Input placeholder="文字搜尋" {...field} />} />
+          <Controller name="query" control={control} render={({ field }) => <Input placeholder="輸入搜尋" {...field} />} />
 
           <Controller
             name="county"
