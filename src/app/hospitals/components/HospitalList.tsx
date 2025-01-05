@@ -76,7 +76,7 @@ const HospitalList = (): ReactElement => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col md:flex-row gap-4">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-grow">
-          <Controller name="query" control={control} render={({ field }) => <Input placeholder="醫院名稱" {...field} />} />
+          <Controller name="query" control={control} render={({ field }) => <Input placeholder="輸入搜尋" {...field} />} />
 
           <Controller
             name="county"
@@ -90,6 +90,7 @@ const HospitalList = (): ReactElement => {
             render={({ field }) => <Select {...field} defaultValue="所有科別" options={Object.values(DepartmentsType)} />}
           />
 
+          <label className="text-sm text-gray-500">睡眠相關關鍵字:</label>
           <Controller
             name="keywords"
             control={control}

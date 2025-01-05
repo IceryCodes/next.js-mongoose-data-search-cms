@@ -44,7 +44,7 @@ const KeywordSelector = ({
 
   return (
     <div className={`flex flex-col gap-4 ${className}`}>
-      <SelectedTags selectedKeywords={selectedKeywordObjects} onRemove={handleRemove} />
+      {!!selectedKeywordObjects.length && <SelectedTags selectedKeywords={selectedKeywordObjects} onRemove={handleRemove} />}
       <SuggestedTags availableKeywords={availableKeywords} selectedKeywords={selectedKeywords} onSelect={handleSelect} />
     </div>
   );

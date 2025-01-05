@@ -1,4 +1,4 @@
-// HospitalListItemCardHorizontal.tsx
+// ClinicListItemCardHorizontal.tsx
 import { ReactElement } from 'react';
 
 import { ObjectId } from 'mongodb';
@@ -9,7 +9,7 @@ import Tag from '@/app/global-components/tags/Tag';
 import { DepartmentsType } from '@/domains/hospital';
 import { DistrictType, getPageUrlByType, PageType } from '@/domains/interfaces';
 
-interface HospitalListItemCardHorizontalProps {
+interface ClinicListItemCardHorizontalProps {
   _id: ObjectId;
   partner: boolean;
   image: string;
@@ -20,7 +20,7 @@ interface HospitalListItemCardHorizontalProps {
   departments: DepartmentsType[];
 }
 
-const HospitalListItemCardHorizontal = ({
+const ClinicListItemCardHorizontal = ({
   _id,
   partner,
   image,
@@ -29,9 +29,9 @@ const HospitalListItemCardHorizontal = ({
   district,
   address,
   departments,
-}: HospitalListItemCardHorizontalProps): ReactElement => (
+}: ClinicListItemCardHorizontalProps): ReactElement => (
   <Link
-    href={`${getPageUrlByType(PageType.HOSPITALS)}/${_id}`}
+    href={`${getPageUrlByType(PageType.CLINICS)}/${_id}`}
     className="relative flex flex-col md:flex-row gap-4 border rounded-lg p-4 shadow-lg hover:scale-[1.02] transition-transform duration-300 bg-white overflow-hidden"
   >
     {/* 推薦標籤 */}
@@ -73,4 +73,4 @@ const HospitalListItemCardHorizontal = ({
   </Link>
 );
 
-export default HospitalListItemCardHorizontal;
+export default ClinicListItemCardHorizontal;

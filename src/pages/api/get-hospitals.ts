@@ -1,7 +1,7 @@
 import { Collection, WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { DepartmentsType, HospitalCategoryType, HospitalProps } from '@/domains/hospital';
+import { DepartmentsType, HospitalCategoryType, HospitalExtraFieldType, HospitalProps } from '@/domains/hospital';
 import { getHospitalsCollection } from '@/lib/mongodb';
 import { GetHospitalsReturnType } from '@/services/interfaces';
 import { HttpStatus } from '@/utils/api';
@@ -53,11 +53,54 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
     if (query && typeof query === 'string') {
       const queryWords = query.toLowerCase().split(' ').filter(Boolean);
 
-      if (mongoQuery.title) {
-        mongoQuery.$and = [{ title: mongoQuery.title }, { title: { $regex: queryWords.join('|'), $options: 'i' } }];
-        delete mongoQuery.title;
-      } else {
-        mongoQuery.title = { $regex: queryWords.join('|'), $options: 'i' };
+      // 檢查查詢詞是否包含職位名稱
+      const positionQueries = queryWords.filter((word) =>
+        Object.values(HospitalExtraFieldType).some((pos) => pos.includes(word))
+      );
+      const regularQueries = queryWords.filter(
+        (word) => !Object.values(HospitalExtraFieldType).some((pos) => pos.includes(word))
+      );
+
+      const searchFields = [
+        'title',
+        'departments',
+        'county',
+        'district',
+        'address',
+        'expert',
+        'content',
+        'keywords',
+        'orgCode',
+      ];
+
+      const orConditions: Record<string, unknown>[] = [];
+
+      // 處理一般搜尋欄位
+      if (regularQueries.length > 0) {
+        const regexPattern = regularQueries.join('|');
+        searchFields.forEach((field) => {
+          orConditions.push({ [field]: { $regex: regexPattern, $options: 'i' } });
+        });
+      }
+
+      // 處理職位搜尋
+      if (positionQueries.length > 0) {
+        positionQueries.forEach((posQuery) => {
+          const matchingPositions = Object.values(HospitalExtraFieldType).filter((pos) => pos.includes(posQuery));
+          matchingPositions.forEach((position) => {
+            orConditions.push({ [position]: { $gt: 0 } });
+          });
+        });
+      }
+
+      if (orConditions.length > 0) {
+        if (mongoQuery.title) {
+          // 如果已經有 title 條件（來自分類），需要合併條件
+          mongoQuery.$and = [{ title: mongoQuery.title }, { $or: orConditions }];
+          delete mongoQuery.title;
+        } else {
+          mongoQuery.$or = orConditions;
+        }
       }
     }
 
