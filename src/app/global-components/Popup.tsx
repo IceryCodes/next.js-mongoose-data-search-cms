@@ -21,11 +21,11 @@ const Popup = ({ title, children, display, noBlackBg = false, onClose }: PopupPr
   return (
     <>
       <div
-        className={`fixed inset-0 flex items-center justify-center bg-opacity-40 transition-all duration-300 ${display ? 'opacity-100' : 'opacity-0'} ${display ? 'z-10' : '-z-10'} ${display && !noBlackBg ? 'bg-black' : 'bg-transparent'}`}
+        className={`fixed inset-0 flex items-center justify-center bg-opacity-40 transition-all duration-300 ${display ? 'opacity-100' : 'opacity-0'} ${display ? 'z-20' : '-z-20'} ${display && !noBlackBg ? 'bg-black' : 'bg-transparent'}`}
         onClick={onClose}
       >
         <div
-          className={`fixed bg-white rounded shadow-lg p-4 m-4 flex flex-col gap-4 max-w-6xl max-h-content overflow-y-auto`}
+          className={`fixed bg-white rounded shadow-lg p-4 m-4 flex flex-col gap-4 max-w-6xl overflow-y-auto transition-all duration-300 ${display ? 'max-h-content' : 'max-h-0'}`}
           onClick={(e) => e.stopPropagation()}
         >
           {title && <label className="text-2xl font-bold">{title}</label>}

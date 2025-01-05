@@ -36,7 +36,7 @@ const ClinicListItemCardHorizontal = ({
   >
     {/* 推薦標籤 */}
     {partner && (
-      <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden z-10">
+      <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden">
         <div className="absolute -top-2 -right-5 bg-blue-500 text-white font-bold py-1 px-10 transform translate-x-2 translate-y-3 rotate-45">
           推
         </div>
