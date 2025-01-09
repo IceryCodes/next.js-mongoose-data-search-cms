@@ -40,6 +40,7 @@ const defaultPharmacy: UpdatePharmacyProps = {
   content: '',
   keywords: [],
   featuredImg: '',
+  googleTitle: '',
   healthInsuranceAuthorized: false,
 };
 
@@ -140,6 +141,13 @@ const CreatePharmacyContent = () => {
             titleText: '標題',
             fieldName: 'title',
             placeholder: '藥局',
+            col: 6,
+          })}
+
+          {formField({
+            titleText: 'Google名稱',
+            fieldName: 'googleTitle',
+            placeholder: 'Google map登記名稱',
             col: 6,
           })}
 

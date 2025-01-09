@@ -44,6 +44,7 @@ const defaultHospital: UpdateHospitalProps = {
   content: '',
   keywords: [],
   featuredImg: '',
+  googleTitle: '',
   [HospitalExtraFieldType.SpeechTherapist]: 0,
   [HospitalExtraFieldType.DentalTechnician]: 0,
   [HospitalExtraFieldType.Audiologist]: 0,
@@ -190,6 +191,13 @@ const CreateHospitalContent = () => {
             titleText: '標題(含"醫院"則歸類為醫院)',
             fieldName: 'title',
             placeholder: '醫療機構',
+            col: 6,
+          })}
+
+          {formField({
+            titleText: 'Google名稱',
+            fieldName: 'googleTitle',
+            placeholder: 'Google map登記名稱',
             col: 6,
           })}
 
