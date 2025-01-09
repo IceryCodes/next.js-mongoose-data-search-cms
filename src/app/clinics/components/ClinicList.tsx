@@ -20,7 +20,7 @@ import ClinicListItemCardHorizontal from './ClinicListItemCardHorizontal';
 const limit: number = 12;
 
 const ClinicList = (): ReactElement => {
-  const { control, handleSubmit, reset } = useForm<GetHospitalsDto>({
+  const { control, handleSubmit, reset, getValues } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
       county: '',
@@ -65,6 +65,16 @@ const ClinicList = (): ReactElement => {
     [reset]
   );
 
+  const handleKeywordChange = useCallback(
+    (keywords: string[], field: { onChange: (value: string[]) => void }) => {
+      field.onChange(keywords);
+      // Get current form values and submit with new keywords
+      const formData = getValues();
+      onSubmit({ ...formData, keywords });
+    },
+    [getValues, onSubmit]
+  );
+
   return (
     <div className="container mx-auto flex flex-col gap-y-4">
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
@@ -98,7 +108,7 @@ const ClinicList = (): ReactElement => {
               <KeywordSelector
                 keywords={keywordOptions}
                 selectedKeywords={field.value}
-                onKeywordsChange={field.onChange}
+                onKeywordsChange={(keywords: string[]) => handleKeywordChange(keywords, field)}
                 className="col-span-2 md:col-span-3"
               />
             )}

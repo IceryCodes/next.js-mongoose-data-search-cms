@@ -59,7 +59,7 @@ const HospitalListItemCardHorizontal = ({
     <div className="flex flex-col flex-grow gap-2">
       <div className="flex flex-col items-start">
         <h2 className="text-xl font-bold">{title}</h2>
-        {partner && <Tag text="先豐科技合作夥伴" />}
+        {/* {partner && <Tag text="先豐科技合作夥伴" />} */}
       </div>
 
       <p className="text-gray-600">{`${county}${district}${address}`}</p>

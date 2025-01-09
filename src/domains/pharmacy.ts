@@ -36,6 +36,7 @@ export interface PharmacyProps {
   healthInsuranceAuthorized: boolean;
   managers?: string[];
   lineId?: string;
+  googleTitle: string;
   createdAt: Date;
   updatedAt: Date;
 }
