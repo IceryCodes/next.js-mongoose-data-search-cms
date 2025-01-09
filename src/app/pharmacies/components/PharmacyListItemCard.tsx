@@ -20,7 +20,6 @@ interface PharmacyListItemCardProps {
 
 const PharmacyListItemCard = ({
   _id,
-  partner,
   image,
   title,
   county,
@@ -36,7 +35,7 @@ const PharmacyListItemCard = ({
     <Image src={image} alt="Hospital Image" width={720} height={480} className="rounded" priority={true} />
     <div className="flex flex-col items-start">
       <span className="text-xl font-bold">{title}</span>
-      {partner && <Tag text="先豐科技合作夥伴" />}
+      {/* {partner && <Tag text="合作夥伴" />} */}
     </div>
     <p>{`${county}${district}${address}`}</p>
     <div className="flex flex-col items-start">{healthInsuranceAuthorized && <Tag text="健保特約藥局" />}</div>
