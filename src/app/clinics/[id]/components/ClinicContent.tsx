@@ -79,7 +79,6 @@ const ClinicContent = (): ReactElement => {
 
   const {
     _id,
-    partner,
     orgCode,
     owner,
     gender,
@@ -157,7 +156,7 @@ const ClinicContent = (): ReactElement => {
                   )}
                 </div>
               </div>
-              {partner && <Tag text="先豐科技合作夥伴" />}
+              {/* {partner && <Tag text="合作夥伴" />} */}
               {lineId && (
                 <Link href={`https://line.me/R/ti/p/${lineId}`} target="_blank">
                   <h3 className="bg-[#00C338] text-sm px-2 py-1 text-white text-center w-[120px] rounded">加入Line</h3>

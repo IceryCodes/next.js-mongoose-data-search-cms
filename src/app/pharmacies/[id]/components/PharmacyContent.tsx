@@ -80,7 +80,7 @@ const PharmacyContent = (): ReactElement => {
 
   const {
     _id,
-    partner,
+    // partner,
     orgCode,
     owner,
     gender,
@@ -158,7 +158,7 @@ const PharmacyContent = (): ReactElement => {
                   )}
                 </div>
               </div>
-              {partner && <Tag text="先豐科技合作夥伴" />}
+              {/* {partner && <Tag text="合作夥伴" />} */}
               {healthInsuranceAuthorized && <Tag text="健保特約藥局" />}
               {lineId && (
                 <Link href={`https://line.me/R/ti/p/${lineId}`} target="_blank">
