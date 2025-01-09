@@ -96,7 +96,7 @@ const Header = ({ children }: { children: ReactElement }) => {
       </header>
 
       {/* Content Section */}
-      <section className={`mt-header`}>{children}</section>
+      <section className="mt-header pt-4">{children}</section>
 
       <VerifyBar />
     </>
