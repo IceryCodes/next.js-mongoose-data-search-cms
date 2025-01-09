@@ -44,7 +44,7 @@ const ClinicContent = (): ReactElement => {
     const checkAndFetchGoogleData = async () => {
       if (isLoading || isError || !hospital) return;
 
-      const googleTitle = hospital.title;
+      const googleTitle = hospital.googleTitle;
       const googleAddress = `${hospital.county}${hospital.district}${hospital.address}`;
 
       const fetchBasedOn = (query: string) => fetchGoogleInfo({ title: query });

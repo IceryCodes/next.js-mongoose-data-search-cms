@@ -43,7 +43,7 @@ const PharmacyContent = (): ReactElement => {
     const checkAndFetchGoogleData = async () => {
       if (isLoading || isError || !pharmacy) return;
 
-      const googleTitle = pharmacy.title;
+      const googleTitle = pharmacy.googleTitle;
       const googleAddress = `${pharmacy.county}${pharmacy.district}${pharmacy.address}`;
 
       const fetchBasedOn = (query: string) => fetchGoogleInfo({ title: query });

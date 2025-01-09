@@ -136,6 +136,13 @@ const ManagePharmacyContent = ({ pharmacy, refetch }: ManagePharmacyContentProps
             col: 6,
           })}
 
+          {formField({
+            titleText: 'Google名稱',
+            fieldName: 'googleTitle',
+            placeholder: 'Google map登記名稱',
+            col: 6,
+          })}
+
           <Controller
             name="partner"
             control={control}
