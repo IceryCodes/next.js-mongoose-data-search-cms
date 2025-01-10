@@ -58,7 +58,7 @@ apiOrigin.interceptors.request.use(
   (config: CustomAxiosRequestConfig): CustomAxiosRequestConfig => {
     try {
       if (isBrowser) {
-        const token: string | null = sessionStorage.getItem('token');
+        const token: string | null = localStorage.getItem('token');
         // Ensure headers are initialized
         if (!config.headers) config.headers = {} as AxiosHeaders; // Initialize headers if undefined
 
@@ -92,7 +92,7 @@ apiOrigin.interceptors.response.use(
 
     originalRequest.retryAttempt = true;
 
-    const token: string | null = sessionStorage.getItem('token');
+    const token: string | null = localStorage.getItem('token');
     const newToken: string | null = await renewToken(token); // Renew the token
 
     if (newToken) {

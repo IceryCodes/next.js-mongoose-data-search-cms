@@ -153,7 +153,7 @@ export const renewToken = async (token: string | null): Promise<string | null> =
     );
 
     const newToken = renewResponse.data.token;
-    sessionStorage.setItem('token', newToken); // Store the new token
+    localStorage.setItem('token', newToken); // Store the new token
     return newToken; // Return the new token
   } catch (error) {
     console.error('Token renewal failed:', error);
