@@ -59,55 +59,57 @@ const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
     <div className="flex gap-x-8">
       <div className=" w-full md:w-2/3">{children}</div>
       <div className="w-1/3 flex-col hidden md:flex">
-        <Card>
-          <>
-            <label className="text-xl font-bold">附近診所</label>
-            {/* search form */}
-            <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4 mb-4">
-              <div className="flex gap-x-2">
-                <Button
-                  text="返回列表"
-                  buttonStyle={ButtonStyleType.Disabled}
-                  onClick={() => router.push(getPageUrlByType(PageType.HOSPITALS))}
-                  className="rounded w-2/3"
+        {process.env.NODE_ENV === 'development' && (
+          <Card>
+            <>
+              <label className="text-xl font-bold">附近診所</label>
+              {/* search form */}
+              <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4 mb-4">
+                <div className="flex gap-x-2">
+                  <Button
+                    text="返回列表"
+                    buttonStyle={ButtonStyleType.Disabled}
+                    onClick={() => router.push(getPageUrlByType(PageType.HOSPITALS))}
+                    className="rounded w-2/3"
+                  />
+
+                  <Button text="搜尋" type="submit" className="w-1/3" />
+                </div>
+
+                <Controller
+                  name="partner"
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <div className="flex items-center">
+                      <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
+                      <label className="text-sm">{`${process.env.NEXT_PUBLIC_SITE_NAME}合作夥伴`}</label>
+                    </div>
+                  )}
                 />
 
-                <Button text="搜尋" type="submit" className="w-1/3" />
-              </div>
+                <Controller
+                  name="query"
+                  control={control}
+                  render={({ field }) => <Input placeholder="診所名稱" {...field} />}
+                />
 
-              <Controller
-                name="partner"
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <div className="flex items-center">
-                    <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
-                    <label className="text-sm">{`${process.env.NEXT_PUBLIC_SITE_NAME}合作夥伴`}</label>
-                  </div>
-                )}
-              />
+                <Controller
+                  name="county"
+                  control={control}
+                  render={({ field }) => <Select {...field} defaultValue="所有縣市" options={Object.values(CountyType)} />}
+                />
 
-              <Controller
-                name="query"
-                control={control}
-                render={({ field }) => <Input placeholder="診所名稱" {...field} />}
-              />
-
-              <Controller
-                name="county"
-                control={control}
-                render={({ field }) => <Select {...field} defaultValue="所有縣市" options={Object.values(CountyType)} />}
-              />
-
-              <Controller
-                name="departments"
-                control={control}
-                render={({ field }) => (
-                  <Select {...field} defaultValue="所有科別" options={Object.values(DepartmentsType)} />
-                )}
-              />
-            </form>
-          </>
-        </Card>
+                <Controller
+                  name="departments"
+                  control={control}
+                  render={({ field }) => (
+                    <Select {...field} defaultValue="所有科別" options={Object.values(DepartmentsType)} />
+                  )}
+                />
+              </form>
+            </>
+          </Card>
+        )}
 
         <div className="relative w-full">
           {isLoading && (
