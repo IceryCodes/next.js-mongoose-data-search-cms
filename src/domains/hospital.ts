@@ -95,6 +95,7 @@ export interface HospitalProps {
   managers?: string[];
   lineId?: string;
   googleTitle: string;
+  viewed: number;
   [HospitalExtraFieldType.SpeechTherapist]: number;
   [HospitalExtraFieldType.DentalTechnician]: number;
   [HospitalExtraFieldType.Audiologist]: number;

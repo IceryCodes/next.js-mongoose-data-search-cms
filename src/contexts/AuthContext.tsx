@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactElement }): ReactEle
 
   const logout = useCallback(() => {
     localStorage.removeItem('token');
-    localStorage.removeItem('user'); // Remove user data from session storage
+    localStorage.removeItem('user');
     setIsAuthenticated(false);
     setToken(null);
   }, []);

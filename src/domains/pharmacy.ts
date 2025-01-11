@@ -37,6 +37,7 @@ export interface PharmacyProps {
   managers?: string[];
   lineId?: string;
   googleTitle: string;
+  viewed: number;
   createdAt: Date;
   updatedAt: Date;
 }

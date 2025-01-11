@@ -45,6 +45,7 @@ const defaultHospital: UpdateHospitalProps = {
   keywords: [],
   featuredImg: '',
   googleTitle: '',
+  viewed: 0,
   [HospitalExtraFieldType.SpeechTherapist]: 0,
   [HospitalExtraFieldType.DentalTechnician]: 0,
   [HospitalExtraFieldType.Audiologist]: 0,
