@@ -4,6 +4,7 @@ import {
   GetPharmaciesDto,
   GetPharmacyDto,
   UpdatePharmacyDto,
+  UpdatePharmacyViewDto,
 } from '@/domains/pharmacy';
 import { apiOrigin, logApiError } from '@/utils/api';
 
@@ -69,6 +70,23 @@ export const updatePharmacy = async (pharmacy: UpdatePharmacyDto): Promise<Pharm
     };
   } catch (error) {
     const message: string = '更新藥局失敗!';
+    logApiError({ error, message });
+
+    return {
+      message,
+    };
+  }
+};
+
+export const updatePharmacyView = async (hospital: UpdatePharmacyViewDto): Promise<PharmacyUpdateReturnType> => {
+  try {
+    const { data } = await apiOrigin.post(`/update-pharmacy-view`, hospital);
+
+    return {
+      message: data.message,
+    };
+  } catch (error) {
+    const message: string = '更新瀏覽次數失敗!';
     logApiError({ error, message });
 
     return {

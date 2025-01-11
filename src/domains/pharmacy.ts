@@ -46,3 +46,4 @@ export type UpdatePharmacyProps = Omit<PharmacyProps, '_id' | 'createdAt' | 'upd
 export interface UpdatePharmacyDto extends UpdatePharmacyProps, Pick<PharmacyProps, '_id'> {}
 export type CreatePharmacyDto = UpdatePharmacyProps;
 export type DeletePharmacyDto = Pick<PharmacyProps, '_id'>;
+export type UpdatePharmacyViewDto = Pick<PharmacyProps, '_id'>;
