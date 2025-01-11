@@ -58,7 +58,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetPharmaciesRe
 
     const pharmacies: WithId<PharmacyProps>[] = await pharmaciesCollection
       .find(mongoQuery)
-      .sort({ partner: -1 })
+      .sort({ partner: -1, viewed: -1, title: 1, _id: 1 })
       .skip((currentPage - 1) * pageSize)
       .limit(pageSize)
       .toArray();

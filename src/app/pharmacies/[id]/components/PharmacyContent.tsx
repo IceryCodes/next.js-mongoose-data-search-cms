@@ -21,6 +21,7 @@ import { ManageCategoryType } from '@/domains/manage';
 import { defaultPharmacyExcerpt } from '@/domains/metadatas';
 import { useGoogleInfosMutation } from '@/features/google/hooks/useGoogleInfosMutation';
 import { usePharmacyQuery } from '@/features/pharmacies/hooks/usePharmacyQuery';
+import { useUpdatePharmacyViewMutation } from '@/features/pharmacies/hooks/useUpdatePharmacyViewMutation';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import ManagerProtected from '@/hooks/utils/protections/components/useManagerProtected';
 import ConvertLink, { LinkType } from '@/utils/links';
@@ -36,6 +37,7 @@ const PharmacyContent = (): ReactElement => {
   const { data: { pharmacy, manage } = {}, isLoading, isError, refetch } = usePharmacyQuery({ _id: paramsId });
 
   const { data: googleInfo, mutateAsync: fetchGoogleInfo } = useGoogleInfosMutation();
+  const { mutateAsync: updatePharmacyView } = useUpdatePharmacyViewMutation();
 
   const [isAddressChecked, setIsAddressChecked] = useState<boolean>(false);
 
@@ -57,13 +59,12 @@ const PharmacyContent = (): ReactElement => {
     };
 
     checkAndFetchGoogleData();
-  }, [isLoading, isError, pharmacy, isAddressChecked, fetchGoogleInfo]);
+  }, [isLoading, isError, pharmacy, isAddressChecked, fetchGoogleInfo, updatePharmacyView]);
 
   useEffect(() => {
-    if (!isLoading && !pharmacy && !isError) {
-      notFound();
-    }
-  }, [isLoading, pharmacy, isError, router]);
+    if (!isLoading && !pharmacy && !isError) notFound();
+    if (pharmacy) updatePharmacyView({ _id: pharmacy._id });
+  }, [isLoading, pharmacy, isError, router, updatePharmacyView]);
 
   if (isLoading) {
     return (

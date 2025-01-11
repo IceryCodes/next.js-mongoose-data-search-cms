@@ -25,7 +25,7 @@ const ManagerProtected = ({ children, pageId, type }: AdminProtectedProps): Reac
   useEffect(() => {
     const init = async () => {
       if (typeof window !== 'undefined') {
-        const token: string | null = sessionStorage.getItem('token');
+        const token: string | null = localStorage.getItem('token');
 
         if (token) {
           try {

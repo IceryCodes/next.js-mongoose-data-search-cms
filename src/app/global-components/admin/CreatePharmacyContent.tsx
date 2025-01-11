@@ -38,10 +38,11 @@ const defaultPharmacy: UpdatePharmacyProps = {
   title: '',
   excerpt: '',
   content: '',
+  healthInsuranceAuthorized: false,
   keywords: [],
   featuredImg: '',
   googleTitle: '',
-  healthInsuranceAuthorized: false,
+  viewed: 0,
 };
 
 const inputStyle: string = 'w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400';

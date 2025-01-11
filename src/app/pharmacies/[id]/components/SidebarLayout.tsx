@@ -57,57 +57,59 @@ const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
     <div className="flex gap-x-8">
       <div className="w-full md:w-2/3">{children}</div>
       <div className="w-1/3 flex-col hidden md:flex">
-        <Card>
-          <>
-            <label className="text-xl font-bold">附近藥局</label>
-            {/* search form */}
-            <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4 mb-4">
-              <div className="flex gap-x-2">
-                <Button
-                  text="返回列表"
-                  buttonStyle={ButtonStyleType.Disabled}
-                  onClick={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
-                  className="rounded w-2/3"
+        {process.env.NODE_ENV === 'development' && (
+          <Card>
+            <>
+              <label className="text-xl font-bold">附近藥局</label>
+              {/* search form */}
+              <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4 mb-4">
+                <div className="flex gap-x-2">
+                  <Button
+                    text="返回列表"
+                    buttonStyle={ButtonStyleType.Disabled}
+                    onClick={() => router.push(getPageUrlByType(PageType.PHARMACIES))}
+                    className="rounded w-2/3"
+                  />
+                  <Button text="搜尋" type="submit" className="w-1/3" />
+                </div>
+
+                <Controller
+                  name="partner"
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <div className="flex items-center">
+                      <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
+                      <label className="text-sm">{`${process.env.NEXT_PUBLIC_SITE_NAME}合作夥伴`}</label>
+                    </div>
+                  )}
                 />
-                <Button text="搜尋" type="submit" className="w-1/3" />
-              </div>
 
-              <Controller
-                name="partner"
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <div className="flex items-center">
-                    <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
-                    <label className="text-sm">{`${process.env.NEXT_PUBLIC_SITE_NAME}合作夥伴`}</label>
-                  </div>
-                )}
-              />
+                <Controller
+                  name="healthInsuranceAuthorized"
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <div className="flex items-center">
+                      <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
+                      <label className="text-sm">健保特約藥局</label>
+                    </div>
+                  )}
+                />
 
-              <Controller
-                name="healthInsuranceAuthorized"
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <div className="flex items-center">
-                    <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
-                    <label className="text-sm">健保特約藥局</label>
-                  </div>
-                )}
-              />
+                <Controller
+                  name="query"
+                  control={control}
+                  render={({ field }) => <Input placeholder="藥局名稱" {...field} />}
+                />
 
-              <Controller
-                name="query"
-                control={control}
-                render={({ field }) => <Input placeholder="藥局名稱" {...field} />}
-              />
-
-              <Controller
-                name="county"
-                control={control}
-                render={({ field }) => <Select {...field} defaultValue="所有縣市" options={Object.values(CountyType)} />}
-              />
-            </form>
-          </>
-        </Card>
+                <Controller
+                  name="county"
+                  control={control}
+                  render={({ field }) => <Select {...field} defaultValue="所有縣市" options={Object.values(CountyType)} />}
+                />
+              </form>
+            </>
+          </Card>
+        )}
 
         <div className="relative w-full">
           {isLoading && (

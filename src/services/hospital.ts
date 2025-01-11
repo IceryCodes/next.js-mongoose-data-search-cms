@@ -4,6 +4,7 @@ import {
   GetHospitalDto,
   GetHospitalsDto,
   UpdateHospitalDto,
+  UpdateHospitalViewDto,
 } from '@/domains/hospital';
 import { apiOrigin, logApiError } from '@/utils/api';
 
@@ -69,6 +70,23 @@ export const updateHospital = async (hospital: UpdateHospitalDto): Promise<Hospi
     };
   } catch (error) {
     const message: string = '更新醫院失敗!';
+    logApiError({ error, message });
+
+    return {
+      message,
+    };
+  }
+};
+
+export const updateHospitalView = async (hospital: UpdateHospitalViewDto): Promise<HospitalUpdateReturnType> => {
+  try {
+    const { data } = await apiOrigin.post(`/update-hospital-view`, hospital);
+
+    return {
+      message: data.message,
+    };
+  } catch (error) {
+    const message: string = '更新瀏覽次數失敗!';
     logApiError({ error, message });
 
     return {

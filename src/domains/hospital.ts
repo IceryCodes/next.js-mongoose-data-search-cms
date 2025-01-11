@@ -95,6 +95,7 @@ export interface HospitalProps {
   managers?: string[];
   lineId?: string;
   googleTitle: string;
+  viewed: number;
   [HospitalExtraFieldType.SpeechTherapist]: number;
   [HospitalExtraFieldType.DentalTechnician]: number;
   [HospitalExtraFieldType.Audiologist]: number;
@@ -145,6 +146,7 @@ export type UpdateHospitalProps = Omit<HospitalProps, '_id' | 'createdAt' | 'upd
 export interface UpdateHospitalDto extends UpdateHospitalProps, Pick<HospitalProps, '_id'> {}
 export type CreateHospitalDto = UpdateHospitalProps;
 export type DeleteHospitalDto = Pick<HospitalProps, '_id'>;
+export type UpdateHospitalViewDto = Pick<HospitalProps, '_id'>;
 
 export const keywordOptions: string[] = [
   '失眠',

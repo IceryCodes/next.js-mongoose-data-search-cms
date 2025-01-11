@@ -23,14 +23,14 @@ export const AuthProvider = ({ children }: { children: ReactElement }): ReactEle
   const [user, setUser] = useState<UserProps | null>(null);
 
   const logout = useCallback(() => {
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user'); // Remove user data from session storage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setIsAuthenticated(false);
     setToken(null);
   }, []);
 
   const login = useCallback(async ({ token }: LoginProps) => {
-    sessionStorage.setItem('token', token);
+    localStorage.setItem('token', token);
     const { user: userData }: TokenProps = await verifyToken(token);
     setIsAuthenticated(true);
     setToken(token);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactElement }): ReactEle
 
   useEffect(() => {
     const init = async () => {
-      const tokenData: string | null = sessionStorage.getItem('token');
+      const tokenData: string | null = localStorage.getItem('token');
 
       if (tokenData) {
         try {

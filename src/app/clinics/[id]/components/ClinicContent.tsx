@@ -25,6 +25,7 @@ import { ManageCategoryType } from '@/domains/manage';
 import { defaultClicnicExcerpt } from '@/domains/metadatas';
 import { useGoogleInfosMutation } from '@/features/google/hooks/useGoogleInfosMutation';
 import { useHospitalQuery } from '@/features/hospitals/hooks/useHospitalQuery';
+import { useUpdateHospitalViewMutation } from '@/features/hospitals/hooks/useUpdateHospitalViewMutation';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 import ManagerProtected from '@/hooks/utils/protections/components/useManagerProtected';
 import ConvertLink, { LinkType } from '@/utils/links';
@@ -37,6 +38,7 @@ const ClinicContent = (): ReactElement => {
   const { data: { hospital, manage } = {}, isLoading, isError, refetch } = useHospitalQuery({ _id: paramsId });
 
   const { data: googleInfo, mutateAsync: fetchGoogleInfo } = useGoogleInfosMutation();
+  const { mutateAsync: updateHospitalView } = useUpdateHospitalViewMutation();
 
   const [isAddressChecked, setIsAddressChecked] = useState<boolean>(false);
 
@@ -62,7 +64,8 @@ const ClinicContent = (): ReactElement => {
 
   useEffect(() => {
     if (!isLoading && !hospital && !isError) notFound();
-  }, [isLoading, hospital, isError, router]);
+    if (hospital) updateHospitalView({ _id: hospital._id });
+  }, [isLoading, hospital, isError, router, updateHospitalView]);
 
   if (isLoading) {
     return (
