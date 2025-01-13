@@ -5,10 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import Tag from '@/app/global-components/tags/Tag';
-import { DepartmentsType } from '@/domains/hospital';
 import { DistrictType, getPageUrlByType, PageType } from '@/domains/interfaces';
 
-interface HospitalListItemCardHorizontalProps {
+interface PharmacyListItemCardHorizontalProps {
   _id: ObjectId;
   partner: boolean;
   image: string;
@@ -16,10 +15,10 @@ interface HospitalListItemCardHorizontalProps {
   county: string;
   district: DistrictType;
   address: string;
-  departments: DepartmentsType[];
+  healthInsuranceAuthorized: boolean;
 }
 
-const HospitalListItemCardHorizontal = ({
+const PharmacyListItemCardHorizontal = ({
   _id,
   partner,
   image,
@@ -27,10 +26,10 @@ const HospitalListItemCardHorizontal = ({
   county,
   district,
   address,
-  departments,
-}: HospitalListItemCardHorizontalProps): ReactElement => (
+  healthInsuranceAuthorized,
+}: PharmacyListItemCardHorizontalProps): ReactElement => (
   <Link
-    href={`${getPageUrlByType(PageType.HOSPITALS)}/${_id}`}
+    href={`${getPageUrlByType(PageType.CLINICS)}/${_id}`}
     target="_blank"
     className="relative flex flex-col md:flex-row gap-4 border rounded-lg p-4 shadow-lg hover:scale-[1.02] transition-transform duration-300 bg-white overflow-hidden"
   >
@@ -59,18 +58,12 @@ const HospitalListItemCardHorizontal = ({
     <div className="flex flex-col flex-grow gap-2">
       <div className="flex flex-col items-start">
         <h2 className="text-xl font-bold">{title}</h2>
-        {/* {partner && <Tag text="先豐科技合作夥伴" />} */}
+        {healthInsuranceAuthorized && <Tag text="健保特約藥局" />}
       </div>
 
       <p className="text-gray-600">{`${county}${district}${address}`}</p>
-
-      <div className="flex flex-wrap gap-2 mt-auto">
-        {departments.map((department: DepartmentsType) => (
-          <Tag key={department} text={department} />
-        ))}
-      </div>
     </div>
   </Link>
 );
 
-export default HospitalListItemCardHorizontal;
+export default PharmacyListItemCardHorizontal;
