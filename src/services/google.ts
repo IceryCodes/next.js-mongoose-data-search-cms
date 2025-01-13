@@ -3,9 +3,9 @@ import { apiOrigin, logApiError } from '@/utils/api';
 
 import { GetGoogleInfosReturnType } from './interfaces';
 
-export const getGoogleInfos = async ({ title }: GetGoogleInfosDto): Promise<GetGoogleInfosReturnType> => {
+export const getGoogleInfos = async ({ query, byTitle }: GetGoogleInfosDto): Promise<GetGoogleInfosReturnType> => {
   try {
-    const { data } = await apiOrigin.get('/get-google-infos', { params: { title } });
+    const { data } = await apiOrigin.get('/get-google-infos', { params: { query, byTitle } });
 
     const {
       address_components,

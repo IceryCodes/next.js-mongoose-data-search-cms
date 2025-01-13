@@ -10,20 +10,42 @@ export default async function handler(
 ) {
   if (req.method !== 'GET') return res.status(HttpStatus.MethodNotAllowed).json({ error: 'Method not allowed' });
 
-  const { title } = req.query;
+  const { query, byTitle } = req.query;
 
-  if (!title) return res.status(HttpStatus.BadRequest).json({ error: 'title is required' });
+  if (!query) return res.status(HttpStatus.BadRequest).json({ error: 'query is required' });
 
   try {
-    // Get Place ID based on title
-    const placeIdRes = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
-      params: {
-        address: title,
-        key: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
-      },
-    });
+    // Get Place ID based on query
+    let placeId: string = '';
 
-    const placeId = placeIdRes.data.results[0]?.place_id;
+    if (byTitle === 'true') {
+      const placeIdRes = await axios.get('https://maps.googleapis.com/maps/api/place/findplacefromtext/json', {
+        params: {
+          input: query,
+          inputtype: 'textquery',
+          fields: 'place_id',
+          key: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+        },
+      });
+
+      const placeIdData = placeIdRes.data;
+
+      if (placeIdData.status !== 'OK' || !placeIdData.candidates?.[0]?.place_id) {
+        return res.status(HttpStatus.BadRequest).json({ error: 'Failed to fetch place ID' });
+      }
+
+      placeId = placeIdData.candidates[0].place_id;
+    } else {
+      const placeIdRes = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+        params: {
+          address: query,
+          key: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+        },
+      });
+
+      placeId = placeIdRes.data.results[0]?.place_id;
+    }
+
     if (!placeId) return res.status(HttpStatus.BadRequest).json({ error: 'Failed to fetch place ID' });
 
     // Fetch place details
