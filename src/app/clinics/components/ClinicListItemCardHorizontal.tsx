@@ -1,4 +1,3 @@
-// ClinicListItemCardHorizontal.tsx
 import { ReactElement } from 'react';
 
 import { ObjectId } from 'mongodb';

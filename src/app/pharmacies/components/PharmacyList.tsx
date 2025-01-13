@@ -14,7 +14,7 @@ import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 
-import PharmacyListItemCard from './PharmacyListItemCard';
+import PharmacyListItemCardHorizontal from './PharmacyListItemCardHorizontal';
 
 const limit: number = 12;
 
@@ -121,11 +121,11 @@ const PharmacyList = (): ReactElement => {
         {isError && <span>搜尋時發生錯誤</span>}
 
         {/* Hospital list */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!pharmacies.length && <label>沒有符合藥局</label>}
           {pharmacies.map(
             ({ _id, title, partner, county, district, address, healthInsuranceAuthorized, featuredImg }: PharmacyProps) => (
-              <PharmacyListItemCard
+              <PharmacyListItemCardHorizontal
                 key={_id.toString()}
                 _id={_id}
                 image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
