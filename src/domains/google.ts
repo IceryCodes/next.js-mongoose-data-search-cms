@@ -71,5 +71,6 @@ export enum GoogleBusinessStatus {
 }
 
 export interface GetGoogleInfosDto {
-  title: string;
+  query: string;
+  byTitle: boolean;
 }

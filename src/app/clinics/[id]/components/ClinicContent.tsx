@@ -49,12 +49,10 @@ const ClinicContent = (): ReactElement => {
       const googleTitle = hospital.googleTitle;
       const googleAddress = `${hospital.county}${hospital.district}${hospital.address}`;
 
-      const fetchBasedOn = (query: string) => fetchGoogleInfo({ title: query });
-
       if (!isAddressChecked && googleTitle) {
-        const { formatted_address } = await fetchBasedOn(googleTitle);
+        const { formatted_address } = await fetchGoogleInfo({ query: googleTitle, byTitle: true });
 
-        if (!formatted_address?.includes('號')) await fetchBasedOn(googleAddress);
+        if (!formatted_address?.includes('號')) await fetchGoogleInfo({ query: googleAddress, byTitle: true });
         setIsAddressChecked(true);
       }
     };
