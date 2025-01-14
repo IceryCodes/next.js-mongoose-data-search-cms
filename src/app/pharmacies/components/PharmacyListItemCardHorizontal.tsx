@@ -29,7 +29,7 @@ const PharmacyListItemCardHorizontal = ({
   healthInsuranceAuthorized,
 }: PharmacyListItemCardHorizontalProps): ReactElement => (
   <Link
-    href={`${getPageUrlByType(PageType.CLINICS)}/${_id}`}
+    href={`${getPageUrlByType(PageType.PHARMACIES)}/${_id}`}
     target="_blank"
     className="relative flex flex-col md:flex-row gap-4 border rounded-lg p-4 shadow-lg hover:scale-[1.02] transition-transform duration-300 bg-white overflow-hidden"
   >

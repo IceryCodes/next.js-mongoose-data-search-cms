@@ -81,16 +81,6 @@ const PharmacyList = (): ReactElement => {
             control={control}
             render={({ field }) => <Select {...field} defaultValue="所有縣市" options={Object.values(CountyType)} />}
           />
-          <Controller
-            name="partner"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <div className="flex items-center">
-                <Input type={InputStyleType.Checkbox} checked={value} onChange={(e) => onChange(e.target.checked)} />
-                <label className="text-sm">{`${process.env.NEXT_PUBLIC_SITE_NAME}合作夥伴`}</label>
-              </div>
-            )}
-          />
 
           <Controller
             name="healthInsuranceAuthorized"
