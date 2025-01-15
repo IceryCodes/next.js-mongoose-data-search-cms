@@ -33,15 +33,6 @@ const PharmacyListItemCardHorizontal = ({
     target="_blank"
     className="relative flex flex-col md:flex-row gap-4 border rounded-lg p-4 shadow-lg hover:scale-[1.02] transition-transform duration-300 bg-white overflow-hidden"
   >
-    {/* 推薦標籤 */}
-    {partner && (
-      <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden">
-        <div className="absolute -top-2 -right-5 bg-blue-500 text-white font-bold py-1 px-10 transform translate-x-2 translate-y-3 rotate-45">
-          推
-        </div>
-      </div>
-    )}
-
     {/* 圖片容器 - 固定為正方形 */}
     <div className="w-full md:w-24 h-24 relative flex-shrink-0">
       <Image
@@ -53,6 +44,15 @@ const PharmacyListItemCardHorizontal = ({
         priority={true}
       />
     </div>
+
+    {/* 推薦標籤 */}
+    {partner && (
+      <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden">
+        <div className="absolute -top-2 -right-5 bg-blue-500 text-white font-bold py-1 px-10 transform translate-x-2 translate-y-3 rotate-45">
+          推
+        </div>
+      </div>
+    )}
 
     {/* 內容區 */}
     <div className="flex flex-col flex-grow gap-2">
