@@ -219,6 +219,11 @@ const HospitalContent = (): ReactElement => {
               <>
                 <h2 className="text-xl font-bold">關於{title}</h2>
                 <p>{content ? content : `尚無關於${title}的相關資訊，歡迎醫院提供補充!`}</p>
+                {!content && (
+                  <label className="text-sm text-gray-600">
+                    歡迎隨時告知我們，以便我們及時更新資料庫，讓更多人受益，感謝您的協助!
+                  </label>
+                )}
               </>
             </Card>
 
