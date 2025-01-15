@@ -110,7 +110,7 @@ const PharmacyList = (): ReactElement => {
         )}
         {isError && <span>搜尋時發生錯誤</span>}
 
-        {/* Hospital list */}
+        {/* Pharmacy list */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!pharmacies.length && <label>沒有符合藥局</label>}
           {pharmacies.map(
