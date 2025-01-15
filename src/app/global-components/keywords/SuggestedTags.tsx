@@ -9,18 +9,19 @@ export interface SuggestedTagsProps {
 }
 
 const SuggestedTags = ({ availableKeywords, selectedKeywords, onSelect }: SuggestedTagsProps): ReactElement => (
-  <div className="flex flex-wrap gap-2 ${className}">
+  <div className="inline-flex gap-2 py-2">
     {availableKeywords.map((keyword) => (
-      <Button
-        key={keyword}
-        onClick={() => onSelect(keyword)}
-        disabled={selectedKeywords.includes(keyword)}
-        text={keyword}
-        buttonStyle={ButtonStyleType.Disabled}
-      />
+      <div className="shrink-0" key={keyword}>
+        <Button
+          onClick={() => onSelect(keyword)}
+          disabled={selectedKeywords.includes(keyword)}
+          text={keyword}
+          buttonStyle={ButtonStyleType.Disabled}
+        />
+      </div>
     ))}
     {availableKeywords.length === 0 && selectedKeywords.length > 0 && (
-      <span className="text-sm text-gray-500">沒有更多相關的關鍵字</span>
+      <span className="text-sm text-gray-500 shrink-0">沒有更多相關的關鍵字</span>
     )}
   </div>
 );

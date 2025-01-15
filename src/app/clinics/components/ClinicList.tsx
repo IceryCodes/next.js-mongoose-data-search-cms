@@ -131,7 +131,7 @@ const ClinicList = (): ReactElement => {
         )}
         {isError && <span>搜尋時發生錯誤</span>}
 
-        {/* Hospital list */}
+        {/* Clinic list */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!hospitals.length && <label>沒有符合診所</label>}
           {hospitals.map(({ _id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (

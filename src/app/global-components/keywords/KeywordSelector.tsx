@@ -43,9 +43,25 @@ const KeywordSelector = ({
   );
 
   return (
-    <div className={`flex flex-col gap-4 ${className}`}>
-      {!!selectedKeywordObjects.length && <SelectedTags selectedKeywords={selectedKeywordObjects} onRemove={handleRemove} />}
-      <SuggestedTags availableKeywords={availableKeywords} selectedKeywords={selectedKeywords} onSelect={handleSelect} />
+    <div className={`w-full ${className}`}>
+      <div className="flex flex-col w-full">
+        {!!selectedKeywordObjects.length && (
+          <div className="w-full overflow-x-auto">
+            <div className="flex flex-nowrap min-w-max">
+              <SelectedTags selectedKeywords={selectedKeywordObjects} onRemove={handleRemove} />
+            </div>
+          </div>
+        )}
+        <div className="w-full overflow-x-auto">
+          <div className="flex flex-nowrap min-w-max">
+            <SuggestedTags
+              availableKeywords={availableKeywords}
+              selectedKeywords={selectedKeywords}
+              onSelect={handleSelect}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
