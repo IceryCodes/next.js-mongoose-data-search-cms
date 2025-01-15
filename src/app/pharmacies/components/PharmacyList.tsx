@@ -132,10 +132,6 @@ const PharmacyList = (): ReactElement => {
 
         {/* Pagination */}
         <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
-
-        <div className="my-4 text-center">
-          <label>歡迎隨時告知我們，以便我們及時更新資料庫，讓更多人受益，感謝您的協助!</label>
-        </div>
       </div>
     </div>
   );
