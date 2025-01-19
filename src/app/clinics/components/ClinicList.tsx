@@ -134,7 +134,11 @@ const ClinicList = (): ReactElement => {
       {/* Loading overlay */}
       <div className="relative w-full min-h-[400px]">
         {!hasSearched ? (
-          <div className="flex justify-center items-center h-[400px]">
+          <div className="flex flex-col justify-center items-center h-[400px] gap-4">
+            <div className="w-12 h-12 relative">
+              <div className="absolute w-8 h-8 border-4 rounded-full border-gray-400"></div>
+              <div className="absolute w-4 h-4 bg-gray-400 rotate-45 bottom-1 right-1"></div>
+            </div>
             <span className="text-gray-500">請輸入搜尋條件</span>
           </div>
         ) : isLoading ? (
