@@ -8,11 +8,9 @@ export interface SelectedTagsProps {
 }
 
 const SelectedTags = ({ selectedKeywords, onRemove }: SelectedTagsProps): ReactElement => (
-  <div className="inline-flex gap-2 py-2">
+  <div className="flex flex-wrap gap-2">
     {selectedKeywords.map((keyword) => (
-      <div className="shrink-0" key={keyword}>
-        <Button onClick={() => onRemove(keyword)} text={keyword} />
-      </div>
+      <Button key={keyword} onClick={() => onRemove(keyword)} text={keyword} smallButton />
     ))}
   </div>
 );
