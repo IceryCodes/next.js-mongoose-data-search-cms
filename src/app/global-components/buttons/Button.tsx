@@ -13,10 +13,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
   disabled?: boolean;
   buttonStyle?: ButtonStyleType;
+  smallButton?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
 export const defaultButtonStyle: string = 'px-4 py-2 duration-200 rounded-lg text-center';
+export const smallButtonStyle: string = 'text-sm px-2 py-1 duration-200 rounded-lg text-center';
 
 export const Button = ({
   text,
@@ -25,6 +27,7 @@ export const Button = ({
   className = '',
   onClick,
   disabled = false,
+  smallButton = false,
   buttonStyle = disabled ? ButtonStyleType.Disabled : ButtonStyleType.Active,
   ...restProps
 }: ButtonProps) => {
@@ -44,7 +47,11 @@ export const Button = ({
   return (
     <button
       type={type ?? 'button'}
-      className={element ? className : `${buttonClassName} ${defaultButtonStyle} transition-all duration-300 ${className}`}
+      className={
+        element
+          ? className
+          : `${buttonClassName} ${smallButton ? smallButtonStyle : defaultButtonStyle} transition-all duration-300 ${className}`
+      }
       onClick={onClick}
       disabled={disabled}
       {...restProps}

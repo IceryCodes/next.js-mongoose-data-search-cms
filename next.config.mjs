@@ -6,7 +6,6 @@ const usedUrl = process.env.NODE_ENV === 'production' ? baseUrl : baseUrlDev
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
-    darkMode: false,
     images: {
     remotePatterns: [
       {
