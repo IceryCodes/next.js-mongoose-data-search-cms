@@ -31,6 +31,7 @@ const HospitalList = (): ReactElement => {
   });
 
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useState({
     query: '',
     county: '',
@@ -42,7 +43,14 @@ const HospitalList = (): ReactElement => {
     limit,
   });
 
-  const { data: { hospitals = [], total = 0 } = {}, isLoading, isError } = useHospitalsQuery(searchParams);
+  const {
+    data: { hospitals = [], total = 0 } = {},
+    isLoading,
+    isError,
+  } = useHospitalsQuery({
+    ...searchParams,
+    enabled: hasSearched,
+  });
 
   const totalPages = Math.ceil(total / limit);
 
@@ -59,6 +67,7 @@ const HospitalList = (): ReactElement => {
         page: 1,
         limit,
       });
+      setHasSearched(true);
       reset(formData);
       setCurrentPage(1);
     },
@@ -123,31 +132,39 @@ const HospitalList = (): ReactElement => {
       <GoogleMapComponent locationData={hospitals} />
 
       <div className="relative w-full min-h-[400px]">
-        {isLoading && (
+        {!hasSearched ? (
+          <div className="flex justify-center items-center h-[400px]">
+            <span className="text-gray-500">請輸入搜尋條件</span>
+          </div>
+        ) : isLoading ? (
           <div className="absolute inset-0 flex justify-center items-center bg-white bg-opacity-70">
             <span className="text-gray-500 text-lg">搜尋中...</span>
           </div>
+        ) : isError ? (
+          <span>搜尋時發生錯誤</span>
+        ) : (
+          <>
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {!hospitals.length && <label>沒有符合醫院</label>}
+              {hospitals.map(
+                ({ _id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
+                  <HospitalListItemCardHorizontal
+                    key={_id.toString()}
+                    _id={_id}
+                    image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
+                    title={title}
+                    county={county}
+                    district={district}
+                    address={address}
+                    departments={departments}
+                    partner={partner}
+                  />
+                )
+              )}
+            </section>
+            <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
+          </>
         )}
-        {isError && <span>搜尋時發生錯誤</span>}
-
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {!hospitals.length && <label>沒有符合醫院</label>}
-          {hospitals.map(({ _id, title, partner, county, district, address, featuredImg, departments }: HospitalProps) => (
-            <HospitalListItemCardHorizontal
-              key={_id.toString()}
-              _id={_id}
-              image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
-              title={title}
-              county={county}
-              district={district}
-              address={address}
-              departments={departments}
-              partner={partner}
-            />
-          ))}
-        </section>
-
-        <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
       </div>
     </div>
   );

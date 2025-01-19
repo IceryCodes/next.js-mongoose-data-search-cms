@@ -29,6 +29,7 @@ const PharmacyList = (): ReactElement => {
   });
 
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
 
   const {
     data: { pharmacies = [], total = 0 } = {},
@@ -42,6 +43,7 @@ const PharmacyList = (): ReactElement => {
     healthInsuranceAuthorized: getValues('healthInsuranceAuthorized'),
     page: currentPage,
     limit,
+    enabled: hasSearched,
   });
 
   const totalPages = Math.ceil(total / limit);
@@ -51,6 +53,7 @@ const PharmacyList = (): ReactElement => {
   const onSubmit = useCallback(
     (formData: GetPharmaciesDto) => {
       refetch();
+      setHasSearched(true);
       reset(formData);
       setCurrentPage(1);
     },
@@ -103,35 +106,48 @@ const PharmacyList = (): ReactElement => {
 
       {/* Loading overlay */}
       <div className="relative w-full min-h-[400px]">
-        {isLoading && (
+        {!hasSearched ? (
+          <div className="flex justify-center items-center h-[400px]">
+            <span className="text-gray-500">請輸入搜尋條件</span>
+          </div>
+        ) : isLoading ? (
           <div className="absolute inset-0 flex justify-center items-center bg-white bg-opacity-70">
             <span className="text-gray-500 text-lg">搜尋中...</span>
           </div>
+        ) : isError ? (
+          <span>搜尋時發生錯誤</span>
+        ) : (
+          <>
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {!pharmacies.length && <label>沒有符合藥局</label>}
+              {pharmacies.map(
+                ({
+                  _id,
+                  title,
+                  partner,
+                  county,
+                  district,
+                  address,
+                  healthInsuranceAuthorized,
+                  featuredImg,
+                }: PharmacyProps) => (
+                  <PharmacyListItemCardHorizontal
+                    key={_id.toString()}
+                    _id={_id}
+                    image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
+                    title={title}
+                    county={county}
+                    district={district}
+                    address={address}
+                    healthInsuranceAuthorized={healthInsuranceAuthorized}
+                    partner={partner}
+                  />
+                )
+              )}
+            </section>
+            <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
+          </>
         )}
-        {isError && <span>搜尋時發生錯誤</span>}
-
-        {/* Pharmacy list */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {!pharmacies.length && <label>沒有符合藥局</label>}
-          {pharmacies.map(
-            ({ _id, title, partner, county, district, address, healthInsuranceAuthorized, featuredImg }: PharmacyProps) => (
-              <PharmacyListItemCardHorizontal
-                key={_id.toString()}
-                _id={_id}
-                image={featuredImg ? featuredImg : process.env.NEXT_PUBLIC_FEATURED_IMAGE}
-                title={title}
-                county={county}
-                district={district}
-                address={address}
-                healthInsuranceAuthorized={healthInsuranceAuthorized}
-                partner={partner}
-              />
-            )
-          )}
-        </section>
-
-        {/* Pagination */}
-        <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
       </div>
     </div>
   );
