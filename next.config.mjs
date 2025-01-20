@@ -47,6 +47,7 @@ const nextConfig = {
         NEXT_PUBLIC_SITE_NAME: process.env.SITE_NAME,
         NEXT_PUBLIC_FEATURED_IMAGE: "/assets/featured_image.jpg",
         NEXT_PUBLIC_GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID,
     }
 };
 
