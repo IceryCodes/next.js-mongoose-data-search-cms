@@ -9,6 +9,7 @@ import localFont from 'next/font/local';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 
+import GoogleAnalytics from './global-components/GoogleAnalytics';
 import Header from './global-components/Header';
 
 import './globals.css';
@@ -46,6 +47,7 @@ const RootLayout = ({ children }: { children: ReactElement }) => {
             </ToastProvider>
           </AuthProvider>
         </QueryClientProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   );
