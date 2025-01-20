@@ -134,9 +134,23 @@ const HospitalList = (): ReactElement => {
       <div className="relative w-full min-h-[400px]">
         {!hasSearched ? (
           <div className="flex flex-col justify-center items-center h-[400px] gap-4">
-            <div className="w-12 h-12 relative">
-              <div className="absolute w-8 h-8 border-4 rounded-full border-gray-400"></div>
-              <div className="absolute w-4 h-4 bg-gray-400 rotate-45 bottom-1 right-1"></div>
+            <div className="relative">
+              <div className="w-32 h-32 bg-blue-50 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 relative">
+                  <div className="absolute w-14 h-14 border-4 rounded-full border-blue-500"></div>
+                  <div className="absolute w-6 h-6 bg-blue-500 rotate-45 bottom-1 right-1"></div>
+                </div>
+              </div>
+              <div className="absolute -top-2 -right-2">
+                <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                </div>
+              </div>
+              <div className="absolute -bottom-3 -left-3">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <div className="w-5 h-5 bg-green-400 rounded-full"></div>
+                </div>
+              </div>
             </div>
             <span className="text-gray-500">請輸入搜尋條件</span>
           </div>
