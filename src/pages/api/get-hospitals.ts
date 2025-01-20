@@ -27,7 +27,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
   const pageSize: number = Number(limit);
 
   // Return undefined if query is invalid
-  if (isNaN(currentPage) || currentPage < 1 || isNaN(pageSize) || pageSize < 1) {
+  if (isNaN(currentPage) || pageSize < 0 || isNaN(pageSize)) {
     return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
   }
 
@@ -127,8 +127,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
     const hospitals: WithId<HospitalProps>[] = await hospitalsCollection
       .find(mongoQuery)
       .sort({ partner: -1, viewed: -1, title: 1, _id: 1 })
-      .skip((currentPage - 1) * pageSize)
-      .limit(pageSize)
+      .skip(pageSize ? (currentPage - 1) * pageSize : 0)
+      .limit(pageSize ?? total)
       .toArray();
 
     res.status(HttpStatus.Ok).json({
