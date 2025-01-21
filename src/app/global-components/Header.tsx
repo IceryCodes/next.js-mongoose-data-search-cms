@@ -68,7 +68,8 @@ const Header = ({ children }: { children: ReactElement }) => {
               {Object.keys(PageTypeMap).map((key) => {
                 const pageType = PageTypeMap[key];
 
-                if (pageType === PageType.LOGIN || pageType === PageType.REGISTER) if (isAuthenticated) return;
+                if (pageType === PageType.LOGIN) if (isAuthenticated) return;
+                // if (pageType === PageType.LOGIN || pageType === PageType.REGISTER) if (isAuthenticated) return;
                 if (pageType === PageType.PROFILE && !isAuthenticated) return;
                 if (pageType === PageType.HOME || pageType === PageType.VERIFY || pageType === PageType.ADMIN) return;
 
