@@ -50,8 +50,8 @@ export const getDescription = ({ currentPath, data }: GetDescriptionProps): stri
       return defaultPharmacyExcerpt(data as PharmacyProps);
     case currentPath.includes(getPageUrlByType(PageType.PHARMACIES)):
       return 'b';
-    case currentPath.includes(getPageUrlByType(PageType.REGISTER)):
-      return '';
+    // case currentPath.includes(getPageUrlByType(PageType.REGISTER)):
+    //   return '';
     case currentPath.includes(getPageUrlByType(PageType.LOGIN)):
       return '';
     case currentPath.includes(getPageUrlByType(PageType.VERIFY)):
