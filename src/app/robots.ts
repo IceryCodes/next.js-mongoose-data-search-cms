@@ -14,7 +14,7 @@ export default function robots(): MetadataRoute.Robots {
     '/draft/', // 禁止爬取草稿內容
     getPageUrlByType(PageType.ADMIN),
     getPageUrlByType(PageType.LOGIN),
-    getPageUrlByType(PageType.REGISTER),
+    // getPageUrlByType(PageType.REGISTER),
     getPageUrlByType(PageType.VERIFY),
     getPageUrlByType(PageType.PROFILE),
   ];

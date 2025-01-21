@@ -3,7 +3,7 @@ export enum PageType {
   HOSPITALS = '醫院搜尋',
   CLINICS = '診所搜尋',
   PHARMACIES = '藥局搜尋',
-  REGISTER = '註冊',
+  // REGISTER = '註冊',
   LOGIN = '登入',
   VERIFY = '帳號驗證',
   PROFILE = '個人帳號',
