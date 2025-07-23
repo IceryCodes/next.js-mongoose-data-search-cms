@@ -39,9 +39,10 @@ export interface GoogleOpeningHours {
 
 // Photo object structure
 export interface GooglePhoto {
-  height: number;
-  html_attributions: string[];
   photo_reference: string;
+  base64: string;
+  html_attributions: string[];
+  height: number;
   width: number;
 }
 

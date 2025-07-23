@@ -10,7 +10,8 @@ declare namespace NodeJS {
     NEXT_PUBLIC_BASE_URL: string;
     NEXT_PUBLIC_SITE_NAME: string;
     NEXT_PUBLIC_FEATURED_IMAGE: string;
-    NEXT_PUBLIC_GOOGLE_API_KEY: string;
+    NEXT_PUBLIC_GOOGLE_API_PLACE_KEY: string;
+    NEXT_PUBLIC_GOOGLE_API_MAP_KEY: string;
     NEXT_PUBLIC_GA_MEASUREMENT_ID: string;
   }
 }
