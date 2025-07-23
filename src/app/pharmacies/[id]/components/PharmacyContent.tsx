@@ -115,6 +115,7 @@ const PharmacyContent = (): ReactElement => {
   } = googleInfo || {};
 
   const usedExcerpt: string = excerpt ? excerpt : defaultPharmacyExcerpt(pharmacy);
+  const hasGoogleInfo: boolean = !!icon && !icon?.includes('geocode-71.png');
 
   return (
     <div className="container mx-auto p-6">
@@ -238,7 +239,7 @@ const PharmacyContent = (): ReactElement => {
               <GoogleMapComponent locationData={[pharmacy]} />
             </Card>
 
-            {photos && <GooglePhotoCarousel title={title} photos={photos} />}
+            {hasGoogleInfo && photos?.length && <GooglePhotoCarousel title={title} photos={photos} />}
 
             {reviews && <GoogleReviews reviews={reviews} />}
           </div>
