@@ -2,6 +2,7 @@
 import { ReactElement, useCallback, useState } from 'react';
 
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
 import CreateHospitalContent from '@/app/global-components/admin/CreateHospitalContent';
@@ -21,23 +22,26 @@ import HospitalListItemCardHorizontal from './HospitalListItemCardHorizontal';
 const limit: number = 12;
 
 const HospitalList = (): ReactElement => {
+  const keywordsParams = useSearchParams();
+  const keywords: string[] | undefined = keywordsParams ? keywordsParams.get('keywords')?.split(',') : undefined;
+
   const { control, handleSubmit, reset, getValues } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
       county: '',
       departments: '' as DepartmentsType,
-      keywords: [],
+      keywords: keywords ?? [],
       partner: false,
     },
   });
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [hasSearched, setHasSearched] = useState<boolean>(!!keywords);
   const [searchParams, setSearchParams] = useState({
     query: '',
     county: '',
     departments: '' as DepartmentsType,
-    keywords: [] as string[],
+    keywords: keywords ?? [],
     partner: false,
     category: HospitalCategoryType.Hospital,
     page: currentPage,
