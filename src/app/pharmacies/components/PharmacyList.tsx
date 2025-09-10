@@ -12,6 +12,7 @@ import Pagination from '@/app/global-components/Pagination';
 import { Select } from '@/app/global-components/selects/Select';
 import { CountyType, PageType } from '@/domains/interfaces';
 import { GetPharmaciesDto, PharmacyProps } from '@/domains/pharmacy';
+import { useLocationQuery } from '@/features/google/hooks/useLocationQuery';
 import { usePharmaciesQuery } from '@/features/pharmacies/hooks/usePharmaciesQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 
@@ -21,10 +22,12 @@ import PharmacyListItemCardHorizontal from './PharmacyListItemCardHorizontal';
 const limit: number = 12;
 
 const PharmacyList = (): ReactElement => {
-  const { control, handleSubmit, getValues, reset } = useForm<GetPharmaciesDto>({
+  const { data: userLocation = '', isLoading: locationLoading } = useLocationQuery({});
+
+  const { control, handleSubmit, reset } = useForm<GetPharmaciesDto>({
     defaultValues: {
       query: '',
-      county: '',
+      county: userLocation,
       partner: false,
       healthInsuranceAuthorized: false,
     },
@@ -32,35 +35,47 @@ const PharmacyList = (): ReactElement => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [searchParams, setSearchParams] = useState({
+    query: '',
+    county: userLocation,
+    healthInsuranceAuthorized: false,
+    partner: false,
+    page: currentPage,
+    limit,
+  });
 
   const {
     data: { pharmacies = [], total = 0 } = {},
     isLoading,
     isError,
-    refetch,
   } = usePharmaciesQuery({
-    query: getValues('query'),
-    county: getValues('county'),
-    partner: getValues('partner'),
-    healthInsuranceAuthorized: getValues('healthInsuranceAuthorized'),
-    page: currentPage,
-    limit,
+    ...searchParams,
+    county: userLocation || searchParams.county,
     enabled: hasSearched,
   });
 
   const totalPages = Math.ceil(total / limit);
 
-  const onPageChange = useCallback((page: number) => setCurrentPage(page), []);
+  const onPageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+    setSearchParams((prev) => ({ ...prev, page }));
+  }, []);
 
   const onSubmit = useCallback(
     (formData: GetPharmaciesDto) => {
-      refetch();
+      setSearchParams({
+        ...formData,
+        page: 1,
+        limit,
+      });
       setHasSearched(true);
       reset(formData);
       setCurrentPage(1);
     },
-    [refetch, reset]
+    [reset]
   );
+
+  if (locationLoading) return <div>載入中...</div>;
 
   return (
     <div className="container mx-auto flex flex-col gap-y-4">

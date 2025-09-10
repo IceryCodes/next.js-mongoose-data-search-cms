@@ -14,6 +14,7 @@ import Pagination from '@/app/global-components/Pagination';
 import { Select } from '@/app/global-components/selects/Select';
 import { DepartmentsType, GetHospitalsDto, HospitalCategoryType, HospitalProps, keywordOptions } from '@/domains/hospital';
 import { CountyType, PageType } from '@/domains/interfaces';
+import { useLocationQuery } from '@/features/google/hooks/useLocationQuery';
 import { useHospitalsQuery } from '@/features/hospitals/hooks/useHospitalsQuery';
 import AdminProtected from '@/hooks/utils/protections/components/useAdminProtected';
 
@@ -24,11 +25,12 @@ const limit: number = 12;
 const ClinicList = (): ReactElement => {
   const keywordsParams = useSearchParams();
   const keywords: string[] | undefined = keywordsParams ? keywordsParams.get('keywords')?.split(',') : undefined;
+  const { data: userLocation = '', isLoading: locationLoading } = useLocationQuery({});
 
   const { control, handleSubmit, reset, getValues } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
-      county: '',
+      county: userLocation,
       departments: '' as DepartmentsType,
       keywords: keywords ?? [],
       partner: false,
@@ -39,7 +41,7 @@ const ClinicList = (): ReactElement => {
   const [hasSearched, setHasSearched] = useState<boolean>(!!keywords);
   const [searchParams, setSearchParams] = useState({
     query: '',
-    county: '',
+    county: userLocation,
     departments: '' as DepartmentsType,
     keywords: keywords ?? [],
     partner: false,
@@ -54,6 +56,7 @@ const ClinicList = (): ReactElement => {
     isError,
   } = useHospitalsQuery({
     ...searchParams,
+    county: userLocation || searchParams.county,
     enabled: hasSearched,
   });
 
@@ -88,6 +91,8 @@ const ClinicList = (): ReactElement => {
     },
     [getValues, onSubmit]
   );
+
+  if (locationLoading) return <div>載入中...</div>;
 
   return (
     <div className="container mx-auto flex flex-col gap-y-4">
