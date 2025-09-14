@@ -1,5 +1,5 @@
 'use client';
-import { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -27,7 +27,7 @@ const HospitalList = (): ReactElement => {
   const keywords: string[] | undefined = keywordsParams ? keywordsParams.get('keywords')?.split(',') : undefined;
   const { data: userLocation = '', isLoading: locationLoading } = useLocationQuery({});
 
-  const { control, handleSubmit, reset, getValues } = useForm<GetHospitalsDto>({
+  const { control, handleSubmit, reset, getValues, setValue } = useForm<GetHospitalsDto>({
     defaultValues: {
       query: '',
       county: userLocation,
@@ -91,6 +91,12 @@ const HospitalList = (): ReactElement => {
     },
     [getValues, onSubmit]
   );
+
+  useEffect(() => {
+    if (userLocation) {
+      setValue('county', userLocation);
+    }
+  }, [setValue, userLocation]);
 
   if (locationLoading) return <div>載入中...</div>;
 

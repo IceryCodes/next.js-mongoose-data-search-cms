@@ -1,5 +1,5 @@
 'use client';
-import { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import { Controller, useForm } from 'react-hook-form';
@@ -24,7 +24,7 @@ const limit: number = 12;
 const PharmacyList = (): ReactElement => {
   const { data: userLocation = '', isLoading: locationLoading } = useLocationQuery({});
 
-  const { control, handleSubmit, reset } = useForm<GetPharmaciesDto>({
+  const { control, handleSubmit, reset, setValue } = useForm<GetPharmaciesDto>({
     defaultValues: {
       query: '',
       county: userLocation,
@@ -74,6 +74,12 @@ const PharmacyList = (): ReactElement => {
     },
     [reset]
   );
+
+  useEffect(() => {
+    if (userLocation) {
+      setValue('county', userLocation);
+    }
+  }, [setValue, userLocation]);
 
   if (locationLoading) return <div>載入中...</div>;
 
