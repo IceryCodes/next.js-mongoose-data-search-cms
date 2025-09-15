@@ -50,7 +50,6 @@ const PharmacyList = (): ReactElement => {
     isError,
   } = usePharmaciesQuery({
     ...searchParams,
-    county: userLocation || searchParams.county,
     enabled: hasSearched,
   });
 

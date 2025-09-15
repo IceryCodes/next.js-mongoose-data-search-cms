@@ -56,7 +56,6 @@ const HospitalList = (): ReactElement => {
     isError,
   } = useHospitalsQuery({
     ...searchParams,
-    county: userLocation || searchParams.county,
     enabled: hasSearched,
   });
 
