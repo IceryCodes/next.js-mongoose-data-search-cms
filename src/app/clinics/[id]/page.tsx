@@ -10,18 +10,18 @@ import { GetHospitalReturnType } from '@/services/interfaces';
 
 import ClinicContent from './components/ClinicContent';
 
-export const generateMetadata = async ({ params }: { params: { id: string } }): Promise<Metadata> => {
-  const { id } = params;
+export const generateMetadata = async ({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> => {
+  const { id } = await params;
 
-  let _id: string = '';
-  let pageName: string = '';
+  let _id = '';
+  let pageName = '';
   const { hospital }: GetHospitalReturnType = await getHospital({ _id: id });
   if (hospital) {
     _id = hospital._id.toString();
     pageName = hospital.title;
   }
 
-  const currentPath: string = `${process.env.NEXT_PUBLIC_BASE_URL}${getPageUrlByType(PageType.HOSPITALS)}/${_id}`;
+  const currentPath = `${process.env.NEXT_PUBLIC_BASE_URL}${getPageUrlByType(PageType.HOSPITALS)}/${_id}`;
 
   return metadataInfo({
     pageName,

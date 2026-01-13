@@ -19,7 +19,7 @@ import AdminProtected from '@/hooks/utils/protections/components/useAdminProtect
 import PharmacyListItemCardHorizontal from './PharmacyListItemCardHorizontal';
 // import { ReactComponent as Icon } from './ZionCare Clinic Search.svg';
 
-const limit: number = 12;
+const limit = 12;
 
 const PharmacyList = (): ReactElement => {
   const { data: userLocation = '', isLoading: locationLoading } = useLocationQuery({});

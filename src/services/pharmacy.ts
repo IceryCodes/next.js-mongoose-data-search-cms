@@ -22,7 +22,7 @@ export const getPharmacy = async ({ _id }: GetPharmacyDto): Promise<GetPharmacyR
     });
     return data;
   } catch (error) {
-    const message: string = '搜尋藥局失敗!';
+    const message = '搜尋藥局失敗!';
     logApiError({ error, message });
 
     return {
@@ -50,7 +50,7 @@ export const getPharmacies = async ({
       message: 'Success',
     };
   } catch (error) {
-    const message: string = '搜尋藥局失敗!';
+    const message = '搜尋藥局失敗!';
     logApiError({ error, message });
 
     return {
@@ -69,7 +69,7 @@ export const updatePharmacy = async (pharmacy: UpdatePharmacyDto): Promise<Pharm
       message: data.message,
     };
   } catch (error) {
-    const message: string = '更新藥局失敗!';
+    const message = '更新藥局失敗!';
     logApiError({ error, message });
 
     return {
@@ -86,7 +86,7 @@ export const updatePharmacyView = async (hospital: UpdatePharmacyViewDto): Promi
       message: data.message,
     };
   } catch (error) {
-    const message: string = '更新瀏覽次數失敗!';
+    const message = '更新瀏覽次數失敗!';
     logApiError({ error, message });
 
     return {
@@ -103,7 +103,7 @@ export const createPharmacy = async (hospital: CreatePharmacyDto): Promise<Pharm
       message: data.message,
     };
   } catch (error) {
-    const message: string = '新增藥局失敗!';
+    const message = '新增藥局失敗!';
     logApiError({ error, message });
 
     return {
@@ -122,7 +122,7 @@ export const deletePharmacy = async ({ _id }: DeletePharmacyDto): Promise<Pharma
       message: data.message,
     };
   } catch (error) {
-    const message: string = '刪除藥局失敗!';
+    const message = '刪除藥局失敗!';
     logApiError({ error, message });
 
     return {

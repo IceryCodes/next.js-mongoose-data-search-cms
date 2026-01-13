@@ -10,18 +10,18 @@ import { getPharmacy } from '@/services/pharmacy';
 
 import PharmacyContent from './components/PharmacyContent';
 
-export const generateMetadata = async ({ params }: { params: { id: string } }): Promise<Metadata> => {
-  const { id } = params;
+export const generateMetadata = async ({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> => {
+  const { id } = await params;
 
-  let _id: string = '';
-  let pageName: string = '';
+  let _id = '';
+  let pageName = '';
   const { pharmacy }: GetPharmacyReturnType = await getPharmacy({ _id: id });
   if (pharmacy) {
     _id = pharmacy._id.toString();
     pageName = pharmacy.title;
   }
 
-  const currentPath: string = `${process.env.NEXT_PUBLIC_BASE_URL}${getPageUrlByType(PageType.PHARMACIES)}/${_id}`;
+  const currentPath = `${process.env.NEXT_PUBLIC_BASE_URL}${getPageUrlByType(PageType.PHARMACIES)}/${_id}`;
 
   return metadataInfo({
     pageName,

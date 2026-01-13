@@ -36,7 +36,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalRetu
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     });
 
-    const manage: boolean = !!(
+    const manage = !!(
       hospital &&
       (await getManageRecordsByCategoryId({
         id: new ObjectId(_id),

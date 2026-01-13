@@ -23,8 +23,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetHospitalsRet
   const { query, county, departments, keywords, partner, category, page = '1', limit = '10' } = req.query;
 
   // Parse page and limit as integers
-  const currentPage: number = Number(page);
-  const pageSize: number = Number(limit);
+  const currentPage = Number(page);
+  const pageSize = Number(limit);
 
   // Return undefined if query is invalid
   if (isNaN(currentPage) || pageSize < 0 || isNaN(pageSize)) {

@@ -17,7 +17,7 @@ export const getLocation = async ({ lat, lng }: GetLocationDto): Promise<string>
     });
     return (city || county || '').replaceAll('臺', '台');
   } catch (error) {
-    const message: string = '搜尋醫院失敗!';
+    const message = '搜尋醫院失敗!';
     logApiError({ error, message });
 
     return '';

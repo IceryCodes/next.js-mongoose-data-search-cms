@@ -15,7 +15,7 @@ export const PageTypeMap: { [key: string]: string } = Object.fromEntries(
 );
 
 export const getPageUrlByType = (value: PageType): string => {
-  const url: string = `/${Object.keys(PageType)
+  const url = `/${Object.keys(PageType)
     .find((key) => PageType[key as keyof typeof PageType] === value)
     ?.toLowerCase()}`;
   return url;

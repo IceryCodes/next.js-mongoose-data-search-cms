@@ -17,7 +17,7 @@ interface ManageRegisterButtonProps {
   title: string;
 }
 
-const ManageRegisterButton = ({ _id, title }: ManageRegisterButtonProps) => {
+const ManageRegisterButton = ({ title }: ManageRegisterButtonProps) => {
   const { isAuthenticated } = useAuth();
   const { isLoading } = useDeleteHospitalMutation();
   const { showToast } = useToast();

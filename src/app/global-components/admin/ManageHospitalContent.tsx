@@ -34,7 +34,7 @@ interface FormFieldProps {
   type?: string;
 }
 
-const inputStyle: string = 'w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400';
+const inputStyle = 'w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400';
 
 const ManageHospitalContent = ({ hospital, refetch }: ManageHospitalContentProps) => {
   const router = useRouter();

@@ -22,7 +22,7 @@ export const getHospital = async ({ _id }: GetHospitalDto): Promise<GetHospitalR
     });
     return data;
   } catch (error) {
-    const message: string = '搜尋醫院失敗!';
+    const message = '搜尋醫院失敗!';
     logApiError({ error, message });
 
     return {
@@ -52,7 +52,7 @@ export const getHospitals = async ({
       message: 'Success',
     };
   } catch (error) {
-    const message: string = '搜尋醫院失敗!';
+    const message = '搜尋醫院失敗!';
     logApiError({ error, message });
 
     return {
@@ -69,7 +69,7 @@ export const updateHospital = async (hospital: UpdateHospitalDto): Promise<Hospi
       message: data.message,
     };
   } catch (error) {
-    const message: string = '更新醫院失敗!';
+    const message = '更新醫院失敗!';
     logApiError({ error, message });
 
     return {
@@ -86,7 +86,7 @@ export const updateHospitalView = async (hospital: UpdateHospitalViewDto): Promi
       message: data.message,
     };
   } catch (error) {
-    const message: string = '更新瀏覽次數失敗!';
+    const message = '更新瀏覽次數失敗!';
     logApiError({ error, message });
 
     return {
@@ -103,7 +103,7 @@ export const createHospital = async (hospital: CreateHospitalDto): Promise<Hospi
       message: data.message,
     };
   } catch (error) {
-    const message: string = '新增醫院失敗!';
+    const message = '新增醫院失敗!';
     logApiError({ error, message });
 
     return {
@@ -122,7 +122,7 @@ export const deleteHospital = async ({ _id }: DeleteHospitalDto): Promise<Hospit
       message: data.message,
     };
   } catch (error) {
-    const message: string = '刪除醫院失敗!';
+    const message = '刪除醫院失敗!';
     logApiError({ error, message });
 
     return {

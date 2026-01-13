@@ -21,7 +21,7 @@ export const getUser = async ({ _id }: GetUserDto): Promise<GetUserReturnType> =
     });
     return data;
   } catch (error) {
-    const message: string = '搜尋帳號失敗!';
+    const message = '搜尋帳號失敗!';
     logApiError({ error, message });
 
     return {
@@ -42,7 +42,7 @@ export const getUsers = async ({ email }: GetUsersDto): Promise<GetUsersReturnTy
       message: 'Success',
     };
   } catch (error) {
-    const message: string = '搜尋帳號失敗!';
+    const message = '搜尋帳號失敗!';
     logApiError({ error, message });
 
     return {
@@ -58,7 +58,7 @@ export const verifyUser = async ({ token }: UserVerifyDto): Promise<UserVerifyRe
     });
     return data;
   } catch (error) {
-    const message: string = '帳號驗證失敗!';
+    const message = '帳號驗證失敗!';
     logApiError({ error, message });
 
     throw { message };
@@ -75,7 +75,7 @@ export const deleteUser = async ({ _id }: DeleteUserDto): Promise<UserUpdateRetu
       message: data.message,
     };
   } catch (error) {
-    const message: string = '刪除帳號失敗!';
+    const message = '刪除帳號失敗!';
     logApiError({ error, message });
 
     return {
@@ -91,7 +91,7 @@ export const getMe = async ({ _id }: GetUserDto): Promise<UserLoginReturnType> =
     });
     return data;
   } catch (error) {
-    const message: string = '找不到帳號!';
+    const message = '找不到帳號!';
     logApiError({ error, message });
 
     return {

@@ -12,7 +12,7 @@ import AdminProtected from '@/hooks/utils/protections/components/useAdminProtect
 
 import VerifyBar from './VerifyBar';
 
-const linkStyle: string =
+const linkStyle =
   'font-bold text-white hover:text-[#545454] block transition-all duration-300 ease-in-out md:inline';
 
 const Header = ({ children }: { children: ReactElement }) => {

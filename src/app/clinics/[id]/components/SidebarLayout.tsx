@@ -19,7 +19,7 @@ interface SidebarLayoutProps {
   children: ReactElement;
 }
 
-const limit: number = 6;
+const limit = 6;
 
 const SidebarLayout = ({ pageId, county, children }: SidebarLayoutProps) => {
   const router = useRouter();

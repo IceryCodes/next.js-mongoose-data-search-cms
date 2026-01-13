@@ -11,7 +11,7 @@ export const updateManages = async (manages: CreateManageDto): Promise<ManageUpd
       message: data.message,
     };
   } catch (error) {
-    const message: string = '更新管理機構失敗!';
+    const message = '更新管理機構失敗!';
     logApiError({ error, message });
 
     return {

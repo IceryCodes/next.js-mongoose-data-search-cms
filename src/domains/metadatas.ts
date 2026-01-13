@@ -32,7 +32,7 @@ export const defaultPharmacyExcerpt = ({
   owner,
   phone,
 }: PharmacyProps): string =>
-  `${title}是一間位於${county}${district}${address}的藥局! ${healthInsuranceAuthorized ? '是健保特約的藥局，' : ''}${owner && `負責人為${owner!}，`}電話是${phone}!`;
+  `${title}是一間位於${county}${district}${address}的藥局! ${healthInsuranceAuthorized ? '是健保特約的藥局，' : ''}${owner && `負責人為${owner}，`}電話是${phone}!`;
 
 export const getDescription = ({ currentPath, data }: GetDescriptionProps): string => {
   switch (true) {

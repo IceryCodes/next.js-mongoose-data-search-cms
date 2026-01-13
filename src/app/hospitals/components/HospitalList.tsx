@@ -20,7 +20,7 @@ import AdminProtected from '@/hooks/utils/protections/components/useAdminProtect
 
 import HospitalListItemCardHorizontal from './HospitalListItemCardHorizontal';
 
-const limit: number = 12;
+const limit = 12;
 
 const HospitalList = (): ReactElement => {
   const keywordsParams = useSearchParams();

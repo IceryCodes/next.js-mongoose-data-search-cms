@@ -36,7 +36,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetPharmacyRetu
       $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
     });
 
-    const manage: boolean = !!(
+    const manage = !!(
       pharmacy &&
       (await getManageRecordsByCategoryId({
         id: new ObjectId(_id),

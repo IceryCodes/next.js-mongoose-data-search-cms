@@ -19,7 +19,7 @@ export const userRegister = async ({
     });
     return data;
   } catch (error) {
-    const message: string = '此電子郵件已被註冊!';
+    const message = '此電子郵件已被註冊!';
     logApiError({ error, message });
 
     return {
@@ -33,7 +33,7 @@ export const userLogin = async ({ email, password }: UserLoginDto): Promise<User
     const { data } = await apiOrigin.post('/user-login', { email, password });
     return data;
   } catch (error) {
-    const message: string = '帳號或密碼錯誤!';
+    const message = '帳號或密碼錯誤!';
     logApiError({ error, message });
 
     return {
@@ -49,7 +49,7 @@ export const userResendVerification = async ({
     const { data } = await apiOrigin.post('/resend-verification', { _id });
     return data;
   } catch (error) {
-    const message: string = '登入失敗!';
+    const message = '登入失敗!';
     logApiError({ error, message });
 
     return {
@@ -68,7 +68,7 @@ export const userUpdate = async ({ _id, firstName, lastName, gender }: UserUpdat
     });
     return data;
   } catch (error) {
-    const message: string = '更新失敗!';
+    const message = '更新失敗!';
     logApiError({ error, message });
 
     return {

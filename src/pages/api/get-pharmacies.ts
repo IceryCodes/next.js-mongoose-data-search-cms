@@ -22,8 +22,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<GetPharmaciesRe
 
   const { query, county, healthInsuranceAuthorized, partner, page = '1', limit = '10' } = req.query;
 
-  const currentPage: number = Number(page);
-  const pageSize: number = Number(limit);
+  const currentPage = Number(page);
+  const pageSize = Number(limit);
 
   if (isNaN(currentPage) || pageSize < 0 || isNaN(pageSize)) {
     return res.status(HttpStatus.BadRequest).json({ message: 'Invalid body' });
